@@ -1,0 +1,14 @@
+# OS + editor cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+__MACOSX/
+
+# tool state, not source
+.impeccable/
+
+# nothing here yet, but keep secrets out by default
+.env
+.env.*
+*.pem
+*.key

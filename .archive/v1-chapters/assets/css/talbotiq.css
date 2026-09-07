@@ -1,0 +1,1968 @@
+@charset "utf-8";
+/* =============================================================================
+   TALBOTIQ — "THE INSTRUMENT"
+   -----------------------------------------------------------------------------
+   The one thing about TalbotIQ that no competitor can claim is verifiable from
+   the AI Engine's own console: every product is metered through one engine.
+   So this page is built as a measuring instrument, not a brochure — a control
+   plane with channels, headroom, served-by tags and a scale down the side.
+
+   Colour is not decoration here. The engine reports three rate-limit states in
+   its own words — Comfortable / Approaching / At ceiling — so the palette is
+   green / amber / red as SIGNALS, sampled from the official logo (#30B484,
+   #F0D860). Everything else is instrument grey.
+
+   ARCHITECTURE NOTE (read before editing)
+   Dark sections work by REASSIGNING TOKENS on `.dark`, never by writing
+   `.dark .thing {}` overrides. Add a component once and it themes itself.
+   Section rhythm comes from one token, --bay, so no two rules fight over
+   padding.
+   ========================================================================== */
+
+/* ---- 1 · TOKENS --------------------------------------------------------- */
+:root {
+  --f-display: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-text:    "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* The ground. A suite paces a long page by ALTERNATING two surfaces — white
+     and a light grey band — rather than by guessing at padding, so both are
+     tokens and `.band` swaps them. Cards are white, which is why they read on
+     the band and need a hairline on white. */
+  --paper:   #FFFFFF;
+  --band:    #F2F3F1;
+  /* the cool haze under the hero — barely a colour, and the only place on the
+     page where a gradient is allowed to exist */
+  --haze:    #DDE4F2;
+  --face:    #FFFFFF;
+  --sunk:    #E7E9E5;
+  --ink:     #0B100E;
+  --ink-2:   #333B37;
+  --ink-3:   #5E665F;   /* 4.85:1 on --paper */
+  /* --dim carries every mono label on the page, all of it small text, so it has
+     to clear 4.5:1 rather than merely look quiet. #616861 measures 4.69:1 on
+     --paper; anything lighter fails at 12px. */
+  --dim:     #616861;
+  --rule:    #E2E5DF;
+  --rule-2:  #CBD0C7;
+
+  /* signals — the engine's own three rate-limit states */
+  --sig:     #1F9A69;   /* comfortable / in range / brand */
+  --sig-lo:  #DCEFE5;
+  --warn:    #B67C06;   /* approaching */
+  --stop:    #B03A26;   /* at ceiling — used almost never */
+
+  --accent:  var(--sig);       /* reassigned per chapter */
+  --accent-lo: var(--sig-lo);
+
+  /* Two derived accents, so a product's colour can be both a fill and a label
+     without one of those failing contrast. A raw accent at 11-12px is 3.7-4.5:1
+     on --paper — under AA — and white on a raw accent is ~3.5:1.
+       --accent-ink   : the accent as SMALL TEXT. Mixes toward --ink, which means
+                        it darkens on paper and lightens in the dark room, so
+                        both themes are covered by the same declaration.
+       --accent-solid : the accent BEHIND white text (buttons, active tabs).
+     Every accent in products.js passes AA through these; none does raw. */
+  --accent-ink:   color-mix(in oklab, var(--accent) 74%, var(--ink));
+  --accent-solid: color-mix(in oklab, var(--accent) 78%, #000);
+  --sig-ink:      color-mix(in oklab, var(--sig) 72%, var(--ink));
+
+  /* elevation: shallow and real. light falls from above. */
+  --lift-1: 0 1px 1px rgb(11 16 14 / .04);
+  --lift-2: 0 1px 2px rgb(11 16 14 / .05), 0 6px 12px -8px rgb(11 16 14 / .12);
+  --lift-3: 0 2px 4px rgb(11 16 14 / .05), 0 22px 44px -20px rgb(11 16 14 / .22);
+  --lift-4: 0 4px 8px rgb(11 16 14 / .06), 0 48px 96px -32px rgb(11 16 14 / .32);
+
+  /* geometry: instruments have tight, consistent radii and real hairlines */
+  --r-sm: 2px;
+  --r:    4px;
+  --r-lg: 6px;
+
+  --page: 1520px;
+  --gut: 1.25rem;
+  --scale-w: 0px;       /* the left measuring scale reserves this */
+  --bay: 5rem;          /* THE section rhythm token. Nothing else sets it. */
+
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --ease-io: cubic-bezier(.7, 0, .2, 1);
+  --t-1: .15s; --t-2: .3s; --t-3: .7s;
+}
+@media (min-width: 680px)  { :root { --gut: 2rem;   --bay: 6.5rem; } }
+@media (min-width: 1080px) { :root { --gut: 2.5rem; --bay: 8rem; --scale-w: 92px; } }
+@media (min-width: 1440px) { :root { --gut: 4rem;   --bay: 9rem; } }
+
+/* THE DARK ROOM. Tokens only — every component follows automatically. */
+.dark {
+  --paper:  #060C0A;
+  --face:   #0D1512;
+  --sunk:   #040907;
+  --ink:    #EEF2EE;
+  --ink-2:  #BCC4BE;
+  --ink-3:  #939B94;
+  --dim:    #79817A;
+  --rule:   #1D2723;
+  --rule-2: #2C3832;
+  --sig:    #43C692;
+  --sig-lo: #0E2A20;
+  /* In here the text that sits ON an accent is near-black, so the solid has to
+     lighten instead of darken or it would be dark-on-dark. And --accent-ink has
+     to mix toward WHITE, not --ink: 74% accent + light ink still lands mid-grey
+     and measures 3.2:1 on the room's near-black. */
+  --accent-solid: color-mix(in oklab, var(--accent) 84%, #fff);
+  --accent-ink:   color-mix(in oklab, var(--accent) 58%, #fff);
+  --warn:   #E4B53C;
+  --stop:   #E2664C;
+  --lift-2: 0 1px 2px rgb(0 0 0 / .5);
+  --lift-3: 0 2px 6px rgb(0 0 0 / .5), 0 24px 48px -20px rgb(0 0 0 / .7);
+  --lift-4: 0 4px 10px rgb(0 0 0 / .5), 0 56px 112px -32px rgb(0 0 0 / .8);
+  color-scheme: dark;
+}
+
+/* ---- 2 · RESET ---------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+/* The CRM funnel deliberately runs past the right gutter. Clipping on <html>
+   as well as <body> is what stops that bleed becoming a horizontal scrollbar —
+   body alone leaves the root scrollable. */
+html {
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink-2);
+  font-family: var(--f-text);
+  font-size: 1rem;
+  line-height: 1.62;
+  font-variation-settings: "wdth" 100;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+h1, h2, h3, h4 { margin: 0; color: var(--ink); font-weight: 600; line-height: 1; }
+p, dl, dd, dt, figure { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, svg, canvas { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent); color: #fff; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 1px; }
+[id] { scroll-margin-top: 88px; }
+
+.vh {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+.skip {
+  position: fixed; top: 0; left: 0; z-index: 300;
+  transform: translateY(-110%);
+  background: var(--ink); color: var(--face);
+  padding: .8rem 1.4rem; font: 500 .8125rem/1 var(--f-mono);
+}
+.skip:focus { transform: none; }
+
+/* ---- 3 · THE SURFACE ---------------------------------------------------- */
+/* There was a hairline grid field here, on the dark room and the close, with a
+   comment calling it "a real measured grid". It was not one: nothing on this
+   page is laid out to a 22px module — spacing comes from --bay and rem, and
+   nothing ever snapped to those lines. So it was decoration wearing a
+   rationale, and a tiled hairline grid is a well-worn generated-UI tell.
+   The surface system that replaced it is real: alternating --paper and .band
+   grounds, one curved seam, and the dark room. If a future section genuinely
+   needs a ruled ground, rule it to something the layout actually measures
+   against. */
+
+.wrap {
+  width: 100%; max-width: var(--page);
+  margin-inline: auto; padding-inline: var(--gut);
+}
+.wrap--inset { padding-inline-start: calc(var(--gut) + var(--scale-w)); }
+
+/* the alternating ground — one class, one swap, no per-section overrides */
+.band { background: var(--band); }
+.band { --face: #FFFFFF; --sunk: #E4E7E2; }
+
+/* The seam between the hero and the band below it. This was a hard convex
+   curve; it is now a soft wash — the band's colour, plus the faintest cool
+   haze, rising into white over a long distance. The curve announced itself and
+   read as a shape; the wash just makes the top of the page feel like it has
+   air in it, which is the whole emotional job of a front door. */
+.curve {
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: clamp(120px, 22vw, 300px);
+  pointer-events: none;
+  /* it comes after the content in DOM order, so without this it washes over
+     the copy it is supposed to sit behind */
+  z-index: 0;
+  background:
+    radial-gradient(120% 100% at 50% 100%,
+      color-mix(in oklab, var(--haze) 62%, transparent) 0%,
+      transparent 72%),
+    linear-gradient(to bottom, transparent 0%, var(--band) 92%);
+}
+
+/* Full-height hairlines marking the real column structure, rather than a
+   tiled field pretending to be one. They land on the content's own gutters, so
+   they say where the grid is instead of decorating the background. */
+.ruleset { position: relative; }
+.ruleset::before,
+.ruleset::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 1px;
+  background: var(--rule); pointer-events: none;
+}
+.ruleset::before { left: var(--gut); }
+.ruleset::after { right: var(--gut); }
+@media (max-width: 900px) { .ruleset::before, .ruleset::after { display: none; } }
+
+/* ---- 4 · TYPE ----------------------------------------------------------- */
+/* Archivo's WIDTH axis does the heavy lifting: expanded + medium weight reads
+   like equipment nomenclature. Fat 800-weight normal-width is the SaaS default
+   and we never use it for display. */
+.dsp {
+  font-family: var(--f-display);
+  font-weight: 620;
+  font-variation-settings: "wdth" 118;
+  letter-spacing: -.03em;
+  line-height: .94;
+  color: var(--ink);
+  text-wrap: balance;
+}
+/* xl is set for a FOUR-LINE authored statement (products.js writes the breaks),
+   so it is sized to fit four lines in the first screen, not to be as big as
+   possible. lg is the chapter statement, also authored with breaks. */
+.dsp--xl { font-size: clamp(2.25rem, 4.3vw, 3.75rem); letter-spacing: -.034em; }
+.dsp--lg { font-size: clamp(1.9rem, 3.4vw, 2.875rem); }
+.dsp--md { font-size: clamp(1.5rem, 2.3vw, 2rem); letter-spacing: -.022em; line-height: 1.04; }
+
+/* Nomenclature, not an eyebrow: mono, SENTENCE CASE, with an index or a unit.
+   Tracked-out all-caps labels above headings are the single loudest tell of a
+   generated page, so they do not exist in this stylesheet. */
+.nom {
+  font: 500 .75rem/1.5 var(--f-mono);
+  letter-spacing: .01em;
+  color: var(--dim);
+  font-feature-settings: "zero" 1;
+}
+.nom--accent { color: var(--accent-ink); }
+.nom b { font-weight: 600; color: var(--ink-2); }
+
+.lede {
+  font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 34ch;
+}
+.body { color: var(--ink-3); max-width: 62ch; }
+.fine { font: 400 .8125rem/1.55 var(--f-mono); color: var(--dim); max-width: 58ch; }
+
+/* an inline mark for verified product vocabulary quoted from the app itself */
+.said {
+  font-family: var(--f-mono);
+  font-size: .94em;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: .05em;
+}
+
+/* ---- 5 · CONTROLS ------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: .625rem;
+  min-height: 2.875rem; padding: 0 1.375rem;
+  border-radius: var(--r);
+  font: 500 .9375rem/1 var(--f-text);
+  letter-spacing: -.005em;
+  border: 1px solid transparent;
+  transition: background var(--t-1), border-color var(--t-1), color var(--t-1), transform var(--t-1);
+}
+.btn:active { transform: translateY(1px); }
+.btn--fill { background: var(--ink); color: var(--paper); }
+.btn--fill:hover { background: var(--accent); }
+.btn--line { border-color: var(--rule-2); color: var(--ink); }
+.btn--line:hover { border-color: var(--ink); background: color-mix(in oklab, var(--ink) 5%, transparent); }
+/* the filled-grey secondary a suite pairs with its primary, rather than a
+   second outlined button competing for the same weight */
+.btn--ghost { background: var(--band); color: var(--ink); }
+.btn--ghost:hover { background: color-mix(in oklab, var(--ink) 9%, var(--band)); }
+.btn--sig { background: var(--accent-solid); color: #fff; }
+.dark .btn--sig, .dark.btn--sig { color: #04140D; }
+.btn--sig:hover { filter: brightness(1.08); }
+.btn--sm { min-height: 2.25rem; padding: 0 .875rem; font-size: .875rem; }
+
+/* a link that goes somewhere: the rule under it extends on hover.
+   No "→" glyph welded onto the label. */
+.go {
+  display: inline-flex; align-items: baseline; gap: .5rem;
+  font: 500 .9375rem/1.4 var(--f-text);
+  color: var(--ink);
+  padding-bottom: 2px;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  transition: background-size var(--t-2) var(--ease), color var(--t-1);
+}
+.go:hover { color: var(--accent-ink); background-size: 100% 2px; }
+.go i {
+  flex: none; width: 6px; height: 6px; align-self: center;
+  border-top: 1px solid currentColor; border-right: 1px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform var(--t-2) var(--ease);
+}
+.go:hover i { transform: rotate(45deg) translate(2px, -2px); }
+
+/* The status pill (.state / .state--live) is gone with its last caller. It
+   printed "Live" / "Placeholder" / "App URL pending" — three quarters of
+   which were notes about our own rollout, shown where someone is reading
+   about the product. */
+
+/* ---- 6 · THE MEASURING SCALE (left rail) -------------------------------- */
+/* Not a dot-progress rail. A tick-marked scale with a tracking indicator —
+   the page's structural signature, and it encodes real position. */
+/* The scale measures CHAPTERS, so it stays out of the way until one owns the
+   viewport — in the hero and the app grid it would be pointing at nothing. */
+.scale {
+  position: fixed; top: 0; bottom: 0; left: 0; z-index: 40;
+  width: var(--scale-w);
+  display: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--t-3) var(--ease);
+}
+@media (min-width: 1080px) { .scale { display: block; } }
+[data-inchap="true"] .scale { opacity: 1; }
+
+/* The scale floats over the dark room without being inside it, so it takes the
+   room's tokens on its own. Reassignment, not overrides — --accent-ink then
+   recomputes and lightens by itself. */
+[data-overdark="true"] .scale {
+  --ink:    #EEF2EE;
+  --ink-2:  #BCC4BE;
+  --ink-3:  #939B94;
+  --dim:    #79817A;
+  --rule:   #1D2723;
+  --rule-2: #33403A;
+}
+
+.scale__in {
+  position: absolute; top: 50%; left: var(--gut);
+  transform: translateY(-50%);
+  padding-left: 13px;
+}
+/* The spine and its minor graduations, drawn rather than marked up. Minor
+   ticks every 11px are 4px long; the major tick for each stop is drawn by the
+   link itself below, at 9px. Two tick lengths is what makes it read as a
+   measuring scale instead of a progress bar. */
+.scale__in::before {
+  content: ""; position: absolute; left: 0; top: -16px; bottom: -16px; width: 4px;
+  background-image:
+    linear-gradient(to bottom, var(--rule) 1px, transparent 1px),
+    linear-gradient(to right, var(--rule-2) 1px, transparent 1px);
+  background-size: 4px 11px, 1px 100%;
+  background-repeat: repeat-y, no-repeat;
+}
+.scale ol { position: relative; display: grid; gap: 0; }
+.scale li { position: relative; height: 33px; }
+.scale a {
+  pointer-events: auto;
+  position: absolute; inset: 0;
+  display: flex; align-items: center; gap: .5rem;
+  font: 500 .6875rem/1 var(--f-mono);
+  color: var(--dim);
+  font-feature-settings: "zero" 1;
+  transition: color var(--t-1);
+}
+/* The major tick for each stop. It grows leftward from a fixed right edge, so
+   it is drawn at full length and revealed by scaleX from that edge — animating
+   width and left together would do the same thing through layout. */
+.scale a::before {
+  content: ""; position: absolute; left: -19px; right: auto;
+  width: 15px; height: 2px; background: var(--rule-2);
+  transform: scaleX(.6); transform-origin: right;
+  transition: transform var(--t-2) var(--ease), background var(--t-2);
+}
+.scale a span { transition: opacity var(--t-2), transform var(--t-2) var(--ease); }
+.scale a em {
+  font-style: normal; opacity: 0; transform: translateX(-4px);
+  transition: opacity var(--t-2) var(--ease), transform var(--t-2) var(--ease);
+  white-space: nowrap;
+}
+.scale a:hover { color: var(--ink-2); }
+.scale a:hover em { opacity: 1; transform: none; }
+.scale a[aria-current="true"] { color: var(--ink); }
+.scale a[aria-current="true"]::before { transform: none; background: var(--accent); }
+.scale a[aria-current="true"] em { opacity: 1; transform: none; color: var(--accent); }
+
+.scale__unit {
+  position: absolute; left: 13px; top: -1.875rem;
+  font: 500 .625rem/1 var(--f-mono); color: var(--dim);
+}
+
+/* ---- 7 · HEADER --------------------------------------------------------- */
+.head {
+  position: sticky; top: 0; z-index: 90;
+  background: color-mix(in oklab, var(--paper) 95%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  backdrop-filter: saturate(1.4) blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-2), background var(--t-2), color var(--t-2);
+  color: var(--ink-2);
+}
+.head[data-stuck="true"] { border-bottom-color: var(--rule); }
+.head > .wrap {
+  display: flex; align-items: center; gap: clamp(1rem, 2.4vw, 2.25rem);
+  min-height: 68px;
+}
+.brand { flex: none; display: block; }
+.brand img { height: 30px; width: auto; }
+/* the full-colour mark cannot be inverted (it flattens to a white blob), so on
+   dark the wordmark takes over — always legible, never a broken asset */
+.brand__mk {
+  display: none;
+  font-family: var(--f-display);
+  font-weight: 650; font-variation-settings: "wdth" 112;
+  font-size: 1.1875rem; letter-spacing: -.03em; color: var(--ink);
+}
+.brand__mk b { font-weight: 650; color: var(--sig-ink); }
+.dark .brand img, .head[data-dark="true"] .brand img { display: none; }
+.dark .brand__mk, .head[data-dark="true"] .brand__mk { display: block; }
+
+.nav { display: none; align-items: center; gap: .25rem; margin-inline-start: .5rem; }
+@media (min-width: 1000px) { .nav { display: flex; } }
+.nav > a, .nav__btn {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .5rem .6875rem; border-radius: var(--r);
+  font: 500 .9375rem/1 var(--f-text); color: var(--ink-2);
+  transition: color var(--t-1), background var(--t-1);
+}
+.nav > a:hover, .nav__btn:hover { color: var(--ink); background: color-mix(in oklab, var(--ink) 6%, transparent); }
+.nav__btn::after {
+  content: ""; width: 5px; height: 5px;
+  border-bottom: 1.2px solid currentColor; border-right: 1.2px solid currentColor;
+  transform: translateY(-1px) rotate(45deg);
+  transition: transform var(--t-2) var(--ease);
+}
+.nav__btn[aria-expanded="true"]::after { transform: translateY(1px) rotate(225deg); }
+/* Which application you are currently inside. A suite's header changes to the
+   product you are reading about; on one page that means the active chapter's
+   mark and name appear beside the logo. */
+.head__now { display: none; align-items: center; }
+@media (min-width: 1180px) { .head__now { display: flex; } }
+.head__now span {
+  display: flex; align-items: center; gap: .5rem;
+  padding-inline-start: 1rem; margin-inline-start: .25rem;
+  border-inline-start: 1px solid var(--rule);
+  font: 500 .875rem/1 var(--f-text); color: var(--ink);
+  animation: nowIn .3s var(--ease) both;
+}
+.head__now span[hidden] { display: none; }
+@keyframes nowIn { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
+
+.head__r { margin-inline-start: auto; display: flex; align-items: center; gap: .625rem; }
+.head__r .btn { white-space: nowrap; }
+/* on a phone the drawer already carries both calls to action, and two buttons
+   plus a burger in a 390px bar is what makes a header wrap */
+@media (max-width: 720px) { .head__r .btn--line { display: none; } }
+@media (max-width: 460px) { .head__r .btn { display: none; } }
+
+.burger { display: grid; place-items: center; width: 40px; height: 40px; margin-inline-end: -.5rem; }
+@media (min-width: 1000px) { .burger { display: none; } }
+.burger span, .burger span::before, .burger span::after {
+  display: block; width: 19px; height: 1.5px; background: var(--ink); border-radius: 2px;
+  transition: transform var(--t-2) var(--ease), opacity var(--t-1);
+}
+.burger span::before, .burger span::after { content: ""; position: absolute; }
+.burger span::before { transform: translateY(-6px); }
+.burger span::after  { transform: translateY(6px); }
+.burger[aria-expanded="true"] span { transform: rotate(45deg); }
+.burger[aria-expanded="true"] span::before { opacity: 0; }
+.burger[aria-expanded="true"] span::after  { transform: rotate(-90deg); }
+
+/* ---- 8 · MEGA MENU ------------------------------------------------------ */
+/* Product discovery with a live preview pane — browsing an ecosystem, not
+   opening a dropdown. */
+.mw { position: relative; }
+/* Full-bleed, not a floating card: a suite publishes a DIRECTORY, and a
+   directory spans the page. Anchored to the header rather than to the button,
+   so it opens as a shelf under the whole bar. */
+.mega {
+  position: fixed; left: 0; right: 0; top: var(--head-b, 68px);
+  background: var(--face);
+  border-block: 1px solid var(--rule);
+  box-shadow: 0 24px 48px -24px rgb(11 16 14 / .22);
+  overflow: hidden;
+}
+.mega[hidden] { display: none; }
+
+.mega__grid { display: flex; align-items: stretch; gap: clamp(1.25rem, 2.5vw, 2.5rem); padding-block: 1.75rem 1.5rem; }
+.mega__cats {
+  flex: 1; min-width: 0;
+  display: grid; gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-content: start;
+}
+.mega__pane { flex: 0 0 268px; }
+@media (max-width: 1180px) {
+  .mega__cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mega__pane { display: none; }
+}
+/* Column heights are uneven by nature — three categories hold one product and
+   one holds four — so the note is pushed to the bottom of every column and the
+   row of notes reads as a baseline instead of four floating fragments. */
+.mega__col { min-width: 0; display: flex; flex-direction: column; }
+.mega__col ul { flex: 1; }
+.mega__col .mega__note { margin-top: auto; }
+
+/* the category header in its own hue over a hairline — the device that makes a
+   long directory scannable, and the reason the list needs no other chrome */
+.mega__cat {
+  font: 600 .8125rem/1 var(--f-text);
+  letter-spacing: .002em;
+  /* the hue at full strength is 3.6:1 at this size — the rule below it can
+     carry the raw colour, the label cannot */
+  color: color-mix(in oklab, var(--hue) 76%, var(--ink));
+  padding-bottom: .625rem; margin-bottom: .625rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--hue) 42%, var(--rule));
+}
+.mega__note {
+  margin-top: .875rem; padding-top: .75rem;
+  border-top: 1px solid var(--rule);
+  font: 400 .75rem/1.5 var(--f-mono); color: var(--dim);
+}
+.mega__col > .nom { padding-inline: .5rem; margin-bottom: .625rem; display: block; }
+.mega__col a {
+  display: flex; align-items: flex-start; gap: .625rem;
+  padding: .5rem .5rem .5rem .375rem; border-radius: var(--r);
+  transition: background var(--t-1);
+}
+.mega__col a:hover, .mega__col a:focus-visible { background: var(--band); }
+.mega__col a > span { min-width: 0; }
+.mega__n {
+  display: block;
+  font: 500 .9375rem/1.3 var(--f-text); color: var(--ink);
+  letter-spacing: -.008em;
+}
+.mega__d { display: block; font: 400 .8125rem/1.4 var(--f-text); color: var(--dim); margin-top: .1875rem; }
+
+.mega__pane {
+  padding: 1.125rem; min-width: 0;
+  background: var(--band); border-radius: var(--r-lg);
+  align-self: start;
+}
+.mega__pane .nom { display: block; margin-bottom: .75rem; }
+.mega__slot { min-height: 172px; }
+.mega__foot { border-top: 1px solid var(--rule); background: var(--band); }
+.mega__foot > .wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding-block: .8125rem;
+  font: 400 .8125rem/1.4 var(--f-mono); color: var(--dim);
+}
+
+/* ---- 9 · DRAWER --------------------------------------------------------- */
+.drawer {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--paper);
+  padding: 1.25rem var(--gut) 2.5rem;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: .125rem;
+  transform: translateY(-100%);
+  transition: transform var(--t-3) var(--ease-io);
+}
+.drawer[data-open="true"] { transform: none; }
+@media (min-width: 1000px) { .drawer { display: none; } }
+.drawer__top { display: flex; align-items: center; min-height: 48px; margin-bottom: 1.5rem; }
+.drawer .nom { margin: 1.5rem 0 .5rem; }
+.drawer__a {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .8125rem 0; border-bottom: 1px solid var(--rule);
+  font-family: var(--f-display); font-weight: 600; font-variation-settings: "wdth" 112;
+  font-size: 1.25rem; letter-spacing: -.02em; color: var(--ink);
+}
+.drawer__a b { margin-inline-start: auto; font: 500 .6875rem/1 var(--f-mono); color: var(--dim); }
+.drawer__cta { display: grid; gap: .625rem; margin-top: 2rem; }
+.drawer__cta .btn { justify-content: center; }
+
+/* §10 was a black metrics banner above the header — "3 of 7 products are
+   registered in the AI Engine and metered through it" — which made an
+   internal readout the first line a visitor read. Removed. If a banner is
+   ever needed again it should carry news, not statistics. */
+
+/* ---- 11 · THE BUS — the signature component ----------------------------- */
+/* Seven products, seven channels, one engine underneath. This is the verified
+   claim (per-product metering) drawn as the hero image, and it returns twice:
+   full-scale in the engine chapter, and once more at the close. */
+.bus {
+  --row-h: 42px;
+  position: relative;
+  background: var(--face);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-3);
+  overflow: hidden;
+}
+.bus__hd {
+  display: flex; align-items: center; gap: .625rem;
+  padding: .625rem .875rem;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--paper) 60%, var(--face));
+  font: 500 .75rem/1 var(--f-mono); color: var(--ink-3);
+}
+.bus__hd s { margin-inline-start: auto; text-decoration: none; color: var(--dim); font-size: .6875rem; }
+.bus__body { position: relative; padding: .5rem 0; }
+
+/* the bus itself: a hairline every channel taps into */
+.bus__spine {
+  position: absolute; left: 27px; top: 0; bottom: 0; width: 1px;
+  background: var(--rule-2);
+}
+.bus__spine::after {                     /* the travelling request */
+  content: ""; position: absolute; left: -1.5px; top: 0; width: 4px; height: 30px;
+  border-radius: 2px;
+  background: linear-gradient(var(--sig), transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.ch {
+  position: relative; display: grid; align-items: center;
+  grid-template-columns: 56px minmax(84px, 1fr) auto;
+  gap: .75rem; height: var(--row-h);
+  padding-inline: .875rem 1rem;
+  font-size: .8125rem;
+}
+.ch__n { font: 500 .6875rem/1 var(--f-mono); color: var(--dim); font-feature-settings: "zero" 1; }
+/* the tap: a short lead from the spine to the channel */
+.ch__n::after {
+  content: ""; position: absolute; left: 27px; top: 50%; width: 13px; height: 1px;
+  background: var(--rule-2);
+  transform-origin: left; transform: scaleX(0);
+  transition: transform var(--t-2) var(--ease), background var(--t-2);
+}
+.ch__nm {
+  display: flex; align-items: center; gap: .5rem; min-width: 0;
+  font: 500 .8125rem/1.2 var(--f-text); color: var(--ink);
+  letter-spacing: -.005em;
+}
+/* the channel is identified by its app mark; the mark fades up as the channel
+   taps the bus, which is why it starts dimmed rather than absent */
+.ch__nm .mk { opacity: .32; transition: opacity var(--t-3) var(--ease); }
+.bus[data-on="true"] .ch__nm .mk { opacity: 1; }
+.ch__nm b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch__r { display: flex; align-items: center; gap: .625rem; }
+.ch__tag {
+  font: 400 .6875rem/1 var(--f-mono); color: var(--dim);
+  white-space: nowrap;
+}
+@media (max-width: 560px) { .ch__tag { display: none; } }
+
+/* On the engine, or not yet. A full bar or an empty track — no percentage,
+   because there is no percentage anyone verified. Revealed by scaleX rather
+   than by animating width, so the row never reflows. */
+.gauge {
+  position: relative; width: 74px; height: 4px;
+  border-radius: 2px; background: var(--sunk); overflow: hidden;
+}
+.gauge i {
+  position: absolute; inset: 0;
+  background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .9s var(--ease);
+}
+
+/* the engine, underneath all seven */
+.bus__eng {
+  display: grid; align-items: center;
+  grid-template-columns: 56px 1fr auto; gap: .75rem;
+  padding: .8125rem .875rem .8125rem;
+  margin-top: .5rem;
+  border-top: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--accent) 6%, var(--face));
+  font-size: .8125rem;
+}
+.bus__eng .nom { grid-column: 1; color: var(--ink-3); }
+.bus__eng b { font: 500 .8125rem/1.2 var(--f-text); color: var(--ink); }
+.bus__eng small { display: block; font: 400 .6875rem/1.4 var(--f-mono); color: var(--ink-3); margin-top: .125rem; }
+.bus__eng .go { grid-column: 3; }
+
+/* powered-up state, set once by JS. Channels light in sequence. */
+.bus[data-on="true"] .ch__n::after { transform: scaleX(1); }
+
+.bus[data-on="true"] .gauge i { transform: none; }
+.bus[data-on="true"] .ch { animation: chIn .5s var(--ease) both; }
+.bus[data-on="true"] .ch__n::after,
+.bus[data-on="true"] .ch__nm .mk,
+.bus[data-on="true"] .gauge i { transition-delay: var(--d, 0s); }
+.bus[data-on="true"] .ch:nth-child(n) { animation-delay: var(--d, 0s); }
+@keyframes chIn { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+.bus[data-on="true"] .bus__spine::after { animation: pulse 1.5s var(--ease-io) .1s 1 both; }
+@keyframes pulse {
+  0%   { opacity: 0; transform: translateY(-30px); }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(var(--travel, 340px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bus[data-on="true"] .ch { animation: none; }
+  .bus__spine::after { display: none; }
+  .bus[data-on="true"] .ch__n::after,
+  .bus[data-on="true"] .ch__nm .mk,
+  .bus[data-on="true"] .gauge i { transition: none; transition-delay: 0s; }
+}
+
+/* full-scale variant, for the engine chapter */
+.bus--full { --row-h: 54px; }
+.bus--full .ch { grid-template-columns: 64px minmax(120px, 1fr) auto; font-size: .875rem; }
+.bus--full .gauge { width: 132px; height: 5px; }
+.bus--full .ch__nm { font-size: .9375rem; }
+
+/* ---- 12 · HERO ---------------------------------------------------------- */
+/* The front door of a suite is centred: one statement, one deck, two buttons,
+   and then the applications. The chapters below stay asymmetric, so centring
+   here is the exception that makes the rest read as composed rather than
+   defaulted. */
+.hero {
+  position: relative;
+  padding-block: clamp(2.75rem, 7vh, 5rem) calc(clamp(48px, 7vw, 104px) + 1.5rem);
+  text-align: center;
+}
+.hero > .wrap { position: relative; z-index: 1; }
+.hero h1 { max-width: 22ch; margin-inline: auto; }
+.hero .lede { margin: 1.5rem auto 0; max-width: 56ch; }
+.hero__cta { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; justify-content: center; }
+/* .hero__claim was a mono paragraph under the buttons explaining how honest
+   this page is. A hero says what the company makes; it does not review its
+   own accuracy. Removed. */
+
+/* ---- 12b · THE APPLICATIONS ------------------------------------------- */
+/* The move that makes a multi-app company legible: every product as a mark you
+   can point at, all of them visible at once, above the fold's edge. */
+.apps { position: relative; padding-block: clamp(1.25rem, 2.5vw, 2rem) var(--bay); }
+.appgrid {
+  display: grid; gap: clamp(.5rem, 1.4vw, 1rem);
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  max-width: 1080px; margin-inline: auto;
+}
+.tile {
+  display: flex; flex-direction: column; align-items: center; gap: .625rem;
+  padding: 1.125rem .5rem 1rem; border-radius: var(--r-lg);
+  text-align: center;
+  transition: background var(--t-1);
+}
+.tile:hover { background: color-mix(in oklab, var(--ink) 4%, transparent); }
+.tile__chip {
+  display: grid; place-items: center;
+  width: 66px; height: 66px; border-radius: 15px;
+  background: var(--face);
+  box-shadow: var(--lift-2);
+  transition: transform var(--t-2) var(--ease), box-shadow var(--t-2);
+}
+.tile:hover .tile__chip { transform: translateY(-4px); box-shadow: var(--lift-3); }
+.tile__nm {
+  font: 500 .875rem/1.25 var(--f-text); color: var(--ink);
+  letter-spacing: -.01em;
+}
+.tile__cat { font: 400 .6875rem/1.3 var(--f-mono); color: var(--dim); }
+
+/* ---- 12b-2 · THE KNIT -------------------------------------------------
+   Six applications, one line down from each, one engine at the bottom where
+   all six arrive. It is the headline, drawn — and it is the page's single
+   load-time sequence, in the order that does the explaining: the apps appear,
+   then the lines drop, then the engine's rule sweeps out to catch them, then
+   the engine names itself.
+
+   The drops share the app grid's own columns, so each one centres under its
+   tile with no measuring. Below 760px the grid is allowed to wrap, which
+   would leave the drops pointing at nothing, so the connective lines are
+   dropped there and the engine simply sits below the apps. */
+.knit { position: relative; }
+.knit__drops {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: clamp(.5rem, 1.4vw, 1rem);
+  max-width: 1080px; margin-inline: auto;
+  height: clamp(2.5rem, 5vw, 4rem);
+}
+.knit__drops i {
+  justify-self: center; width: 1px; height: 100%;
+  background: linear-gradient(to bottom, transparent, var(--rule-2));
+  transform: scaleY(0); transform-origin: top;
+  transition: transform .34s var(--ease-io);
+}
+.knit__rule {
+  display: none;
+  height: 1px; max-width: 1080px; margin-inline: auto;
+  background: linear-gradient(to right,
+    transparent 0, var(--rule-2) 8%, var(--rule-2) 92%, transparent 100%);
+  transform: scaleX(0);
+  transition: transform .5s var(--ease);
+}
+@media (min-width: 760px) { .knit__drops { display: grid; } .knit__rule { display: block; } }
+
+.knit__eng {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(.875rem, 2vw, 1.25rem);
+  width: max-content; max-width: 100%;
+  margin: clamp(1.5rem, 3vw, 2.25rem) auto 0;
+  padding: .875rem 1.375rem .875rem 1rem;
+  border-radius: var(--r-lg);
+  background: var(--face); box-shadow: var(--lift-2);
+  transition: box-shadow var(--t-2), transform var(--t-2) var(--ease);
+}
+@media (min-width: 760px) { .knit__eng { margin-top: clamp(1rem, 2vw, 1.5rem); } }
+.knit__eng:hover { box-shadow: var(--lift-3); transform: translateY(-2px); }
+.knit__chip {
+  flex: none; display: grid; place-items: center;
+  width: 56px; height: 56px; border-radius: 13px;
+  background: var(--sig-lo);
+}
+.knit__t { display: grid; gap: .1875rem; text-align: start; }
+.knit__t b {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 110;
+  font-size: clamp(1rem, 2vw, 1.1875rem); letter-spacing: -.02em; color: var(--ink);
+}
+.knit__t em {
+  font: 400 .875rem/1.4 var(--f-text); font-style: normal; color: var(--ink-3);
+}
+
+/* The sequence. Nothing here animates a layout property.
+   The `.lt` gate matters: this is the only place on the page that hides real
+   CONTENT before a script runs, so it hides it only when the script that
+   brings it back is present. app.js adds `.lt` before it starts observing. */
+.lt .knit .tile { opacity: 0; transform: translateY(7px); }
+.lt .knit .knit__eng { opacity: 0; transform: translateY(7px); }
+.knit[data-lit="true"] .tile,
+.knit[data-lit="true"] .knit__eng {
+  opacity: 1; transform: none;
+  transition: opacity .42s var(--ease), transform .42s var(--ease);
+}
+.knit[data-lit="true"] .tile:nth-child(1) { transition-delay: 0s; }
+.knit[data-lit="true"] .tile:nth-child(2) { transition-delay: .07s; }
+.knit[data-lit="true"] .tile:nth-child(3) { transition-delay: .14s; }
+.knit[data-lit="true"] .tile:nth-child(4) { transition-delay: .21s; }
+.knit[data-lit="true"] .tile:nth-child(5) { transition-delay: .28s; }
+.knit[data-lit="true"] .tile:nth-child(6) { transition-delay: .35s; }
+.knit[data-lit="true"] .tile:nth-child(7) { transition-delay: .42s; }
+.knit[data-lit="true"] .knit__drops i { transform: scaleY(1); }
+.knit[data-lit="true"] .knit__drops i:nth-child(1) { transition-delay: .5s; }
+.knit[data-lit="true"] .knit__drops i:nth-child(2) { transition-delay: .56s; }
+.knit[data-lit="true"] .knit__drops i:nth-child(3) { transition-delay: .62s; }
+.knit[data-lit="true"] .knit__drops i:nth-child(4) { transition-delay: .68s; }
+.knit[data-lit="true"] .knit__drops i:nth-child(5) { transition-delay: .74s; }
+.knit[data-lit="true"] .knit__drops i:nth-child(6) { transition-delay: .8s; }
+.knit[data-lit="true"] .knit__drops i:nth-child(7) { transition-delay: .86s; }
+.knit[data-lit="true"] .knit__rule { transform: scaleX(1); transition-delay: .92s; }
+.knit[data-lit="true"] .knit__eng { transition-delay: 1.25s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .knit .tile, .knit .knit__eng { opacity: 1; transform: none; }
+  .knit__drops i { transform: scaleY(1); }
+  .knit__rule { transform: scaleX(1); }
+}
+
+.apps__proof {
+  max-width: 780px; margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  text-align: center;
+}
+.apps__proof .body { margin-inline: auto; max-width: 54ch; }
+
+/* ---- 12c · THE APP MARK ----------------------------------------------- */
+.mk { flex: none; display: block; }
+
+/* ---- 13 · CHAPTERS ------------------------------------------------------ */
+/* Section rhythm, in one place. A section's own bottom bay is the gap to the
+   next one, so consecutive sections must not add a top bay as well or every
+   seam doubles. Only the dark room, which needs air inside its own colour,
+   keeps both. */
+.chap { position: relative; padding-block: var(--bay); }
+.chap + .chap,
+.hero + .chap,
+.apps + .chap { padding-top: 0; }
+/* The dark room needs air inside its own colour, but a FULL bay on top of
+   the previous section's full bay made that one seam twice every other seam.
+   Half a bay: the colour change is already doing most of the separating. */
+.chap.dark { background: var(--paper); padding-top: calc(var(--bay) * .5); }
+.chap.dark + .chap { padding-top: calc(var(--bay) * .5); }
+/* the close is not a .chap, so it needs saying explicitly or its top bay
+   stacks on the directory's bottom one */
+.chap + .close { padding-top: 0; }
+
+/* the head: nomenclature line, statement, deck, and the product's own verbs */
+.chap__hd {
+  display: grid; gap: clamp(1.5rem, 3vw, 3rem);
+  grid-template-columns: 1fr;
+  align-items: end;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+@media (min-width: 960px) {
+  .chap__hd { grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr); }
+}
+.chap__id { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.chap__id .rule { flex: 1; min-width: 24px; max-width: 120px; height: 1px; background: var(--rule-2); }
+/* the app mark and its name lead the chapter, so you always know which
+   application you are looking at before you read the statement */
+.chap__mk {
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 11px;
+  background: var(--face); box-shadow: var(--lift-2);
+}
+.chap__nm {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 110;
+  font-size: 1.0625rem; letter-spacing: -.018em; color: var(--ink);
+}
+.chap__hd h2 { max-width: 20ch; }
+
+/* The four-verb readout that used to sit under each chapter's description
+   was a fourth piece of copy saying what the description already said.
+   Removed — `story.arc` still drives nothing else, and is kept in the data
+   only because #connect's stage mapping is checked against it by hand. */
+
+.chap__ft { display: flex; align-items: center; flex-wrap: wrap; gap: 1.25rem; margin-top: clamp(2rem, 4vw, 3.25rem); }
+.chap__ft .fine { margin: 0; }
+
+/* the honest caveat. Marking illustrative numbers is the house voice, and it
+   buys more credibility than hiding them would. */
+.caveat {
+  margin-top: 1.125rem; padding-left: .8125rem;
+  border-left: 1px solid var(--rule-2);
+  font: 400 .75rem/1.55 var(--f-mono); color: var(--dim);
+  max-width: 62ch;
+}
+
+/* ---- 14 · UI PLATE (interfaces as physical objects) --------------------- */
+.plate {
+  position: relative;
+  background: var(--face);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-3);
+  overflow: hidden;
+}
+.plate__bar {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .625rem .875rem;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--paper) 55%, var(--face));
+  font: 500 .75rem/1 var(--f-mono); color: var(--ink-3);
+}
+.plate__bar u { display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); }
+.plate__bar u:first-child { background: color-mix(in oklab, var(--accent) 70%, var(--rule-2)); }
+.plate__bar s { margin-inline-start: auto; text-decoration: none; color: var(--dim); font-weight: 400; }
+.plate__in { padding: clamp(1rem, 2vw, 1.5rem); }
+
+/* .tabs went with the composition that used it. The peek readout draws its
+   own module tabs (.peek__tabs). */
+
+/* label / value rows */
+.kv { display: grid; gap: 0; }
+.kv > div {
+  display: flex; align-items: baseline; gap: 1rem;
+  padding: .5625rem 0; border-bottom: 1px solid var(--rule);
+}
+.kv > div:last-child { border-bottom: 0; }
+.kv dt { font: 400 .8125rem/1.4 var(--f-text); color: var(--ink-3); }
+.kv dd { margin-inline-start: auto; font: 500 .8125rem/1.4 var(--f-mono); color: var(--ink); text-align: right; }
+
+/* ---- 15 · CH 01 · MIMIC — the evidence link ---------------------------- */
+/* The product's real differentiator is that every score links to the sentence
+   that earned it. So the composition IS that link: a quote, and rules drawn
+   from the clause to the criterion it scored. */
+.mimic { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 1080px) { .mimic { grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); } }
+
+.mimic__q { padding: clamp(1.25rem, 2.4vw, 2rem); }
+.mimic__q blockquote {
+  margin: 0;
+  font-family: var(--f-display); font-weight: 500; font-variation-settings: "wdth" 104;
+  font-size: clamp(1.125rem, 1.9vw, 1.5rem); line-height: 1.4;
+  letter-spacing: -.018em; color: var(--ink);
+  text-wrap: pretty;
+}
+/* the highlight has to survive a line break, so it is a real background with
+   box-decoration-break — an inset box-shadow tears across the wrap */
+.mimic__q mark {
+  background: linear-gradient(var(--accent-lo), var(--accent-lo)) no-repeat 0 100% / 100% .42em;
+  color: inherit;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size var(--t-3) var(--ease);
+}
+.mimic__q[data-lit="true"] mark {
+  background-image: linear-gradient(color-mix(in oklab, var(--accent) 28%, transparent),
+                                    color-mix(in oklab, var(--accent) 28%, transparent));
+  background-size: 100% 1.05em;
+}
+.mimic__meta { display: flex; gap: 1rem; align-items: baseline; margin-top: 1.125rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+
+/* The meter is the only rule in this block. A row border as well would read as
+   a second, competing hairline right beside it. */
+.crit { display: grid; gap: 1.375rem; }
+.crit__r { padding: 0; }
+.crit__t { display: flex; align-items: baseline; gap: 1rem; }
+.crit__t span { font: 400 .8125rem/1.3 var(--f-text); color: var(--ink-3); }
+.crit__t b {
+  margin-inline-start: auto;
+  font-family: var(--f-display); font-weight: 600; font-variation-settings: "wdth" 108;
+  font-size: 1.125rem; color: var(--ink); font-feature-settings: "tnum" 1;
+}
+.crit__b { margin-top: .5rem; height: 5px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
+.crit__b i {
+  display: block; height: 100%; width: var(--v); background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .9s var(--ease);
+}
+.crit[data-lit="true"] .crit__b i { transform: none; }
+.crit[data-lit="true"] .crit__r:nth-child(2) .crit__b i { transition-delay: .12s; }
+.crit[data-lit="true"] .crit__r:nth-child(3) .crit__b i { transition-delay: .24s; }
+.crit__src { display: block; margin-top: .4375rem; font: 400 .6875rem/1.4 var(--f-mono); color: var(--dim); }
+
+.mimic__out {
+  margin-top: 1.25rem; padding: 1rem 1.125rem;
+  background: var(--accent-lo);
+  border-radius: var(--r);
+  display: flex; align-items: baseline; gap: 1rem;
+}
+.mimic__out span { font: 400 .8125rem/1.3 var(--f-text); color: var(--ink-2); }
+.mimic__out b {
+  margin-inline-start: auto;
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 112;
+  font-size: 1.5rem; color: var(--ink); font-feature-settings: "tnum" 1;
+}
+.mimic__aside { display: grid; gap: 1.25rem; align-content: start; }
+.mimic__fmt { display: grid; gap: .375rem; }
+.mimic__fmt > .nom { margin-bottom: .25rem; }
+.mimic__fmt li {
+  display: flex; align-items: baseline; gap: .625rem;
+  padding: .4375rem 0; border-bottom: 1px solid var(--rule);
+  font: 400 .8125rem/1.4 var(--f-text); color: var(--ink-2);
+}
+.mimic__fmt li::before {
+  content: ""; flex: none; width: 4px; height: 4px; margin-top: .4rem;
+  border-radius: 50%; background: var(--accent);
+}
+.mimic__fmt li b { margin-inline-start: auto; font: 400 .6875rem/1 var(--f-mono); color: var(--dim); }
+
+/* §16 drew a whole chapter for PMS whose subject was that we could not
+   describe PMS. Honest, and the wrong thing to show someone deciding
+   whether to buy software. PMS is now a name in the directory with the
+   words "In development", and has no chapter. */
+
+/* ---- 17 · CH 03 · RECAPR — time runs left to right --------------------- */
+/* No other chapter uses a horizontal time axis, so this one is unmistakably
+   about a meeting. */
+.tl { position: relative; }
+.tl__axis {
+  display: flex; align-items: center; gap: .75rem;
+  padding-bottom: .75rem; margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.tl__axis .nom { white-space: nowrap; }
+.tl__axis i { flex: 1; height: 1px; background: var(--rule); }
+
+/* 112 samples. On a phone they have to be allowed to get thinner than the
+   gap, or the waveform is wider than the screen. */
+.wave { display: flex; align-items: flex-end; gap: 2px; height: 46px; margin-bottom: 1.75rem; overflow: hidden; }
+@media (max-width: 760px) { .wave { gap: 1px; height: 38px; } }
+/* 112 samples in one flex row. Animating their HEIGHT re-ran flex layout for
+   all 112 on every frame — by far the heaviest thing on the page. Each bar is
+   now laid out once at its real height and drawn in with scaleY from the
+   baseline, which is composited and touches layout zero times. */
+.wave i {
+  flex: 1 1 0; min-width: 1px; border-radius: 1px;
+  background: color-mix(in oklab, var(--accent) 32%, var(--rule));
+  height: var(--h);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform .8s var(--ease), background var(--t-2);
+}
+.wave[data-lit="true"] i { transform: none; }
+.wave[data-lit="true"] i.hot { background: var(--accent); }
+
+.turns { display: grid; gap: clamp(1rem, 2vw, 1.5rem); grid-template-columns: 1fr; }
+@media (min-width: 1000px) { .turns { grid-template-columns: repeat(4, 1fr); } }
+.turn { position: relative; padding-top: 1.25rem; border-top: 2px solid var(--rule); }
+.turn::before {
+  content: ""; position: absolute; top: -2px; left: 0; width: 100%; height: 2px;
+  background: var(--accent); transform-origin: left; transform: scaleX(0);
+  transition: transform .7s var(--ease);
+}
+.turns[data-lit="true"] .turn::before { transform: scaleX(1); }
+.turns[data-lit="true"] .turn:nth-child(2)::before { transition-delay: .14s; }
+.turns[data-lit="true"] .turn:nth-child(3)::before { transition-delay: .28s; }
+.turns[data-lit="true"] .turn:nth-child(4)::before { transition-delay: .42s; }
+.turn__k { display: flex; align-items: baseline; gap: .625rem; margin-bottom: .75rem; }
+.turn h3 { font-family: var(--f-display); font-weight: 600; font-variation-settings: "wdth" 108;
+  font-size: 1.0625rem; letter-spacing: -.018em; line-height: 1.25; }
+.turn p { margin-top: .5rem; font-size: .875rem; color: var(--ink-3); }
+.turn__ui {
+  margin-top: 1.125rem; padding: .75rem .8125rem;
+  background: var(--face); border: 1px solid var(--rule); border-radius: var(--r);
+  font: 400 .75rem/1.5 var(--f-mono); color: var(--ink-3);
+}
+.turn__ui b { display: block; color: var(--ink); font-weight: 500; }
+
+/* the contradiction: two quotes from different months, put side by side */
+.contra {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  display: grid; gap: 0; grid-template-columns: 1fr;
+  border: 1px solid var(--rule); border-radius: var(--r-lg);
+  background: var(--face); overflow: hidden;
+}
+@media (min-width: 860px) { .contra { grid-template-columns: 1fr auto 1fr; align-items: stretch; } }
+.contra__s { padding: clamp(1.125rem, 2.2vw, 1.75rem); }
+.contra__s blockquote {
+  margin: 0 0 .75rem;
+  font-family: var(--f-display); font-weight: 500; font-variation-settings: "wdth" 104;
+  font-size: clamp(1rem, 1.5vw, 1.1875rem); line-height: 1.4; letter-spacing: -.015em;
+  color: var(--ink);
+}
+.contra__v {
+  display: grid; place-items: center; padding: 1rem;
+  border-block: 1px solid var(--rule);
+  background: var(--paper);
+  font: 500 .6875rem/1 var(--f-mono); color: var(--accent-ink);
+}
+@media (min-width: 860px) { .contra__v { border-block: 0; border-inline: 1px solid var(--rule); } }
+.contra__note {
+  grid-column: 1 / -1; padding: .875rem clamp(1.125rem, 2.2vw, 1.75rem);
+  border-top: 1px solid var(--rule); background: var(--paper);
+  font: 400 .8125rem/1.5 var(--f-mono); color: var(--ink-3);
+}
+
+/* ---- 18 · CH 04 · NOUSCRM — the pipeline, to scale --------------------- */
+/* One continuous proportional band, not five cards: each stage's WIDTH is its
+   share of the pipeline, so the shape of the funnel is the artwork. It runs
+   past the right gutter to the page edge, because a pipeline is something you
+   look along rather than a chart in a box. */
+.pipe {
+  position: relative;
+  margin-inline-end: calc(var(--gut) * -1);
+  padding-block: .5rem 0;
+}
+.pipe__band { display: flex; align-items: flex-end; gap: 3px; height: clamp(150px, 21vw, 230px); }
+.stage {
+  flex: 0 0 var(--w);
+  min-width: 0; position: relative;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  height: var(--h);
+  border-radius: var(--r) var(--r) 0 0;
+  background: color-mix(in oklab, var(--accent) 20%, var(--face));
+  border: 1px solid color-mix(in oklab, var(--accent) 28%, var(--rule));
+  border-bottom: 0;
+  padding: .75rem .8125rem;
+  transform: scaleY(.04); transform-origin: bottom;
+  transition: transform .75s var(--ease), background var(--t-2);
+}
+.pipe[data-lit="true"] .stage { transform: none; }
+.pipe[data-lit="true"] .stage:nth-child(2) { transition-delay: .09s; }
+.pipe[data-lit="true"] .stage:nth-child(3) { transition-delay: .18s; }
+.pipe[data-lit="true"] .stage:nth-child(4) { transition-delay: .27s; }
+.pipe[data-lit="true"] .stage:nth-child(5) { transition-delay: .36s; }
+.stage:last-child { background: color-mix(in oklab, var(--accent) 38%, var(--face)); }
+.stage__n {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 112;
+  font-size: clamp(1.25rem, 2.4vw, 2rem); line-height: 1; letter-spacing: -.03em;
+  color: var(--ink); font-feature-settings: "tnum" 1;
+}
+.stage__l {
+  margin-top: .3125rem;
+  font: 500 .75rem/1.3 var(--f-mono); color: var(--ink-2);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pipe__axis {
+  display: flex; align-items: center; gap: .75rem;
+  border-top: 1px solid var(--rule-2); padding-top: .625rem;
+  margin-inline-end: var(--gut);
+}
+.pipe__axis i { flex: 1; height: 1px; background: var(--rule); }
+@media (prefers-reduced-motion: reduce) {
+  .stage { transform: none; transition: none; }
+}
+
+/* the dashboard's real endpoint names — no template would print these, and
+   they are the strongest evidence available for an app behind a sign-in */
+.apis { display: flex; flex-wrap: wrap; gap: .375rem; margin-top: .75rem; }
+.apis code {
+  font: 400 .75rem/1 var(--f-mono); color: var(--ink-3);
+  padding: .4375rem .5625rem; border-radius: var(--r-sm);
+  background: var(--face); border: 1px solid var(--rule);
+}
+
+.crm__foot { display: grid; gap: clamp(1.25rem, 3vw, 2.5rem); grid-template-columns: 1fr; margin-top: 2rem; }
+@media (min-width: 900px) { .crm__foot { grid-template-columns: 1fr 1fr; } }
+.modules { display: flex; flex-wrap: wrap; gap: .375rem; }
+.modules span {
+  font: 400 .8125rem/1 var(--f-mono); color: var(--ink-3);
+  padding: .4375rem .5625rem; border-radius: var(--r-sm);
+  border: 1px solid var(--rule); background: var(--face);
+}
+.modules .off { color: var(--dim); border-style: dashed; text-decoration: line-through; text-decoration-color: var(--rule-2); }
+
+/* ---- 19 · CH 05 · TASK — request becomes a brief ----------------------- */
+/* No app URL exists for this product, so nothing is depicted as observed: this
+   composition is explicitly a diagram of the official product-page copy. */
+.triage { display: grid; gap: clamp(1rem, 2vw, 1.5rem); grid-template-columns: 1fr; align-items: stretch; }
+@media (min-width: 1000px) { .triage { grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1.15fr); } }
+.triage__in, .triage__out {
+  padding: clamp(1rem, 2vw, 1.375rem);
+  border: 1px solid var(--rule); border-radius: var(--r-lg); background: var(--face);
+}
+.triage__in { align-self: start; }
+.triage__in p {
+  margin-top: .75rem;
+  font: 400 .875rem/1.6 var(--f-text); color: var(--ink-2);
+}
+.triage__w { display: grid; place-items: center; }
+.triage__w svg { width: 100%; height: 64px; color: var(--rule-2); }
+@media (min-width: 1000px) { .triage__w svg { height: 100%; width: 44px; } }
+.triage__out .kv { margin-top: .75rem; }
+
+.lanes { display: grid; gap: .75rem; grid-template-columns: 1fr; margin-top: clamp(1.5rem, 3vw, 2.25rem); }
+@media (min-width: 760px) { .lanes { grid-template-columns: repeat(3, 1fr); } }
+.lane { display: grid; gap: .5rem; align-content: start; }
+.lane__h {
+  display: flex; align-items: center; gap: .5rem;
+  padding-bottom: .5625rem; border-bottom: 1px solid var(--rule);
+  font: 500 .8125rem/1 var(--f-text); color: var(--ink);
+}
+.lane__h i { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.lane__c {
+  padding: .6875rem .75rem; border-radius: var(--r);
+  background: var(--face); border: 1px solid var(--rule);
+  font: 400 .8125rem/1.45 var(--f-text); color: var(--ink-2);
+}
+/* second and third lanes step down — a board seen at a slight angle */
+@media (min-width: 760px) {
+  .lane:nth-child(2) { margin-top: 1.25rem; }
+  .lane:nth-child(3) { margin-top: 2.5rem; }
+}
+
+/* ---- 20 · CH 06 · LEXERAI — the physical document ---------------------- */
+/* Interfaces as objects: the receipt is tilted, cropped and lit, and the
+   fields lift off it. */
+.xtract {
+  display: grid; gap: clamp(1.5rem, 3vw, 2.5rem);
+  grid-template-columns: 1fr; align-items: center;
+}
+@media (min-width: 1000px) { .xtract { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); } }
+
+.receipt {
+  position: relative; width: min(100%, 366px); margin-inline: auto;
+  padding: 1.5rem 1.375rem 1.875rem;
+  background: #FBFBF8;
+  color: #23282A;
+  border-radius: var(--r-sm);
+  box-shadow: var(--lift-4);
+  transform: rotate(-3.2deg);
+  transition: transform .9s var(--ease);
+  font: 400 .8125rem/1.7 var(--f-mono);
+  /* torn bottom edge — it is a receipt, not a card */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px),
+    92% 100%, 84% calc(100% - 7px), 76% 100%, 68% calc(100% - 7px), 60% 100%,
+    52% calc(100% - 7px), 44% 100%, 36% calc(100% - 7px), 28% 100%,
+    20% calc(100% - 7px), 12% 100%, 4% calc(100% - 7px), 0 100%);
+}
+.xtract[data-lit="true"] .receipt { transform: rotate(-1.8deg) translateY(-5px); }
+.receipt__h { text-align: center; border-bottom: 1px dashed #C8CCC6; padding-bottom: .75rem; margin-bottom: .75rem; }
+.receipt__h b { display: block; font-weight: 600; font-size: .9375rem; letter-spacing: -.01em; }
+.receipt__h span { font-size: .6875rem; color: #6B7370; }
+.receipt__l { display: flex; justify-content: space-between; gap: 1rem; font-size: .75rem; }
+.receipt__l span:last-child { font-variant-numeric: tabular-nums; }
+.receipt__tot {
+  display: flex; justify-content: space-between; gap: 1rem;
+  margin-top: .75rem; padding-top: .625rem; border-top: 1px solid #23282A;
+  font-weight: 600; font-size: .875rem;
+}
+/* the scan pass, once, when the section arrives */
+.receipt::after {
+  content: ""; position: absolute; inset: 0 0 auto; height: 34%;
+  background: linear-gradient(color-mix(in oklab, var(--sig) 30%, transparent), transparent);
+  opacity: 0; pointer-events: none;
+}
+.xtract[data-lit="true"] .receipt::after { animation: scan 1.5s var(--ease-io) .2s 1 both; }
+@keyframes scan {
+  0% { opacity: 0; transform: translateY(-100%); }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(300%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .receipt::after { display: none; }
+  .xtract[data-lit="true"] .receipt { transition: none; }
+}
+.receipt__mark { background: color-mix(in oklab, var(--sig) 22%, transparent); border-radius: 1px; }
+
+.fields { display: grid; gap: 0; }
+.fields > .nom { margin-bottom: .75rem; }
+.field {
+  display: grid; grid-template-columns: 132px 1fr auto; gap: 1rem; align-items: baseline;
+  padding: .75rem 0; border-bottom: 1px solid var(--rule);
+  opacity: 0; transform: translateX(-10px);
+  transition: opacity .55s var(--ease), transform .55s var(--ease);
+}
+.xtract[data-lit="true"] .field { opacity: 1; transform: none; }
+.xtract[data-lit="true"] .field:nth-child(2) { transition-delay: .5s; }
+.xtract[data-lit="true"] .field:nth-child(3) { transition-delay: .62s; }
+.xtract[data-lit="true"] .field:nth-child(4) { transition-delay: .74s; }
+.xtract[data-lit="true"] .field:nth-child(5) { transition-delay: .86s; }
+.xtract[data-lit="true"] .field:nth-child(6) { transition-delay: .98s; }
+.xtract[data-lit="true"] .field:nth-child(7) { transition-delay: 1.1s; }
+@media (prefers-reduced-motion: reduce) {
+  .field { opacity: 1; transform: none; transition: none; }
+}
+.field dt { font: 400 .75rem/1.4 var(--f-mono); color: var(--dim); }
+.field dd {
+  font: 500 .9375rem/1.35 var(--f-text); color: var(--ink);
+  letter-spacing: -.008em; min-width: 0; overflow-wrap: anywhere;
+}
+.field__f {
+  grid-column: 3; font: 400 .6875rem/1 var(--f-mono);
+  color: var(--accent-ink); white-space: nowrap;
+}
+/* on a narrow screen the capability that produced the field drops below it,
+   rather than squeezing the value into two words per line */
+@media (max-width: 620px) {
+  .field { grid-template-columns: 100px minmax(0, 1fr); gap: .25rem .875rem; }
+  .field__f { grid-column: 2; }
+}
+.xtract__ask {
+  margin-top: 1.25rem; padding: .875rem 1rem;
+  border: 1px solid var(--rule); border-radius: var(--r); background: var(--face);
+  display: flex; align-items: center; gap: .75rem;
+  font: 400 .875rem/1.4 var(--f-text); color: var(--ink-2);
+}
+.xtract__ask b { flex: none; font: 500 .75rem/1 var(--f-mono); color: var(--accent-ink); }
+
+/* ---- 21 · CH 07 · THE ENGINE (dark room) ------------------------------- */
+.eng { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); grid-template-columns: 1fr; align-items: start; }
+@media (min-width: 1080px) { .eng { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); } }
+
+/* PII redaction, shown happening rather than asserted */
+.redact {
+  padding: clamp(1rem, 2vw, 1.375rem);
+  border: 1px solid var(--rule); border-radius: var(--r-lg); background: var(--face);
+}
+.redact__l { display: flex; align-items: baseline; gap: .75rem; margin-bottom: .875rem; }
+.redact__s {
+  font: 400 .875rem/1.9 var(--f-mono); color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+/* the PII spans: flagged on arrival, then blacked out in place. Two layers so
+   the redaction really covers the text instead of recolouring it. */
+.redact__s x {
+  position: relative; display: inline-block; border-radius: 2px;
+  padding: 0 .15em; margin: 0 -.05em;
+  background: color-mix(in oklab, var(--warn) 22%, transparent);
+  transition: background .45s var(--ease);
+}
+.redact__s x::after {
+  content: ""; position: absolute; inset: 0; border-radius: 2px;
+  background: color-mix(in oklab, var(--ink) 46%, var(--face));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .45s var(--ease);
+}
+.redact[data-lit="true"] .redact__s x { background: var(--rule-2); }
+.redact[data-lit="true"] .redact__s x::after { transform: scaleX(1); }
+.redact[data-lit="true"] .redact__s x:nth-of-type(2)::after { transition-delay: .12s; }
+.redact[data-lit="true"] .redact__s x:nth-of-type(3)::after { transition-delay: .24s; }
+@media (prefers-reduced-motion: reduce) {
+  .redact__s x::after { transition: none; }
+}
+.redact__arrow { display: flex; align-items: center; gap: .625rem; margin: 1rem 0; }
+.redact__arrow i { flex: 1; height: 1px; background: var(--rule-2); }
+.redact__out {
+  padding: .875rem 1rem; border-radius: var(--r);
+  background: var(--sunk); border: 1px solid var(--rule);
+  font: 400 .875rem/1.9 var(--f-mono); color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.redact__out b { color: var(--sig); font-weight: 500; }
+
+/* the spec runs as one full-width band under both columns, so the dark room
+   closes on a horizontal rather than a ragged pair of columns */
+.spec { display: grid; gap: 0; }
+.spec > div { padding: 1.125rem 0; border-bottom: 1px solid var(--rule); }
+.spec > div:last-child { border-bottom: 0; }
+.spec--band {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--rule-2);
+  grid-template-columns: 1fr;
+  gap: 0 clamp(1.5rem, 3vw, 3rem);
+}
+@media (min-width: 720px)  { .spec--band { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1080px) { .spec--band { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1080px) { .spec--band > div { border-bottom: 0; padding-top: 1.5rem; } }
+.spec dt {
+  font-family: var(--f-display); font-weight: 600; font-variation-settings: "wdth" 110;
+  font-size: 1.0625rem; letter-spacing: -.018em; color: var(--ink); margin-bottom: .375rem;
+}
+.spec dd { font-size: .9375rem; color: var(--ink-3); max-width: 52ch; }
+
+.routes { display: grid; gap: .5rem; margin-top: 1.25rem; }
+.route {
+  display: grid; grid-template-columns: auto 1fr auto; gap: .875rem; align-items: center;
+  padding: .6875rem .875rem; border-radius: var(--r);
+  background: var(--face); border: 1px solid var(--rule);
+  font: 400 .8125rem/1 var(--f-mono);
+}
+.route b { font-weight: 500; color: var(--ink); }
+.route s { text-decoration: none; color: var(--dim); }
+.route--slm b { color: var(--warn); }
+
+/* ---- 22 · THE READOUT ------------------------------------------------- */
+/* One small product readout, rendered by peek() in build.js and shown in three
+   places at three sizes: the mega-menu preview, the showcase stage, and
+   nowhere else. Sized here for the smallest of them; the showcase scales it up
+   in its own block below. */
+.peek { display: grid; gap: .75rem; }
+.peek__hd {
+  display: flex; align-items: center; gap: .5rem;
+  font: 500 .75rem/1 var(--f-mono); color: var(--ink-3);
+  padding-bottom: .625rem; border-bottom: 1px solid var(--rule);
+}
+.peek__hd i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.peek__hd s { margin-inline-start: auto; text-decoration: none; color: var(--dim); font-weight: 400; }
+.peek__q {
+  font-family: var(--f-display); font-weight: 500; font-variation-settings: "wdth" 104;
+  font-size: .9375rem; line-height: 1.45; letter-spacing: -.012em; color: var(--ink);
+}
+.peek__st { font: 400 .6875rem/1.4 var(--f-mono); color: var(--dim); }
+.peek .kv dt, .peek .kv dd { font-size: .75rem; }
+.peek .kv > div { padding: .4375rem 0; }
+.peek__m { display: grid; gap: .4375rem; }
+.peek__m > div { display: flex; align-items: baseline; gap: .75rem; font: 400 .75rem/1.3 var(--f-text); color: var(--ink-3); }
+.peek__m b { margin-inline-start: auto; font: 500 .75rem/1 var(--f-mono); color: var(--ink); }
+.peek__m i { display: block; height: 3px; border-radius: 2px; background: var(--sunk); }
+.peek__m i::after { content: ""; display: block; height: 100%; width: var(--v); border-radius: 2px; background: var(--accent); }
+.peek__bars { display: flex; align-items: flex-end; gap: 3px; height: 44px; }
+.peek__bars i { flex: 1; border-radius: 1px 1px 0 0; background: color-mix(in oklab, var(--accent) 34%, var(--rule)); }
+.peek__bars i:last-child { background: var(--accent); }
+.peek__tabs { display: flex; flex-wrap: wrap; gap: .3125rem; }
+.peek__tabs span {
+  font: 400 .6875rem/1 var(--f-mono); color: var(--ink-3);
+  padding: .3125rem .4375rem; border: 1px solid var(--rule); border-radius: var(--r-sm);
+}
+.peek__tabs .on { background: var(--accent-solid); border-color: var(--accent-solid); color: #fff; }
+.dark .peek__tabs .on { color: #04140D; }
+.peek__none { font: 400 .8125rem/1.6 var(--f-mono); color: var(--dim); }
+
+/* ---- 22b · THE DIRECTORY — everything, in one screen ------------------
+   §22b used to be a pinned stage stepped by scroll: `.stick` was six times
+   58vh tall and the panel beside a pinned list advanced through the suite. It
+   read well and it was the wrong thing to build — the third telling of the
+   same seven products, 4,500px long, and already switched off below 900px.
+
+   A list is the right answer here. One row per product, hairline-separated,
+   two destinations per row: what it does, and the app. */
+.dir { border-top: 1px solid var(--rule-2); }
+.dir__row {
+  display: flex; align-items: stretch;
+  border-bottom: 1px solid var(--rule);
+  transition: background var(--t-1);
+}
+.dir__row:hover { background: color-mix(in oklab, var(--ink) 3%, transparent); }
+.dir__hit {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: clamp(.875rem, 2vw, 1.25rem);
+  padding: clamp(1rem, 2vw, 1.375rem) 0;
+  position: relative;
+}
+/* the accent arrives on the left edge on hover — the row's own colour,
+   nowhere else on the row, so it reads as "this one" */
+.dir__hit::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+  background: var(--accent);
+  transform: scaleY(0); transform-origin: center;
+  transition: transform var(--t-2) var(--ease);
+}
+.dir__row:hover .dir__hit::before,
+.dir__hit:focus-visible::before { transform: scaleY(1); }
+.dir__hit--flat { cursor: default; }
+.dir__hit--flat::before { content: none; }
+
+.dir__t { min-width: 0; display: grid; gap: .125rem; }
+.dir__t b {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 110;
+  font-size: clamp(1.0625rem, 2vw, 1.25rem); letter-spacing: -.022em; color: var(--ink);
+}
+.dir__t em {
+  font: 400 .875rem/1.4 var(--f-text); font-style: normal; color: var(--ink-3);
+}
+.dir__cat {
+  display: none; flex: none; width: 11rem;
+  font: 400 .8125rem/1 var(--f-mono); color: var(--dim);
+}
+@media (min-width: 900px) { .dir__cat { display: block; margin-inline-start: auto; } }
+/* one chevron, not the words "What it does" seven times down the page */
+.dir__go {
+  flex: none; width: 9px; height: 9px; margin-inline: 1.75rem 1.25rem;
+  border-top: 1.4px solid var(--dim); border-right: 1.4px solid var(--dim);
+  transform: rotate(45deg);
+  transition: transform var(--t-2) var(--ease), border-color var(--t-1);
+}
+@media (max-width: 899px) { .dir__go { margin-inline-start: auto; } }
+.dir__row:hover .dir__go {
+  border-color: var(--accent-ink);
+  transform: rotate(45deg) translate(3px, -3px);
+}
+
+.dir__open {
+  flex: none; align-self: center;
+  display: flex; align-items: baseline; gap: .4375rem;
+  width: 5.5rem; justify-content: center;
+  padding: .5rem 0; border-radius: var(--r-sm);
+  font: 500 .8125rem/1 var(--f-mono); color: var(--ink-3);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--rule);
+  transition: color var(--t-1), box-shadow var(--t-1);
+}
+.dir__open:hover { color: var(--sig-ink); box-shadow: inset 0 0 0 1px var(--sig); }
+.dir__open .out { flex: none; align-self: center; transition: transform var(--t-1) var(--ease); }
+.dir__open:hover .out { transform: translate(1px, -1px); }
+/* no app to open is drawn as no app to open */
+.dir__open--off { color: var(--dim); box-shadow: none; }
+
+/* ---- 22c · THE SWITCHER — no chapter is a dead end --------------------- */
+/* Belongs with §13, and lives here so the three components added together
+   read together. Every chapter ends with the products either side of it, so
+   there is no terminal position on the page: chapter seven's "next" is
+   chapter one. The three cells are divided by real hairlines rather than gaps,
+   because the row is one control, not three floating cards. */
+.swap {
+  display: grid; grid-template-columns: 1fr;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--rule);
+}
+@media (min-width: 860px) { .swap { grid-template-columns: 1fr auto 1fr; } }
+.swap__a, .swap__all {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.375rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+@media (min-width: 860px) {
+  .swap__a, .swap__all { border-bottom: 0; }
+  .swap__a--prev { padding-inline-end: 1.75rem; }
+  .swap__a--next { padding-inline-start: 1.75rem; }
+  .swap__all {
+    padding-inline: clamp(1.5rem, 3vw, 2.75rem);
+    border-inline: 1px solid var(--rule);
+  }
+}
+/* the next side is the same markup, read the other way round */
+.swap__a--next { flex-direction: row-reverse; text-align: right; }
+
+/* the chevron: drawn, and it is the only thing that moves on hover */
+.swap__i {
+  flex: none; width: 9px; height: 9px;
+  border-top: 1.4px solid var(--dim); border-left: 1.4px solid var(--dim);
+  transform: rotate(-45deg);
+  transition: transform var(--t-1) var(--ease), border-color var(--t-1);
+}
+.swap__a--next .swap__i { transform: rotate(135deg); }
+.swap__a:hover .swap__i, .swap__a:focus-visible .swap__i { border-color: var(--accent-ink); }
+.swap__a--prev:hover .swap__i, .swap__a--prev:focus-visible .swap__i { transform: rotate(-45deg) translate(3px, 3px); }
+.swap__a--next:hover .swap__i, .swap__a--next:focus-visible .swap__i { transform: rotate(135deg) translate(3px, 3px); }
+
+.swap__x { display: grid; gap: .1875rem; min-width: 0; }
+.swap__x em {
+  font: 400 .6875rem/1 var(--f-mono); font-style: normal;
+  color: var(--dim); letter-spacing: .01em;
+}
+.swap__x b {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 110;
+  font-size: 1.1875rem; letter-spacing: -.022em; color: var(--ink);
+}
+.swap__x s {
+  text-decoration: none;
+  font: 400 .8125rem/1.35 var(--f-text); color: var(--ink-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.swap__mk {
+  flex: none; margin-inline-start: auto;
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 11px;
+  background: var(--face); box-shadow: var(--lift-2);
+  transition: transform var(--t-2) var(--ease);
+}
+.swap__a--next .swap__mk { margin-inline: 0 auto; }
+.swap__a:hover .swap__mk { transform: translateY(-2px); }
+
+/* the middle cell: the switcher itself, which the launcher takes over */
+.swap__all { flex-direction: column; gap: .3125rem; text-align: center; justify-content: center; }
+.swap__all span {
+  font-family: var(--f-display); font-weight: 600; font-variation-settings: "wdth" 108;
+  font-size: 1rem; letter-spacing: -.014em; color: var(--ink);
+}
+.swap__all s { text-decoration: none; font: 400 .6875rem/1 var(--f-mono); color: var(--dim); }
+.swap__all:hover span { color: var(--sig-ink); }
+
+/* ---- 22d · THE ECOSYSTEM — one day's work, stage by stage --------------- */
+/* The section that answers "why are these one company?". It is a rail read
+   downward, because the reader is already scrolling downward and the work
+   really does happen in that order — the scroll direction IS the sequence.
+   No arrows between products: the page does not claim they pass data to each
+   other, so nothing here draws that. */
+.flow { display: grid; gap: 0; }
+.stg {
+  position: relative;
+  display: grid; grid-template-columns: 44px minmax(0, 1fr);
+  gap: 0 1rem;
+  padding-block: clamp(1.375rem, 2.2vw, 1.875rem);
+}
+@media (min-width: 900px) {
+  .stg { grid-template-columns: 44px minmax(0, .95fr) minmax(0, 1.05fr); gap: 0 clamp(1.5rem, 3vw, 3rem); }
+}
+/* The spine, in per-stage segments so it draws downward one stage at a time
+   as the section arrives. It starts at the first number and stops at the
+   last, rather than running off both ends of the figure. */
+.stg::before {
+  content: ""; position: absolute; left: 21px; top: 0; bottom: 0; width: 1px;
+  background: var(--rule-2);
+  transform: scaleY(0); transform-origin: top;
+  transition: transform .42s linear;
+}
+.stg:first-child::before { top: clamp(1.375rem, 2.2vw, 1.875rem); }
+.stg--end::before { bottom: auto; height: calc(clamp(1.375rem, 2.2vw, 1.875rem) + 21px); }
+.flow[data-lit="true"] .stg::before { transform: scaleY(1); }
+.flow[data-lit="true"] .stg:nth-child(1)::before { transition-delay: 0s; }
+.flow[data-lit="true"] .stg:nth-child(2)::before { transition-delay: .3s; }
+.flow[data-lit="true"] .stg:nth-child(3)::before { transition-delay: .6s; }
+.flow[data-lit="true"] .stg:nth-child(4)::before { transition-delay: .9s; }
+.flow[data-lit="true"] .stg:nth-child(5)::before { transition-delay: 1.2s; }
+
+/* the stage number sits ON the spine, and fills in as the spine reaches it */
+.stg__n {
+  position: absolute; left: 0; top: clamp(1.375rem, 2.2vw, 1.875rem);
+  display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: var(--r);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--rule-2);
+  font: 500 .875rem/1 var(--f-mono); color: var(--dim);
+  transition: box-shadow var(--t-2) var(--ease), background var(--t-2), color var(--t-2);
+}
+.flow[data-lit="true"] .stg__n {
+  background: var(--ink); color: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+/* The base row carries the engine's own mark instead of a number, on the
+   signal green — it is what the four stages run on, not a fifth thing to do. */
+.stg--base .stg__n { background: var(--sig-lo); box-shadow: inset 0 0 0 1px var(--sig-lo); }
+.flow[data-lit="true"] .stg--base .stg__n {
+  background: var(--sig-lo); box-shadow: inset 0 0 0 1px var(--sig);
+}
+.stg--base .stg__v { font-size: clamp(1.25rem, 2.4vw, 1.625rem); }
+.flow[data-lit="true"] .stg:nth-child(1) .stg__n { transition-delay: .18s; }
+.flow[data-lit="true"] .stg:nth-child(2) .stg__n { transition-delay: .48s; }
+.flow[data-lit="true"] .stg:nth-child(3) .stg__n { transition-delay: .78s; }
+.flow[data-lit="true"] .stg:nth-child(4) .stg__n { transition-delay: 1.08s; }
+.flow[data-lit="true"] .stg:nth-child(5) .stg__n { transition-delay: 1.38s; }
+
+.stg__l { grid-column: 2; }
+@media (min-width: 900px) { .stg__l { grid-column: 2; } }
+.stg__v {
+  font-family: var(--f-display);
+  font-weight: 600; font-variation-settings: "wdth" 112;
+  font-size: clamp(1.5rem, 3.1vw, 2.125rem); line-height: 1.04;
+  letter-spacing: -.032em; color: var(--ink);
+}
+.stg__g {
+  margin-top: .625rem; max-width: 30ch;
+  font: 400 .9375rem/1.6 var(--f-text); color: var(--ink-3);
+}
+
+/* the products that do this part. The figure IS the repetition: the same
+   marks come back stage after stage, which is the suite, visible. */
+.stg__r {
+  grid-column: 2; margin-top: 1.5rem;
+  display: grid; gap: .3125rem; align-content: start;
+  /* capped: past this the product name and what it does at this stage sit so
+     far apart that the row stops reading as one line */
+  max-width: 34rem;
+}
+@media (min-width: 900px) { .stg__r { grid-column: 3; margin-top: .25rem; } }
+.stg__r a {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6875rem .875rem;
+  border-radius: var(--r); background: var(--face);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  opacity: 0;
+  transition: opacity var(--t-3) var(--ease), box-shadow var(--t-1), transform var(--t-1) var(--ease);
+}
+.flow[data-lit="true"] .stg__r a { opacity: 1; }
+.flow[data-lit="true"] .stg:nth-child(1) .stg__r a { transition-delay: .3s; }
+.flow[data-lit="true"] .stg:nth-child(2) .stg__r a { transition-delay: .6s; }
+.flow[data-lit="true"] .stg:nth-child(3) .stg__r a { transition-delay: .9s; }
+.flow[data-lit="true"] .stg:nth-child(4) .stg__r a { transition-delay: 1.2s; }
+.flow[data-lit="true"] .stg:nth-child(5) .stg__r a { transition-delay: 1.5s; }
+.stg__r a:hover, .stg__r a:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--accent), var(--lift-2);
+  transform: translateX(2px);
+  transition-delay: 0s;
+}
+.stg__r b {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 108;
+  font-size: .9375rem; letter-spacing: -.016em; color: var(--ink);
+}
+.stg__r em {
+  margin-inline-start: auto; text-align: right;
+  font: 400 .8125rem/1.35 var(--f-mono); font-style: normal; color: var(--dim);
+}
+
+/* The evidence panel that used to close #connect (three facts, each tagged
+   "verified in the app" or "stated by TalbotIQ", plus a paragraph listing
+   what we do not claim) is gone. It was a note about how the page was
+   researched, in a place where the reader wants to know what the software
+   does. The discipline stays in the data; it no longer needs a section. */
+
+/* ---- 22e · THE LAUNCHER — one keystroke to anywhere in the suite ------- */
+/* A native <dialog>, so the focus trap, Escape, the inert background and the
+   backdrop are the browser's job and not this file's. */
+kbd {
+  display: none;
+  font: 500 .6875rem/1 var(--f-mono); color: var(--dim);
+  padding: .3125rem .375rem; border-radius: var(--r-sm);
+  background: var(--sunk); box-shadow: inset 0 0 0 1px var(--rule);
+  white-space: nowrap;
+}
+/* Advertised only where it can be pressed: once the script that serves it has
+   run (.cmdk), AND on a pointer that implies a keyboard. A phone was being
+   shown a Command-K chip it has no way to use. */
+@media (hover: hover) and (pointer: fine) {
+  .cmdk kbd { display: inline-block; }
+}
+
+/* the header affordance: a field you can see, not a hidden keystroke */
+.find {
+  display: flex; align-items: center; gap: .5rem;
+  height: 34px; padding-inline: .625rem;
+  border-radius: var(--r); color: var(--ink-3);
+  background: var(--sunk); box-shadow: inset 0 0 0 1px var(--rule);
+  transition: box-shadow var(--t-1), color var(--t-1), background var(--t-1);
+}
+.find:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule-2); }
+.find span {
+  display: none;
+  font: 400 .875rem/1 var(--f-text); color: inherit;
+}
+@media (min-width: 1280px) { .find span { display: block; padding-inline-end: 1.5rem; } }
+.find kbd { background: transparent; box-shadow: none; padding-inline: 0; }
+
+.cmd {
+  width: min(660px, calc(100vw - 2rem));
+  max-height: min(78vh, 680px);
+  margin: min(11vh, 96px) auto auto;
+  padding: 0; border: 0;
+  display: none; flex-direction: column;
+  background: var(--face); color: var(--ink);
+  border-radius: var(--r-lg);
+  box-shadow: inset 0 0 0 1px var(--rule), var(--lift-4);
+  overflow: hidden;
+}
+.cmd[open] { display: flex; animation: cmdIn var(--t-2) var(--ease) both; }
+@keyframes cmdIn { from { opacity: 0; transform: translateY(-8px) scale(.985); } }
+.cmd::backdrop {
+  background: rgb(11 16 14 / .42);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+  animation: cmdFade var(--t-2) var(--ease) both;
+}
+@keyframes cmdFade { from { opacity: 0; } }
+
+.cmd__top {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .875rem 1rem; border-bottom: 1px solid var(--rule);
+  color: var(--dim); flex: none;
+}
+.cmd__top input {
+  flex: 1; min-width: 0; border: 0; background: none; outline: none;
+  font: 400 1.0625rem/1.3 var(--f-text); color: var(--ink);
+  -webkit-appearance: none; appearance: none;
+}
+.cmd__top input::placeholder { color: var(--dim); }
+.cmd__top input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.cmd__x {
+  flex: none; font: 500 .6875rem/1 var(--f-mono); color: var(--dim);
+  padding: .375rem .4375rem; border-radius: var(--r-sm);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  transition: color var(--t-1), box-shadow var(--t-1);
+}
+.cmd__x:hover { color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule-2); }
+
+.cmd__list { overflow-y: auto; overscroll-behavior: contain; padding-bottom: .5rem; }
+.cmd__grp {
+  padding: .875rem 1rem .375rem;
+  font: 400 .6875rem/1 var(--f-mono); color: var(--dim);
+}
+.cmd__grp[hidden] { display: none; }
+.cmd__row { display: flex; align-items: stretch; }
+.cmd__row[hidden] { display: none; }
+.cmd__row:hover, .cmd__row:focus-within { background: var(--sunk); }
+.cmd__hit {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: .8125rem;
+  padding: .625rem 1rem;
+  outline-offset: -3px;
+}
+.cmd__chip {
+  flex: none; display: grid; place-items: center;
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--dim);
+}
+.band .cmd__chip { background: #fff; }
+.cmd__t { min-width: 0; display: grid; gap: .0625rem; }
+.cmd__t b {
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 108;
+  font-size: .9375rem; letter-spacing: -.016em; color: var(--ink);
+}
+.cmd__t em {
+  font: 400 .8125rem/1.35 var(--f-text); font-style: normal; color: var(--ink-3);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cmd__tag {
+  display: none; flex: none;
+  font: 400 .75rem/1 var(--f-mono); color: var(--dim);
+}
+@media (min-width: 560px) { .cmd__tag { display: block; margin-inline-start: auto; } }
+.cmd__hint {
+  flex: none; font: 400 .75rem/1 var(--f-mono); color: var(--dim);
+  min-width: 4.5rem; text-align: right;
+  transition: color var(--t-1);
+}
+@media (max-width: 559px) { .cmd__hint { margin-inline-start: auto; } }
+.cmd__row:hover .cmd__hint, .cmd__hit:focus-visible .cmd__hint { color: var(--accent-ink); }
+/* the app itself, as its own link — Enter on the row goes to the chapter, so
+   nobody is thrown at a sign-in wall by a keystroke */
+.cmd__open, .cmd__off {
+  flex: none; width: 4.25rem;
+  display: flex; align-items: center; justify-content: center; gap: .375rem;
+  margin: .625rem 1rem .625rem 0;
+  border-radius: var(--r-sm);
+  font: 500 .75rem/1 var(--f-mono); color: var(--ink-3);
+  text-decoration: none;
+}
+.cmd__open { box-shadow: inset 0 0 0 1px var(--rule); transition: color var(--t-1), box-shadow var(--t-1); }
+.cmd__off { color: var(--dim); }
+.cmd__open .out { flex: none; align-self: center; transition: transform var(--t-1) var(--ease); }
+.cmd__open:hover, .cmd__open:focus-visible { color: var(--sig-ink); box-shadow: inset 0 0 0 1px var(--sig); }
+.cmd__open:hover .out { transform: translate(1px, -1px); }
+
+.cmd__none {
+  padding: 1.5rem 1rem 2rem; max-width: 46ch;
+  font: 400 .875rem/1.6 var(--f-text); color: var(--ink-3);
+}
+.cmd__none[hidden] { display: none; }
+.cmd__foot {
+  flex: none; display: flex; align-items: center; gap: 1.125rem;
+  padding: .625rem 1rem; border-top: 1px solid var(--rule);
+  background: var(--sunk);
+  font: 400 .75rem/1 var(--f-mono); color: var(--dim);
+}
+.cmd__foot span { display: flex; align-items: center; gap: .3125rem; }
+@media (hover: hover) and (pointer: fine) {
+  .cmd__foot kbd { display: inline-block; background: var(--face); }
+}
+/* on touch the whole key-hints row has nothing to say */
+@media not all and (pointer: fine) { .cmd__foot span { display: none; } }
+.cmd__foot s { margin-inline-start: auto; text-decoration: none; }
+@media (max-width: 480px) { .cmd__foot span:nth-child(2) { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .stg::before { transform: none; }
+  .stg__r a { opacity: 1; }
+  .cmd[open], .cmd::backdrop { animation: none; }
+}
+
+/* ---- 23 · CLOSE --------------------------------------------------------- */
+/* No background here on purpose: both `.close` and `.band` are one class deep,
+   and this rule is 1200 lines later, so declaring one would silently win and
+   `.band` would do nothing. The ground comes from the section's class list. */
+.close { padding-block: var(--bay); }
+.close__g { max-width: 40ch; margin-inline: auto; text-align: center; }
+.close blockquote {
+  margin: .875rem 0 1.75rem;
+  font-family: var(--f-display); font-weight: 620; font-variation-settings: "wdth" 116;
+  font-size: clamp(2rem, 4.2vw, 3.25rem); line-height: 1.02; letter-spacing: -.032em;
+  color: var(--ink); text-wrap: balance;
+}
+.close cite { display: block; margin-bottom: 2rem; font: 400 .8125rem/1.5 var(--f-mono); color: var(--dim); font-style: normal; }
+.close__b { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+.close .fine { margin-top: 2rem; }
+
+/* The roll-call of every product that used to close this section was the
+   FOURTH list of the same seven — after the chapters, #connect and the
+   directory immediately above it. The close is one sentence now, which is
+   what a closing statement is. The footer still carries the links. */
+
+/* ---- 24 · FOOTER -------------------------------------------------------- */
+.ftr { background: var(--paper); border-top: 1px solid var(--rule); padding-block: clamp(3rem, 6vw, 4.5rem) 2rem; }
+.ftr__g { display: grid; gap: clamp(2rem, 4vw, 3rem); grid-template-columns: 1fr; }
+@media (min-width: 640px)  { .ftr__g { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1000px) { .ftr__g { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; } }
+.ftr__mk { font-family: var(--f-display); font-weight: 650; font-variation-settings: "wdth" 112;
+  font-size: 1.375rem; letter-spacing: -.03em; color: var(--ink); }
+.ftr__mk b { color: var(--sig-ink); font-weight: 650; }
+.ftr__g > div > p { margin-top: .875rem; font-size: .875rem; color: var(--ink-3); max-width: 40ch; }
+.ftr h3 { font: 500 .75rem/1 var(--f-mono); color: var(--dim); margin-bottom: 1rem; }
+.ftr li { padding: .3125rem 0; }
+.ftr li a {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .875rem; color: var(--ink-3); transition: color var(--t-1);
+}
+.ftr li a:hover { color: var(--ink); }
+.ftr__b {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem); padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font: 400 .8125rem/1.5 var(--f-mono); color: var(--dim);
+}
+.ftr__b nav { margin-inline-start: auto; display: flex; gap: 1.25rem; }
+.ftr__b a:hover { color: var(--ink); }
+
+/* ---- 25 · REVEAL -------------------------------------------------------- */
+/* Only containers that carry a mechanism get a reveal, and it is a short rise
+   with no scale or blur. Everything is visible if the script never runs. */
+.rv [data-rise] { opacity: 0; transform: translateY(14px); }
+.rv [data-rise].in {
+  opacity: 1; transform: none;
+  transition: opacity .6s var(--ease), transform .6s var(--ease);
+}
+.rv [data-rise="2"].in { transition-delay: .09s; }
+.rv [data-rise="3"].in { transition-delay: .18s; }
+@media (prefers-reduced-motion: reduce) {
+  .rv [data-rise] { opacity: 1; transform: none; }
+}
+
+/* ---- 25b · SMOOTH SCROLLING ------------------------------------------- */
+/* Required by Lenis, and only ever active when it is: the library stamps these
+   classes on <html> itself. Native `scroll-behavior: smooth` has to stand down
+   while Lenis owns the scroll, or the two ease against each other. */
+html.lenis, html.lenis body { height: auto; }
+/* Lenis only adds `lenis-smooth` mid-gesture, so keying off it would leave
+   native smooth scrolling armed in between — and the two then ease against
+   each other on anchor jumps. While Lenis is installed at all, native is off. */
+html.lenis { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ---- 26 · REDUCED MOTION, GLOBALLY ------------------------------------- */
+/* The per-component blocks above each handle one case. This is the net under
+   all of them, and under anything added later: collapse every duration so a
+   reveal lands on its final state instead of easing there. app.js sets every
+   [data-lit] immediately when motion is reduced, so nothing is left mid-way. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- 27 · PRINT --------------------------------------------------------- */
+@media print {
+  .scale, .head, .drawer, .pane { display: none; }
+  .chap, .hero, .close { padding-block: 1.5rem; break-inside: avoid; }
+  body { background: #fff; color: #000; }
+}

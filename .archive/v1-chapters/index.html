@@ -1,0 +1,1439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TalbotIQ — six products, one engine</title>
+<meta name="description" content="Six business applications built by TalbotIQ — interview screening, meeting memory, CRM, task and project work, document extraction — all running on one AI engine.">
+<meta name="theme-color" content="#E7E9E4">
+<!-- canonical omitted until COMPANY.pageUrl is set in products.js -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="TalbotIQ">
+<meta property="og:title" content="TalbotIQ — six products, one engine">
+<meta property="og:description" content="Six business applications built by TalbotIQ — interview screening, meeting memory, CRM, task and project work, document extraction — all running on one AI engine.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TalbotIQ — six products, one engine">
+<meta name="twitter:description" content="Six business applications built by TalbotIQ — interview screening, meeting memory, CRM, task and project work, document extraction — all running on one AI engine.">
+<link rel="icon" href="assets/brand/talbotiq-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/talbotiq.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"TalbotIQ","legalName":"Talbotiq Technologies Sdn Bhd [1313215-V]","url":"https://talbotiq.com","slogan":"Intelligent AI Automation","description":"Architecting the Intelligence Layer of Modern Businesses","address":{"@type":"PostalAddress","addressLocality":"Kuala Lumpur","addressCountry":"MY"},"telephone":"+603 20 111 320"},{"@type":"ItemList","name":"TalbotIQ product ecosystem","numberOfItems":7,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"SoftwareApplication","name":"TalbotIQ AI Engine","applicationCategory":"BusinessApplication","description":"One engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs PII before anything reaches a model, and answers from a knowledge base you load. Every product is metered through it.","url":"https://coe.talxone.com/dashboard/"}},{"@type":"ListItem","position":2,"item":{"@type":"SoftwareApplication","name":"Mimic","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone.","url":"https://talbotiq-9cc4e.web.app/"}},{"@type":"ListItem","position":3,"item":{"@type":"SoftwareApplication","name":"Recapr","applicationCategory":"BusinessApplication","description":"Recapr transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides.","url":"https://recapr-web-qxytyckrma-uc.a.run.app/"}},{"@type":"ListItem","position":4,"item":{"@type":"SoftwareApplication","name":"NousCRM","applicationCategory":"BusinessApplication","description":"The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard.","url":"https://salescrm-next-5iaoqvzvqq-el.a.run.app"}},{"@type":"ListItem","position":5,"item":{"@type":"SoftwareApplication","name":"lexerai","applicationCategory":"BusinessApplication","description":"Reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local OCR as an automatic offline fallback. Bring in bank statements and reconcile what it extracted against them.","url":"https://docparser-748029981157.us-central1.run.app/"}},{"@type":"ListItem","position":6,"item":{"@type":"SoftwareApplication","name":"Task & Project Management","applicationCategory":"BusinessApplication","description":"Tasks created, prioritised and assigned across boards, calendars and Gantt views, with shared workspaces, in-task comments and file sharing. AI User Triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity."}},{"@type":"ListItem","position":7,"item":{"@type":"SoftwareApplication","name":"PMS","applicationCategory":"BusinessApplication","description":"Live on the TalbotIQ AI Engine and in development. We will describe it here when there is something to describe."}}]}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="head" id="head"><div class="wrap">
+  <a class="brand" href="https://talbotiq.com" aria-label="TalbotIQ home">
+    <img src="assets/brand/talbotiq-logo.png" alt="TalbotIQ" width="262" height="72">
+    <span class="brand__mk" aria-hidden="true">Talbot<b>IQ</b></span>
+  </a>
+  <div class="head__now" id="headNow" aria-hidden="true">
+    <span data-now="c-mimic" hidden
+      style="--accent:#0F7C93"><svg class="mk" viewBox="0 0 32 32" width="22" height="22"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg><b>Mimic</b></span><span data-now="c-recapr" hidden
+      style="--accent:#3559C7"><svg class="mk" viewBox="0 0 32 32" width="22" height="22"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg><b>Recapr</b></span><span data-now="c-nouscrm" hidden
+      style="--accent:#5A54B8"><svg class="mk" viewBox="0 0 32 32" width="22" height="22"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg><b>NousCRM</b></span><span data-now="c-task-manager" hidden
+      style="--accent:#7B54BE"><svg class="mk" viewBox="0 0 32 32" width="22" height="22"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Task Manager</b></span><span data-now="c-lexerai" hidden
+      style="--accent:#B2560C"><svg class="mk" viewBox="0 0 32 32" width="22" height="22"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg><b>lexerai</b></span><span data-now="c-ai-engine" hidden
+      style="--accent:#2E9E86"><svg class="mk" viewBox="0 0 32 32" width="22" height="22"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg><b>AI Engine</b></span>
+  </div>
+  <nav class="nav" aria-label="Primary">
+    <div class="mw">
+      <button class="nav__btn" id="megaBtn" aria-expanded="false" aria-controls="mega">Products</button>
+      <div class="mega" id="mega" hidden>
+        <div class="wrap">
+          <div class="mega__grid">
+            <div class="mega__cats"><div class="mega__col" style="--hue:#1F9A69">
+  <p class="mega__cat">Intelligence</p>
+  <ul><li><a href="#c-ai-engine"
+    style="--accent:#2E9E86" data-hint="ai-engine">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg>
+    <span><span class="mega__n">AI Engine</span>
+    <span class="mega__d">The intelligence layer under every product</span></span>
+  </a></li></ul>
+  <p class="mega__note">The layer the rest of the suite runs on.</p>
+</div><div class="mega__col" style="--hue:#0F7C93">
+  <p class="mega__cat">People &amp; hiring</p>
+  <ul><li><a href="#c-mimic"
+    style="--accent:#0F7C93" data-hint="mimic">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg>
+    <span><span class="mega__n">Mimic</span>
+    <span class="mega__d">Screening intelligence, decided by humans</span></span>
+  </a></li></ul>
+  <p class="mega__note">Getting the right people in, and looking after them.</p>
+</div><div class="mega__col" style="--hue:#5A54B8">
+  <p class="mega__cat">Revenue</p>
+  <ul><li><a href="#c-nouscrm"
+    style="--accent:#5A54B8" data-hint="nouscrm">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg>
+    <span><span class="mega__n">NousCRM</span>
+    <span class="mega__d">Opportunities, customers and what they owe</span></span>
+  </a></li></ul>
+  <p class="mega__note">Pipeline, customers and what they owe.</p>
+</div><div class="mega__col" style="--hue:#B2560C">
+  <p class="mega__cat">Knowledge &amp; work</p>
+  <ul><li><a href="#c-recapr"
+    style="--accent:#3559C7" data-hint="recapr">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg>
+    <span><span class="mega__n">Recapr</span>
+    <span class="mega__d">The meeting, on the record</span></span>
+  </a></li><li><a href="#c-lexerai"
+    style="--accent:#B2560C" data-hint="lexerai">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg>
+    <span><span class="mega__n">lexerai</span>
+    <span class="mega__d">Turn documents into structured data</span></span>
+  </a></li><li><a href="#c-task-manager"
+    style="--accent:#7B54BE" data-hint="task-manager">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span><span class="mega__n">Task Manager</span>
+    <span class="mega__d">Plan, track and execute</span></span>
+  </a></li><li><a href="#suite"
+    style="--accent:#69787E" data-hint="pms">
+    <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#69787E;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4.25" y="4.25" width="23.5" height="23.5" rx="6.5" fill="none"
+      stroke="var(--mk)" stroke-width="2.5" stroke-dasharray="5.5 4.5" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="3.75" fill="var(--mk-2)"/></svg>
+    <span><span class="mega__n">PMS</span>
+    <span class="mega__d">In development</span></span>
+  </a></li></ul>
+  <p class="mega__note">What was said, what was signed, what happens next.</p>
+</div></div>
+            <div class="mega__pane">
+              <p class="nom">preview</p>
+              <div class="mega__slot" id="megaSlot"><div class="peek" style="--accent:#0F7C93"><div class="peek__hd"><i></i>Mimic<s>Scored report</s></div><div class="peek__tabs"><span>AI video</span><span class="on">Voice</span><span>Assessment</span><span>Chat</span><span>Timed Q&amp;A</span></div><p class="peek__q">“…then checked his chart for the analgesia timing — he was overdue.”</p><p class="peek__st">Question 3 of 6 · specimen answer</p><div class="peek__m"><div>Relevance<b>91</b></div><i style="--v:91%"></i><div>Clarity<b>88</b></div><i style="--v:88%"></i><div>Depth<b>79</b></div><i style="--v:79%"></i></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mega__foot"><div class="wrap">
+          <span>5 of the 7 open straight into the running application.</span>
+          <a class="go" href="#connect">How they connect<i aria-hidden="true"></i></a>
+          <a class="go" href="#suite">The whole suite<i aria-hidden="true"></i></a>
+        </div></div>
+      </div>
+    </div>
+    <a href="#suite">Suite</a>
+    <a href="#c-ai-engine">AI Engine</a>
+    <a href="https://talbotiq.com/about-us/">Company</a>
+  </nav>
+  <div class="head__r">
+    <button class="find" id="findBtn" type="button" aria-haspopup="dialog" aria-label="Search products">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+        stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="6.25"/><path d="M15.75 15.75 20 20"/></svg>
+      <span>Search products</span>
+      <kbd data-k>⌘ K</kbd>
+    </button>
+    <a class="btn btn--line btn--sm" href="https://talbotiq.com">talbotiq.com</a>
+    <a class="btn btn--fill btn--sm" href="https://talbotiq.com/contact-us/">Talk to us</a>
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="drawer" aria-label="Open menu"><span></span></button>
+  </div>
+</div></header>
+
+<div class="drawer" id="drawer" data-open="false" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="drawer__top">
+    <img src="assets/brand/talbotiq-logo.png" alt="TalbotIQ" width="262" height="72" style="height:26px;width:auto">
+    <button class="burger" id="burgerClose" style="margin-inline-start:auto" aria-expanded="true" aria-label="Close menu"><span></span></button>
+  </div>
+  <p class="nom">the chapters</p>
+  <a class="drawer__a" href="#c-mimic"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg>Mimic<b>01</b></a><a class="drawer__a" href="#c-recapr"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg>Recapr<b>02</b></a><a class="drawer__a" href="#c-nouscrm"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg>NousCRM<b>03</b></a><a class="drawer__a" href="#c-task-manager"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Task Manager<b>04</b></a><a class="drawer__a" href="#c-lexerai"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg>lexerai<b>05</b></a><a class="drawer__a" href="#c-ai-engine"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg>AI Engine<b>06</b></a>
+  <p class="nom">elsewhere</p>
+  <a class="drawer__a" href="#connect">How they connect<b>5 stages</b></a>
+  <a class="drawer__a" href="#suite">The whole suite<b>7</b></a>
+  <a class="drawer__a" href="https://talbotiq.com/about-us/">Company</a>
+  <div class="drawer__cta">
+    <a class="btn btn--fill" href="https://talbotiq.com/contact-us/">Talk to us</a>
+    <a class="btn btn--line" href="https://talbotiq.com">talbotiq.com</a>
+  </div>
+</div>
+
+<nav class="scale" aria-label="Chapters">
+  <div class="scale__in">
+    <span class="scale__unit" aria-hidden="true">ch</span>
+    <ol><li><a href="#c-mimic" data-stop="c-mimic"
+      style="--accent:#0F7C93"><span>01</span><em>Mimic</em></a></li><li><a href="#c-recapr" data-stop="c-recapr"
+      style="--accent:#3559C7"><span>02</span><em>Recapr</em></a></li><li><a href="#c-nouscrm" data-stop="c-nouscrm"
+      style="--accent:#5A54B8"><span>03</span><em>NousCRM</em></a></li><li><a href="#c-task-manager" data-stop="c-task-manager"
+      style="--accent:#7B54BE"><span>04</span><em>Task Manager</em></a></li><li><a href="#c-lexerai" data-stop="c-lexerai"
+      style="--accent:#B2560C"><span>05</span><em>lexerai</em></a></li><li><a href="#c-ai-engine" data-stop="c-ai-engine"
+      style="--accent:#2E9E86"><span>06</span><em>AI Engine</em></a></li>
+    </ol>
+  </div>
+</nav>
+
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <h1 class="dsp dsp--xl">Six products.<br>One engine underneath.</h1>
+    <p class="lede">TalbotIQ builds the software a business runs on — hiring, meetings, customers,
+      documents and the work in between. The same AI engine powers all of it.</p>
+    <div class="hero__cta">
+      <a class="btn btn--fill" href="#connect">See how it works</a>
+      <a class="btn btn--ghost" href="https://talbotiq.com/contact-us/">Talk to us</a>
+    </div>
+  </div>
+  <div class="curve" aria-hidden="true"></div>
+</section>
+
+<section class="apps band ruleset" aria-labelledby="apps-h">
+  <div class="wrap">
+    <h2 class="vh" id="apps-h">The applications</h2>
+
+    <!-- The one figure that explains the company without a sentence: every
+         application above, a line down from each of them, and one engine at
+         the bottom that all the lines arrive at. It animates once, in that
+         order, because the order IS the explanation. -->
+    <div class="knit" data-lit>
+      <div class="appgrid"><a class="tile" href="https://talbotiq-9cc4e.web.app/" target="_blank" rel="noopener" style="--accent:#0F7C93">
+    <span class="tile__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg></span>
+    <span class="tile__nm">Mimic</span>
+    <span class="tile__cat">People &amp; hiring</span>
+  </a><a class="tile" href="https://recapr-web-qxytyckrma-uc.a.run.app/" target="_blank" rel="noopener" style="--accent:#3559C7">
+    <span class="tile__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg></span>
+    <span class="tile__nm">Recapr</span>
+    <span class="tile__cat">Knowledge &amp; work</span>
+  </a><a class="tile" href="https://salescrm-next-5iaoqvzvqq-el.a.run.app" target="_blank" rel="noopener" style="--accent:#5A54B8">
+    <span class="tile__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg></span>
+    <span class="tile__nm">NousCRM</span>
+    <span class="tile__cat">Revenue</span>
+  </a><a class="tile" href="https://talbotiq.com/products/task-management-system/" style="--accent:#7B54BE">
+    <span class="tile__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    <span class="tile__nm">Task Manager</span>
+    <span class="tile__cat">Knowledge &amp; work</span>
+  </a><a class="tile" href="https://docparser-748029981157.us-central1.run.app/" target="_blank" rel="noopener" style="--accent:#B2560C">
+    <span class="tile__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg></span>
+    <span class="tile__nm">lexerai</span>
+    <span class="tile__cat">Knowledge &amp; work</span>
+  </a><a class="tile" href="#c-pms" style="--accent:#69787E">
+    <span class="tile__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#69787E;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4.25" y="4.25" width="23.5" height="23.5" rx="6.5" fill="none"
+      stroke="var(--mk)" stroke-width="2.5" stroke-dasharray="5.5 4.5" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="3.75" fill="var(--mk-2)"/></svg></span>
+    <span class="tile__nm">PMS</span>
+    <span class="tile__cat">Knowledge &amp; work</span>
+  </a></div>
+      <div class="knit__drops" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="knit__rule" aria-hidden="true"></div>
+      <a class="knit__eng" href="#c-ai-engine">
+        <span class="knit__chip"><svg class="mk" viewBox="0 0 32 32" width="40" height="40"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg></span>
+        <span class="knit__t">
+          <b>TalbotIQ AI Engine</b>
+          <em>One engine. It does the thinking for all six.</em>
+        </span>
+      </a>
+    </div>
+
+    <div class="apps__proof">
+      <p class="body">Buy the ones you need. They get better together because they
+        share an engine — not because you have to take all six.</p>
+    </div>
+  </div>
+</section>
+
+<section class="chap" id="c-mimic"
+    style="--accent:#0F7C93" aria-labelledby="h-mimic"
+    data-chap="mimic">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+    <div>
+      <div class="chap__id">
+        <span class="chap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg></span>
+        <span class="chap__nm">Mimic</span>
+        <span class="nom nom--accent">01</span>
+        <span class="rule"></span>
+      </div>
+      <h2 class="dsp dsp--lg" id="h-mimic">Every applicant<br>interviewed<br>on day one.</h2>
+    </div>
+    <div>
+      <p class="body">Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone.</p>
+    </div>
+  </header>
+      <div class="mimic">
+      <div class="plate">
+        <div class="plate__bar"><u></u><u></u><u></u>Mimic<s>Scored report</s></div>
+        <div class="mimic__q" data-lit>
+          <blockquote>I moved him to the quiet bay first so the ward settled, <mark>then checked his chart for the analgesia timing — he was overdue</mark>.</blockquote>
+          <div class="mimic__meta">
+            <p class="nom">Question 3 of 6</p><p class="nom">Voice screening</p>
+          </div>
+        </div>
+        <div class="plate__in" style="border-top:1px solid var(--rule)">
+          <div class="crit" data-lit>
+            <div class="crit__r">
+              <div class="crit__t"><span>Relevance to question</span><b>91</b></div>
+              <div class="crit__b" style="--v:91%"><i></i></div>
+              <span class="crit__src">linked to the clause above</span>
+            </div><div class="crit__r">
+              <div class="crit__t"><span>Communication clarity</span><b>88</b></div>
+              <div class="crit__b" style="--v:88%"><i></i></div>
+              <span class="crit__src">linked to the full answer</span>
+            </div><div class="crit__r">
+              <div class="crit__t"><span>Technical / domain depth</span><b>79</b></div>
+              <div class="crit__b" style="--v:79%"><i></i></div>
+              <span class="crit__src">linked to the clause above</span>
+            </div>
+          </div>
+          <div class="mimic__out">
+            <span>Overall, weighted</span><b>86</b>
+          </div>
+          <p class="fine" style="margin-top:.75rem">Recommendation only. The recruiter decides. The platform does the arithmetic, not the model.</p>
+        </div>
+      </div>
+
+      <aside class="mimic__aside">
+        <div class="mimic__fmt">
+          <p class="nom">six formats</p>
+          <ul><li>AI video avatar<b>scored</b></li><li>Voice screening<b>scored</b></li><li>Assessments<b>scored</b></li><li>Conversational chat<b>scored</b></li><li>Timed Q&amp;A<b>scored</b></li><li>Live two-way call<b>human</b></li></ul>
+          <p class="fine" style="margin-top:.5rem">Five of the six score against the same rubric.</p>
+        </div>
+        <div>
+          <p class="nom">governance</p>
+          <p class="body" style="margin-top:.625rem;font-size:.9375rem">One rubric, applied identically to every applicant. Weights rescale to 100%. Every decision is written to audit history — and <span class="said">Mimic never rejects anyone</span>.</p>
+        </div>
+      </aside>
+    </div>
+    <p class="caveat">Sample answer and scores. Mimic recommends; it never rejects anyone.</p>
+      <div class="chap__ft">
+    <a class="go" href="https://talbotiq-9cc4e.web.app/" target="_blank" rel="noopener">Explore Mimic<i aria-hidden="true"></i></a>
+    <p class="fine">Public product site</p>
+  </div><nav class="swap" aria-label="Move to another product">
+    <a class="swap__a swap__a--prev" href="#c-ai-engine"
+    style="--accent:#2E9E86">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Previous</em>
+      <b>AI Engine</b>
+      <s>The intelligence layer under every product</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg></span>
+  </a>
+    <a class="swap__all" href="#suite" data-cmd>
+      <span>Explore another product</span>
+      <s>all six</s>
+      <kbd data-k>⌘ K</kbd>
+    </a>
+    <a class="swap__a swap__a--next" href="#c-recapr"
+    style="--accent:#3559C7">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Next</em>
+      <b>Recapr</b>
+      <s>The meeting, on the record</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg></span>
+  </a>
+  </nav>
+    </div>
+  </section>
+<section class="chap band" id="c-recapr"
+    style="--accent:#3559C7" aria-labelledby="h-recapr"
+    data-chap="recapr">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+    <div>
+      <div class="chap__id">
+        <span class="chap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg></span>
+        <span class="chap__nm">Recapr</span>
+        <span class="nom nom--accent">02</span>
+        <span class="rule"></span>
+      </div>
+      <h2 class="dsp dsp--lg" id="h-recapr">The meeting,<br>on the record.</h2>
+    </div>
+    <div>
+      <p class="body">Recapr transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides.</p>
+    </div>
+  </header>
+      <div class="tl">
+      <div class="tl__axis">
+        <span class="nom">00:00</span><i></i>
+        <span class="nom nom--accent">23:30 — the decision</span><i></i>
+        <span class="nom">41:12</span>
+      </div>
+      <div class="wave" data-lit aria-hidden="true"><i class="" style="--h:14%"></i><i class="" style="--h:68%"></i><i class="" style="--h:90%"></i><i class="" style="--h:71%"></i><i class="" style="--h:31%"></i><i class="" style="--h:26%"></i><i class="" style="--h:28%"></i><i class="" style="--h:17%"></i><i class="" style="--h:28%"></i><i class="" style="--h:15%"></i><i class="" style="--h:52%"></i><i class="" style="--h:84%"></i><i class="" style="--h:82%"></i><i class="" style="--h:41%"></i><i class="" style="--h:45%"></i><i class="" style="--h:86%"></i><i class="" style="--h:86%"></i><i class="" style="--h:52%"></i><i class="" style="--h:16%"></i><i class="" style="--h:33%"></i><i class="" style="--h:24%"></i><i class="" style="--h:23%"></i><i class="hot" style="--h:23%"></i><i class="hot" style="--h:32%"></i><i class="hot" style="--h:69%"></i><i class="hot" style="--h:86%"></i><i class="hot" style="--h:64%"></i><i class="hot" style="--h:18%"></i><i class="hot" style="--h:72%"></i><i class="hot" style="--h:93%"></i><i class="hot" style="--h:73%"></i><i class="" style="--h:30%"></i><i class="" style="--h:30%"></i><i class="" style="--h:34%"></i><i class="" style="--h:17%"></i><i class="" style="--h:24%"></i><i class="" style="--h:16%"></i><i class="" style="--h:50%"></i><i class="" style="--h:80%"></i><i class="" style="--h:78%"></i><i class="" style="--h:37%"></i><i class="" style="--h:50%"></i><i class="" style="--h:89%"></i><i class="" style="--h:88%"></i><i class="" style="--h:52%"></i><i class="" style="--h:18%"></i><i class="" style="--h:39%"></i><i class="" style="--h:30%"></i><i class="" style="--h:17%"></i><i class="" style="--h:20%"></i><i class="" style="--h:32%"></i><i class="" style="--h:66%"></i><i class="" style="--h:82%"></i><i class="" style="--h:59%"></i><i class="" style="--h:23%"></i><i class="" style="--h:76%"></i><i class="" style="--h:96%"></i><i class="" style="--h:73%"></i><i class="" style="--h:29%"></i><i class="" style="--h:34%"></i><i class="" style="--h:40%"></i><i class="" style="--h:23%"></i><i class="" style="--h:20%"></i><i class="" style="--h:17%"></i><i class="" style="--h:49%"></i><i class="" style="--h:76%"></i><i class="" style="--h:73%"></i><i class="" style="--h:32%"></i><i class="" style="--h:53%"></i><i class="" style="--h:92%"></i><i class="" style="--h:90%"></i><i class="" style="--h:51%"></i><i class="" style="--h:22%"></i><i class="" style="--h:44%"></i><i class="" style="--h:36%"></i><i class="" style="--h:16%"></i><i class="" style="--h:18%"></i><i class="" style="--h:31%"></i><i class="" style="--h:63%"></i><i class="" style="--h:77%"></i><i class="" style="--h:54%"></i><i class="" style="--h:27%"></i><i class="" style="--h:79%"></i><i class="" style="--h:98%"></i><i class="" style="--h:74%"></i><i class="" style="--h:26%"></i><i class="" style="--h:39%"></i><i class="" style="--h:46%"></i><i class="" style="--h:29%"></i><i class="" style="--h:16%"></i><i class="" style="--h:18%"></i><i class="" style="--h:46%"></i><i class="" style="--h:72%"></i><i class="" style="--h:68%"></i><i class="" style="--h:28%"></i><i class="" style="--h:57%"></i><i class="" style="--h:95%"></i><i class="" style="--h:91%"></i><i class="" style="--h:50%"></i><i class="" style="--h:25%"></i><i class="" style="--h:49%"></i><i class="" style="--h:42%"></i><i class="" style="--h:21%"></i><i class="" style="--h:16%"></i><i class="" style="--h:30%"></i><i class="" style="--h:59%"></i><i class="" style="--h:72%"></i><i class="" style="--h:50%"></i><i class="" style="--h:31%"></i><i class="" style="--h:81%"></i><i class="" style="--h:99%"></i><i class="" style="--h:73%"></i></div>
+
+      <div class="turns" data-lit>
+        <article class="turn">
+          <div class="turn__k"><span class="nom nom--accent">01</span><span class="nom">Capture</span></div>
+          <h3>The room, a tab, or an upload</h3>
+          <p>In person, in Meet, Zoom or Teams, or a file after the fact.</p>
+          <div class="turn__ui"><b>No bot to invite</b>Nothing joins the call as a guest.</div>
+        </article><article class="turn">
+          <div class="turn__k"><span class="nom nom--accent">02</span><span class="nom">Understand</span></div>
+          <h3>Every turn, attributed and stamped</h3>
+          <p>While people are still talking.</p>
+          <div class="turn__ui"><b>Live transcription</b>Speaker attribution, timestamped.</div>
+        </article><article class="turn">
+          <div class="turn__k"><span class="nom nom--accent">03</span><span class="nom">Decipher</span></div>
+          <h3>Decisions, actions, risks</h3>
+          <p>Filed as they are said, with the moment marked.</p>
+          <div class="turn__ui"><b>Cmd + Shift + K</b>Mark the moment, mid-sentence.</div>
+        </article><article class="turn">
+          <div class="turn__k"><span class="nom nom--accent">04</span><span class="nom">Act</span></div>
+          <h3>Kept, open or slipped</h3>
+          <p>Commitments tracked across meetings, not just inside one.</p>
+          <div class="turn__ui"><b>Commitment tracker</b>KEPT · OPEN · SLIPPED</div>
+        </article>
+      </div>
+
+      <div class="contra">
+        <div class="contra__s">
+          <blockquote>&ldquo;We hold the September date and ship the Windows build first.&rdquo;</blockquote>
+          <p class="nom">Product weekly · 12 Aug · 23:30</p>
+        </div>
+        <div class="contra__v">contradicts</div>
+        <div class="contra__s">
+          <blockquote>&ldquo;September was never firm — we said we would revisit once the signing landed.&rdquo;</blockquote>
+          <p class="nom">Product weekly · 2 Sep · 08:14</p>
+        </div>
+        <p class="contra__note">Recapr does not tell you a contradiction exists. It quotes both sides and links each one back to its timestamp.</p>
+      </div>
+    </div>
+    <p class="caveat">Sample quotes from two meetings.</p>
+      <div class="chap__ft">
+    <a class="go" href="https://recapr-web-qxytyckrma-uc.a.run.app/" target="_blank" rel="noopener">Explore Recapr<i aria-hidden="true"></i></a>
+    <p class="fine">Public product site</p>
+  </div><nav class="swap" aria-label="Move to another product">
+    <a class="swap__a swap__a--prev" href="#c-mimic"
+    style="--accent:#0F7C93">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Previous</em>
+      <b>Mimic</b>
+      <s>Screening intelligence, decided by humans</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg></span>
+  </a>
+    <a class="swap__all" href="#suite" data-cmd>
+      <span>Explore another product</span>
+      <s>all six</s>
+      <kbd data-k>⌘ K</kbd>
+    </a>
+    <a class="swap__a swap__a--next" href="#c-nouscrm"
+    style="--accent:#5A54B8">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Next</em>
+      <b>NousCRM</b>
+      <s>Opportunities, customers and what they owe</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg></span>
+  </a>
+  </nav>
+    </div>
+  </section>
+<section class="chap" id="c-nouscrm"
+    style="--accent:#5A54B8" aria-labelledby="h-nouscrm"
+    data-chap="nouscrm">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+    <div>
+      <div class="chap__id">
+        <span class="chap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg></span>
+        <span class="chap__nm">NousCRM</span>
+        <span class="nom nom--accent">03</span>
+        <span class="rule"></span>
+      </div>
+      <h2 class="dsp dsp--lg" id="h-nouscrm">Opportunities,<br>and what<br>they owe.</h2>
+    </div>
+    <div>
+      <p class="body">The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard.</p>
+    </div>
+  </header>
+      <div class="pipe" data-lit>
+      <div class="pipe__band">
+        <div class="stage"
+          style="--w:35.3%;--h:100%">
+          <span class="stage__n">12</span>
+          <span class="stage__l">Qualify</span>
+        </div><div class="stage"
+          style="--w:26.5%;--h:85%">
+          <span class="stage__n">9</span>
+          <span class="stage__l">Discovery</span>
+        </div><div class="stage"
+          style="--w:17.6%;--h:69%">
+          <span class="stage__n">6</span>
+          <span class="stage__l">Proposal</span>
+        </div><div class="stage"
+          style="--w:11.8%;--h:59%">
+          <span class="stage__n">4</span>
+          <span class="stage__l">Negotiate</span>
+        </div><div class="stage"
+          style="--w:8.8%;--h:54%">
+          <span class="stage__n">3</span>
+          <span class="stage__l">Won</span>
+        </div>
+      </div>
+      <div class="pipe__axis">
+        <span class="nom">34 open opportunities</span><i></i>
+        <span class="nom">width and height are each stage&rsquo;s share</span>
+      </div>
+    </div>
+    <div class="crm__foot">
+      <div>
+        <p class="nom">modules that answer</p>
+        <div class="modules" style="margin-top:.75rem"><span>Dashboard</span><span>Opportunities</span><span>Customers</span><span>Contacts</span><span>Invoices</span><span>Approvals</span><span>Settings</span></div>
+        <p class="nom" style="margin-top:1.5rem">what the dashboard actually reports</p>
+        <div class="apis"><code>opportunity-by-stage</code><code>opportunity-source</code><code>rep-target</code><code>sales-team-performance</code></div>
+      </div>
+      <div>
+        <p class="nom">modules that do not exist</p>
+        <div class="modules" style="margin-top:.75rem"><span class="off">Leads</span><span class="off">Deals</span><span class="off">Quotes</span><span class="off">Campaigns</span><span class="off">Forecast</span></div>
+        <p class="fine" style="margin-top:.75rem">These five return 404. A CRM page would normally list them anyway. This one does not.</p>
+      </div>
+    </div>
+    <p class="caveat">Sample stage names and counts.</p>
+      <div class="chap__ft">
+    <a class="go" href="https://salescrm-next-5iaoqvzvqq-el.a.run.app" target="_blank" rel="noopener">Open NousCRM<i aria-hidden="true"></i></a>
+    <p class="fine">Sign-in required</p>
+  </div><nav class="swap" aria-label="Move to another product">
+    <a class="swap__a swap__a--prev" href="#c-recapr"
+    style="--accent:#3559C7">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Previous</em>
+      <b>Recapr</b>
+      <s>The meeting, on the record</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg></span>
+  </a>
+    <a class="swap__all" href="#suite" data-cmd>
+      <span>Explore another product</span>
+      <s>all six</s>
+      <kbd data-k>⌘ K</kbd>
+    </a>
+    <a class="swap__a swap__a--next" href="#c-task-manager"
+    style="--accent:#7B54BE">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Next</em>
+      <b>Task Manager</b>
+      <s>Plan, track and execute</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
+  </nav>
+    </div>
+  </section>
+<section class="chap band" id="connect" aria-labelledby="connect-h">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+        <div>
+          <div class="chap__id">
+            <span class="nom">the ecosystem</span>
+            <span class="rule"></span>
+          </div>
+          <h2 class="dsp dsp--lg" id="connect-h">One day's work,<br>and who does<br>which part of it.</h2>
+        </div>
+        <div>
+          <p class="body">Read down: this is the order the work actually happens in.
+            Five of the 7 products show up at more than one
+            stage — and none of them needs the others to do its own part.</p>
+        </div>
+      </header>
+
+      <ol class="flow" data-lit><li class="stg">
+      <div class="stg__l">
+        <span class="stg__n" aria-hidden="true">1</span>
+        <h3 class="stg__v">Capture</h3>
+        <p class="stg__g">Something happens, and it goes on the record instead of into somebody’s memory.</p>
+      </div>
+      <ul class="stg__r"><li><a href="#c-mimic" style="--accent:#0F7C93">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg>
+        <b>Mimic</b>
+        <em>runs the interview</em>
+      </a></li><li><a href="#c-recapr" style="--accent:#3559C7">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg>
+        <b>Recapr</b>
+        <em>records the meeting</em>
+      </a></li><li><a href="#c-lexerai" style="--accent:#B2560C">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg>
+        <b>lexerai</b>
+        <em>takes in the document</em>
+      </a></li></ul>
+    </li><li class="stg">
+      <div class="stg__l">
+        <span class="stg__n" aria-hidden="true">2</span>
+        <h3 class="stg__v">Understand</h3>
+        <p class="stg__g">The record is read, and comes back as something you can act on.</p>
+      </div>
+      <ul class="stg__r"><li><a href="#c-mimic" style="--accent:#0F7C93">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg>
+        <b>Mimic</b>
+        <em>scores each answer</em>
+      </a></li><li><a href="#c-recapr" style="--accent:#3559C7">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg>
+        <b>Recapr</b>
+        <em>writes the summary</em>
+      </a></li><li><a href="#c-lexerai" style="--accent:#B2560C">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg>
+        <b>lexerai</b>
+        <em>pulls out the fields</em>
+      </a></li></ul>
+    </li><li class="stg">
+      <div class="stg__l">
+        <span class="stg__n" aria-hidden="true">3</span>
+        <h3 class="stg__v">Organise</h3>
+        <p class="stg__g">It stops being an event and becomes a record somebody owns.</p>
+      </div>
+      <ul class="stg__r"><li><a href="#c-nouscrm" style="--accent:#5A54B8">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg>
+        <b>NousCRM</b>
+        <em>opportunity, customer, invoice</em>
+      </a></li><li><a href="#c-task-manager" style="--accent:#7B54BE">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <b>Task Manager</b>
+        <em>planned onto a board</em>
+      </a></li></ul>
+    </li><li class="stg">
+      <div class="stg__l">
+        <span class="stg__n" aria-hidden="true">4</span>
+        <h3 class="stg__v">Act</h3>
+        <p class="stg__g">The work is assigned, done, approved and closed.</p>
+      </div>
+      <ul class="stg__r"><li><a href="#c-task-manager" style="--accent:#7B54BE">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <b>Task Manager</b>
+        <em>execute and close</em>
+      </a></li><li><a href="#c-nouscrm" style="--accent:#5A54B8">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg>
+        <b>NousCRM</b>
+        <em>approvals, and what is owed</em>
+      </a></li></ul>
+    </li><li class="stg stg--end stg--base">
+      <div class="stg__l">
+        <span class="stg__n" aria-hidden="true"><svg class="mk" viewBox="0 0 32 32" width="24" height="24"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg></span>
+        <h3 class="stg__v">One engine underneath</h3>
+        <p class="stg__g">Every one of those four asks the same engine to do the thinking. That is the whole idea.</p>
+      </div>
+      <ul class="stg__r"><li><a href="#c-ai-engine" style="--accent:#2E9E86">
+        <svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg>
+        <b>AI Engine</b>
+        <em>the same engine, every time</em>
+      </a></li></ul>
+    </li></ol>
+      <p class="caveat">PMS is still in development, so it appears at no stage yet.</p>
+
+    </div>
+  </section>
+<section class="chap" id="c-task-manager"
+    style="--accent:#7B54BE" aria-labelledby="h-task-manager"
+    data-chap="task-manager">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+    <div>
+      <div class="chap__id">
+        <span class="chap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="chap__nm">Task Manager</span>
+        <span class="nom nom--accent">04</span>
+        <span class="rule"></span>
+      </div>
+      <h2 class="dsp dsp--lg" id="h-task-manager">A request in.<br>A brief,<br>assigned.</h2>
+    </div>
+    <div>
+      <p class="body">Tasks created, prioritised and assigned across boards, calendars and Gantt views, with shared workspaces, in-task comments and file sharing. AI User Triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity.</p>
+    </div>
+  </header>
+      <div class="triage" data-lit>
+      <div class="triage__in">
+        <p class="nom">What arrives</p>
+        <p>hi — the export on the finance dashboard has been timing out since friday, we need it before the board pack goes out on the 12th. cc’d Aiman who saw it first.</p>
+      </div>
+      <div class="triage__w" aria-hidden="true">
+        <svg viewBox="0 0 44 120" preserveAspectRatio="none" fill="none">
+          <path d="M0 60 C 22 60, 22 14, 44 14"  stroke="currentColor" stroke-width="1"/>
+          <path d="M0 60 C 22 60, 22 40, 44 40"  stroke="currentColor" stroke-width="1"/>
+          <path d="M0 60 C 22 60, 22 66, 44 66"  stroke="currentColor" stroke-width="1"/>
+          <path d="M0 60 C 22 60, 22 92, 44 92"  stroke="currentColor" stroke-width="1"/>
+          <path d="M0 60 C 22 60, 22 116, 44 116" stroke="currentColor" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="triage__out">
+        <p class="nom nom--accent">AI User Triage</p>
+        <dl class="kv"><div><dt>Type</dt><dd>Defect</dd></div><div><dt>Priority</dt><dd>High — dated deadline</dd></div><div><dt>Due</dt><dd>12th</dd></div><div><dt>Assigned</dt><dd>Team with capacity</dd></div><div><dt>Watchers</dt><dd>Reporter, Aiman</dd></div></dl>
+      </div>
+    </div>
+
+    <div class="lanes">
+      <div class="lane">
+        <div class="lane__h"><i></i>Triaged</div>
+        <div class="lane__c">Request turned into a structured brief</div><div class="lane__c">Priority scored</div>
+      </div><div class="lane">
+        <div class="lane__h"><i></i>In progress</div>
+        <div class="lane__c">Assigned by availability</div><div class="lane__c">Timer running</div>
+      </div><div class="lane">
+        <div class="lane__h"><i></i>Done</div>
+        <div class="lane__c">Recurring work reset for next cycle</div>
+      </div>
+    </div>
+    <p class="caveat">Drawn from the product page, not a live app.</p>
+      <div class="chap__ft">
+    <a class="go" href="https://talbotiq.com/products/task-management-system/">Read the product page<i aria-hidden="true"></i></a>
+    <p class="fine">Product page</p>
+  </div><nav class="swap" aria-label="Move to another product">
+    <a class="swap__a swap__a--prev" href="#c-nouscrm"
+    style="--accent:#5A54B8">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Previous</em>
+      <b>NousCRM</b>
+      <s>Opportunities, customers and what they owe</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg></span>
+  </a>
+    <a class="swap__all" href="#suite" data-cmd>
+      <span>Explore another product</span>
+      <s>all six</s>
+      <kbd data-k>⌘ K</kbd>
+    </a>
+    <a class="swap__a swap__a--next" href="#c-lexerai"
+    style="--accent:#B2560C">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Next</em>
+      <b>lexerai</b>
+      <s>Turn documents into structured data</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg></span>
+  </a>
+  </nav>
+    </div>
+  </section>
+<section class="chap band" id="c-lexerai"
+    style="--accent:#B2560C" aria-labelledby="h-lexerai"
+    data-chap="lexerai">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+    <div>
+      <div class="chap__id">
+        <span class="chap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg></span>
+        <span class="chap__nm">lexerai</span>
+        <span class="nom nom--accent">05</span>
+        <span class="rule"></span>
+      </div>
+      <h2 class="dsp dsp--lg" id="h-lexerai">Paper in.<br>Structured<br>data out.</h2>
+    </div>
+    <div>
+      <p class="body">Reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local OCR as an automatic offline fallback. Bring in bank statements and reconcile what it extracted against them.</p>
+    </div>
+  </header>
+      <div class="xtract" data-lit>
+      <div>
+        <div class="receipt">
+          <div class="receipt__h">
+            <b>Kedai Kopi Seng Lee</b>
+            <span>Jln Petaling, Kuala Lumpur</span>
+          </div>
+          <div class="receipt__l"><span>2 × Kopi O kaw</span><span>7.00</span></div><div class="receipt__l"><span>1 × Roti bakar</span><span>4.50</span></div><div class="receipt__l"><span>3 × Nasi lemak</span><span>28.50</span></div><div class="receipt__l"><span>Cukai perkhidmatan</span><span>8.20</span></div>
+          <div class="receipt__tot"><span>JUMLAH</span><span class="receipt__mark">48.20</span></div>
+        </div>
+      </div>
+      <div>
+        <dl class="fields">
+          <p class="nom">extracted · structured</p>
+          <div class="field">
+            <dt>Merchant</dt><dd>Kedai Kopi Seng Lee</dd><span class="field__f">AI vision</span>
+          </div><div class="field">
+            <dt>Date</dt><dd>14 June 2026</dd><span class="field__f">AI vision</span>
+          </div><div class="field">
+            <dt>Language</dt><dd>Malay, translated</dd><span class="field__f">any language</span>
+          </div><div class="field">
+            <dt>Total</dt><dd>MYR 48.20</dd><span class="field__f">AI vision</span>
+          </div><div class="field">
+            <dt>Converted</dt><dd>USD 10.21</dd><span class="field__f">currency conversion</span>
+          </div><div class="field">
+            <dt>Tamper check</dt><dd>Passed</dd><span class="field__f">tamper checks</span>
+          </div>
+        </dl>
+        <div class="xtract__ask">
+          <b>Slip</b>What did we spend on client meals in June?
+        </div>
+        <p class="fine" style="margin-top:1rem">Bank statements come in the same way, and reconcile against what was extracted. When the network is gone, local OCR takes over automatically.</p>
+      </div>
+    </div>
+    <p class="caveat">Sample receipt. Every capability listed beside it is real.</p>
+      <div class="chap__ft">
+    <a class="go" href="https://docparser-748029981157.us-central1.run.app/" target="_blank" rel="noopener">Open lexerai<i aria-hidden="true"></i></a>
+    <p class="fine">Sign-in required</p>
+  </div><nav class="swap" aria-label="Move to another product">
+    <a class="swap__a swap__a--prev" href="#c-task-manager"
+    style="--accent:#7B54BE">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Previous</em>
+      <b>Task Manager</b>
+      <s>Plan, track and execute</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  </a>
+    <a class="swap__all" href="#suite" data-cmd>
+      <span>Explore another product</span>
+      <s>all six</s>
+      <kbd data-k>⌘ K</kbd>
+    </a>
+    <a class="swap__a swap__a--next" href="#c-ai-engine"
+    style="--accent:#2E9E86">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Next</em>
+      <b>AI Engine</b>
+      <s>The intelligence layer under every product</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg></span>
+  </a>
+  </nav>
+    </div>
+  </section>
+<section class="chap dark" id="c-ai-engine"
+    style="--accent:#2E9E86" aria-labelledby="h-ai-engine"
+    data-chap="ai-engine">
+    <div class="wrap wrap--inset">
+      <header class="chap__hd">
+    <div>
+      <div class="chap__id">
+        <span class="chap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg></span>
+        <span class="chap__nm">AI Engine</span>
+        <span class="nom nom--accent">06</span>
+        <span class="rule"></span>
+      </div>
+      <h2 class="dsp dsp--lg" id="h-ai-engine">One engine.<br>Every product<br>metered through it.</h2>
+    </div>
+    <div>
+      <p class="body">One engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs PII before anything reaches a model, and answers from a knowledge base you load. Every product is metered through it.</p>
+    </div>
+  </header>
+      <div class="eng">
+      <div>
+        <div class="redact" data-lit>
+          <div class="redact__l"><span class="nom">what the product sends</span></div>
+          <p class="redact__s">Raise an invoice for <x>Nurul Hakim</x> at <x>nurul@example.com</x> — he called from <x>+60 12-345 6789</x> about the September renewal.</p>
+          <div class="redact__arrow"><span class="nom nom--accent">redacted before the model</span><i></i></div>
+          <p class="redact__out">Raise an invoice for [NAME] at [EMAIL] — he called from [PHONE] about the September renewal.</p>
+        </div>
+        <p class="caveat">Sample request. The PII scrubbing it shows is on by default.</p>
+        <div class="routes">
+          <div class="route">
+            <b>gemini-2.5-flash</b><s>hosted frontier model</s><span class="nom nom--accent">Routed to Gemini</span>
+          </div><div class="route route--slm">
+            <b>qwen3-4b</b><s>local small model</s><span class="nom nom--accent">SLM acceptable</span>
+          </div>
+        </div>
+        <p class="caveat">Shadow-comparing the two routes is on the roadmap, not shipped. The console says so itself: the comparison pipeline is not built yet. So it is not claimed here.</p>
+      </div>
+      <div>
+        <figure class="bus bus--full" data-bus>
+    <figcaption class="bus__hd">Metered in the console today — 3 of 6</figcaption>
+    <div class="bus__body">
+      <span class="bus__spine" aria-hidden="true"></span>
+      <div class="ch" style="--accent:#0F7C93;--d:0.000s">
+      <span class="ch__n">01</span>
+      <span class="ch__nm"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg><b>Mimic</b></span>
+      <span class="ch__r"><span class="ch__tag">metered</span><span class="gauge" aria-hidden="true"><i></i></span></span>
+    </div><div class="ch" style="--accent:#3559C7;--d:0.075s">
+      <span class="ch__n">02</span>
+      <span class="ch__nm"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg><b>Recapr</b></span>
+      <span class="ch__r"><span class="ch__tag">metered</span><span class="gauge" aria-hidden="true"><i></i></span></span>
+    </div><div class="ch" style="--accent:#5A54B8;--d:0.150s">
+      <span class="ch__n">03</span>
+      <span class="ch__nm"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg><b>NousCRM</b></span>
+      <span class="ch__r"><span class="ch__tag">not yet</span><span class="gauge" aria-hidden="true"></span></span>
+    </div><div class="ch" style="--accent:#7B54BE;--d:0.225s">
+      <span class="ch__n">04</span>
+      <span class="ch__nm"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Task Manager</b></span>
+      <span class="ch__r"><span class="ch__tag">not yet</span><span class="gauge" aria-hidden="true"></span></span>
+    </div><div class="ch" style="--accent:#B2560C;--d:0.300s">
+      <span class="ch__n">05</span>
+      <span class="ch__nm"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg><b>lexerai</b></span>
+      <span class="ch__r"><span class="ch__tag">not yet</span><span class="gauge" aria-hidden="true"></span></span>
+    </div><div class="ch" style="--accent:#69787E;--d:0.375s">
+      <span class="ch__n"></span>
+      <span class="ch__nm"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#69787E;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4.25" y="4.25" width="23.5" height="23.5" rx="6.5" fill="none"
+      stroke="var(--mk)" stroke-width="2.5" stroke-dasharray="5.5 4.5" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="3.75" fill="var(--mk-2)"/></svg><b>PMS</b></span>
+      <span class="ch__r"><span class="ch__tag">metered</span><span class="gauge" aria-hidden="true"><i></i></span></span>
+    </div>
+      <div class="bus__eng" style="--accent:#2E9E86">
+    <span class="nom">engine</span>
+    <span><b>TalbotIQ AI Engine</b><small>the intelligence under all of them</small></span>
+    
+  </div>
+    </div>
+  </figure>
+
+      </div>
+    </div>
+    <dl class="spec spec--band">
+      <div><dt>Model routing</dt><dd>A hosted frontier model and a local small model, with the console recording which one served each request.</dd></div><div><dt>PII scrubbing</dt><dd>On by default. Personal data is redacted before the model ever sees it.</dd></div><div><dt>Knowledge base</dt><dd>Load PDF, DOCX or TXT; the console reports documents indexed, total chunks and embeddings.</dd></div><div><dt>Observability</dt><dd>Requests, latency, tokens and errors — by product and by task, each with a request ID.</dd></div>
+    </dl>
+      <div class="chap__ft">
+    <a class="go" href="https://coe.talxone.com/dashboard/" target="_blank" rel="noopener">Open the console<i aria-hidden="true"></i></a>
+    <p class="fine">Internal console</p>
+  </div><nav class="swap" aria-label="Move to another product">
+    <a class="swap__a swap__a--prev" href="#c-lexerai"
+    style="--accent:#B2560C">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Previous</em>
+      <b>lexerai</b>
+      <s>Turn documents into structured data</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg></span>
+  </a>
+    <a class="swap__all" href="#suite" data-cmd>
+      <span>Explore another product</span>
+      <s>all six</s>
+      <kbd data-k>⌘ K</kbd>
+    </a>
+    <a class="swap__a swap__a--next" href="#c-mimic"
+    style="--accent:#0F7C93">
+    <i class="swap__i" aria-hidden="true"></i>
+    <span class="swap__x">
+      <em>Next</em>
+      <b>Mimic</b>
+      <s>Screening intelligence, decided by humans</s>
+    </span>
+    <span class="swap__mk"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg></span>
+  </a>
+  </nav>
+    </div>
+  </section>
+
+<section class="chap" id="suite" aria-labelledby="suite-h">
+  <div class="wrap wrap--inset">
+    <header class="chap__hd">
+      <div>
+        <div class="chap__id"><span class="nom">all of it</span><span class="rule"></span></div>
+        <h2 class="dsp dsp--lg" id="suite-h">Everything<br>TalbotIQ makes.</h2>
+      </div>
+      <div>
+        <p class="body">Seven products across four
+          parts of a business. Pick the one closest to your problem.</p>
+      </div>
+    </header>
+
+    <ul class="dir"><li class="dir__row" style="--accent:#2E9E86">
+      <a class="dir__hit" href="#c-ai-engine"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg>
+      <span class="dir__t"><b>AI Engine</b><em>The intelligence layer under every product</em></span>
+      <span class="dir__cat">Intelligence</span><span class="dir__go" aria-hidden="true"></span></a>
+      <a class="dir__open" href="https://coe.talxone.com/dashboard/" target="_blank" rel="noopener">
+        Open<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+    </li><li class="dir__row" style="--accent:#0F7C93">
+      <a class="dir__hit" href="#c-mimic"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg>
+      <span class="dir__t"><b>Mimic</b><em>Screening intelligence, decided by humans</em></span>
+      <span class="dir__cat">People &amp; hiring</span><span class="dir__go" aria-hidden="true"></span></a>
+      <a class="dir__open" href="https://talbotiq-9cc4e.web.app/" target="_blank" rel="noopener">
+        Open<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+    </li><li class="dir__row" style="--accent:#3559C7">
+      <a class="dir__hit" href="#c-recapr"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg>
+      <span class="dir__t"><b>Recapr</b><em>The meeting, on the record</em></span>
+      <span class="dir__cat">Knowledge &amp; work</span><span class="dir__go" aria-hidden="true"></span></a>
+      <a class="dir__open" href="https://recapr-web-qxytyckrma-uc.a.run.app/" target="_blank" rel="noopener">
+        Open<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+    </li><li class="dir__row" style="--accent:#5A54B8">
+      <a class="dir__hit" href="#c-nouscrm"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg>
+      <span class="dir__t"><b>NousCRM</b><em>Opportunities, customers and what they owe</em></span>
+      <span class="dir__cat">Revenue</span><span class="dir__go" aria-hidden="true"></span></a>
+      <a class="dir__open" href="https://salescrm-next-5iaoqvzvqq-el.a.run.app" target="_blank" rel="noopener">
+        Open<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+    </li><li class="dir__row" style="--accent:#B2560C">
+      <a class="dir__hit" href="#c-lexerai"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg>
+      <span class="dir__t"><b>lexerai</b><em>Turn documents into structured data</em></span>
+      <span class="dir__cat">Knowledge &amp; work</span><span class="dir__go" aria-hidden="true"></span></a>
+      <a class="dir__open" href="https://docparser-748029981157.us-central1.run.app/" target="_blank" rel="noopener">
+        Open<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+    </li><li class="dir__row" style="--accent:#7B54BE">
+      <a class="dir__hit" href="#c-task-manager"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="dir__t"><b>Task Manager</b><em>Plan, track and execute</em></span>
+      <span class="dir__cat">Knowledge &amp; work</span><span class="dir__go" aria-hidden="true"></span></a>
+      <s class="dir__open dir__open--off">&mdash;</s>
+    </li><li class="dir__row" style="--accent:#69787E">
+      <span class="dir__hit dir__hit--flat"><svg class="mk" viewBox="0 0 32 32" width="30" height="30"
+    style="--mk:#69787E;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4.25" y="4.25" width="23.5" height="23.5" rx="6.5" fill="none"
+      stroke="var(--mk)" stroke-width="2.5" stroke-dasharray="5.5 4.5" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="3.75" fill="var(--mk-2)"/></svg>
+      <span class="dir__t"><b>PMS</b><em>In development</em></span>
+      <span class="dir__cat">Knowledge &amp; work</span></span>
+      <s class="dir__open dir__open--off">&mdash;</s>
+    </li></ul>
+    <div hidden id="paneStore"><div data-pane="ai-engine" hidden><div class="peek" style="--accent:#2E9E86"><div class="peek__hd"><i></i>AI Engine<s>Usage</s></div><div class="peek__tabs"><span>Overview</span><span class="on">Usage</span><span>Models</span><span>Knowledge base</span><span>Logs</span></div><dl class="kv"><div><dt>Served by</dt><dd>gemini-2.5-flash</dd></div><div><dt>Local model</dt><dd>qwen3-4b</dd></div><div><dt>PII scrubbing</dt><dd>on by default</dd></div></dl></div></div><div data-pane="mimic" hidden><div class="peek" style="--accent:#0F7C93"><div class="peek__hd"><i></i>Mimic<s>Scored report</s></div><div class="peek__tabs"><span>AI video</span><span class="on">Voice</span><span>Assessment</span><span>Chat</span><span>Timed Q&amp;A</span></div><p class="peek__q">“…then checked his chart for the analgesia timing — he was overdue.”</p><p class="peek__st">Question 3 of 6 · specimen answer</p><div class="peek__m"><div>Relevance<b>91</b></div><i style="--v:91%"></i><div>Clarity<b>88</b></div><i style="--v:88%"></i><div>Depth<b>79</b></div><i style="--v:79%"></i></div></div></div><div data-pane="recapr" hidden><div class="peek" style="--accent:#3559C7"><div class="peek__hd"><i></i>Recapr<s>Product weekly</s></div><p class="peek__q">“We hold the September date and ship the Windows build first.”</p><p class="peek__st">Dan · 23:30 · heard</p><dl class="kv"><div><dt>Key decision</dt><dd>Windows build first</dd></div><div><dt>Action</dt><dd>Verify the build</dd></div><div><dt>Conflicts with</dt><dd>2 Sep · 08:14</dd></div></dl></div></div><div data-pane="nouscrm" hidden><div class="peek" style="--accent:#5A54B8"><div class="peek__hd"><i></i>NousCRM<s>Dashboard</s></div><div class="peek__tabs"><span class="on">Dashboard</span><span>Opportunities</span><span>Customers</span><span>Invoices</span></div><div class="peek__bars" aria-hidden="true"><i style="height:38%"></i><i style="height:55%"></i><i style="height:44%"></i><i style="height:68%"></i><i style="height:52%"></i><i style="height:79%"></i><i style="height:61%"></i><i style="height:86%"></i></div><dl class="kv"><div><dt>Opportunity by stage</dt><dd>reported</dd></div><div><dt>Rep target</dt><dd>reported</dd></div><div><dt>Awaiting approval</dt><dd>reported</dd></div></dl></div></div><div data-pane="lexerai" hidden><div class="peek" style="--accent:#B2560C"><div class="peek__hd"><i></i>lexerai<s>Receipt extracted</s></div><div class="peek__tabs"><span>Dashboard</span><span class="on">Receipts</span><span>Contacts</span><span>Reconcile</span></div><dl class="kv"><div><dt>Merchant</dt><dd>Kedai Kopi Seng Lee</dd></div><div><dt>Total</dt><dd>MYR 48.20</dd></div><div><dt>Converted</dt><dd>USD 10.21</dd></div><div><dt>Tamper check</dt><dd>Passed</dd></div></dl></div></div><div data-pane="task-manager" hidden><div class="peek" style="--accent:#7B54BE"><div class="peek__hd"><i></i>Task Manager<s>Boards</s></div><div class="peek__tabs"><span class="on">Boards</span><span>Calendar</span><span>Gantt</span></div><dl class="kv"><div><dt>AI User Triage</dt><dd>request → brief</dd></div><div><dt>Priority</dt><dd>scored</dd></div><div><dt>Assignment</dt><dd>by availability</dd></div></dl></div></div><div data-pane="pms" hidden><div class="peek"><p class="peek__none">Nothing to preview. In development.</p></div></div></div>
+  </div>
+</section>
+
+<section class="close band">
+  <div class="wrap wrap--inset">
+    <div class="close__g">
+      <p class="nom">TalbotIQ</p>
+      <blockquote>Technology is a tool. Intelligence is the edge.</blockquote>
+      <cite>TalbotIQ, on its own about page</cite>
+      <div class="close__b">
+        <a class="btn btn--sig" href="https://talbotiq.com/contact-us/">Talk to our team</a>
+        <a class="btn btn--line" href="https://talbotiq.com/inquiry-now/">Make an enquiry</a>
+      </div>
+      <p class="fine">Kuala Lumpur, Malaysia &middot; +603 20 111 320</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="ftr"><div class="wrap wrap--inset">
+  <div class="ftr__g">
+    <div>
+      <p class="ftr__mk">Talbot<b>IQ</b></p>
+      <p>Architecting the Intelligence Layer of Modern Businesses. No &quot;AI hype.&quot; We build tools that solve actual business bottlenecks.</p>
+    </div>
+    <div><h3>products</h3><ul><li><a href="https://coe.talxone.com/dashboard/" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg>AI Engine</a></li><li><a href="https://talbotiq-9cc4e.web.app/" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg>Mimic</a></li><li><a href="https://recapr-web-qxytyckrma-uc.a.run.app/" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg>Recapr</a></li><li><a href="https://salescrm-next-5iaoqvzvqq-el.a.run.app" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg>NousCRM</a></li><li><a href="https://docparser-748029981157.us-central1.run.app/" target="_blank" rel="noopener"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg>lexerai</a></li><li><a href="https://talbotiq.com/products/task-management-system/"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Task Manager</a></li><li><a href="#suite"><svg class="mk" viewBox="0 0 32 32" width="20" height="20"
+    style="--mk:#69787E;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4.25" y="4.25" width="23.5" height="23.5" rx="6.5" fill="none"
+      stroke="var(--mk)" stroke-width="2.5" stroke-dasharray="5.5 4.5" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="3.75" fill="var(--mk-2)"/></svg>PMS</a></li></ul></div>
+    <div><h3>platform</h3><ul>
+      <li><a href="#c-ai-engine">AI Engine</a></li>
+      <li><a href="#suite">The whole suite</a></li>
+      <li><a href="#c-mimic">Chapter one</a></li>
+    </ul></div>
+    <div><h3>services</h3><ul>
+      <li><a href="https://talbotiq.com/services/ai-strategy-consulting/">AI strategy &amp; consulting</a></li>
+      <li><a href="https://talbotiq.com/services/ai-agent-bot-development/">AI agent &amp; bot development</a></li>
+      <li><a href="https://talbotiq.com/services/embedded-systems-edge-intelligence/">Embedded &amp; edge AI</a></li>
+      <li><a href="https://talbotiq.com/services/full-stack-development-ai-integration/">Full stack &amp; AI integration</a></li>
+    </ul></div>
+    <div><h3>company</h3><ul>
+      <li><a href="https://talbotiq.com/about-us/">About</a></li>
+      <li><a href="https://talbotiq.com/beyond-the-headlines/">Beyond the headlines</a></li>
+      <li><a href="https://talbotiq.com/contact-us/">Contact</a></li>
+      <li><a href="https://talbotiq.com/inquiry-now/">Make an enquiry</a></li>
+    </ul></div>
+  </div>
+  <div class="ftr__b">
+    <span>&copy; 2026 Talbotiq Technologies Sdn Bhd [1313215-V]</span>
+    <nav aria-label="Legal">
+      <a href="https://talbotiq.com/privacy-policy/">Privacy policy</a>
+      <a href="https://talbotiq.com">talbotiq.com</a>
+    </nav>
+  </div>
+</div></footer>
+
+<dialog class="cmd" id="cmd" aria-label="Find a product">
+    <div class="cmd__top" role="search">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor"
+        stroke-width="1.7" stroke-linecap="round" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="6.25"/><path d="M15.75 15.75 20 20"/></svg>
+      <input id="cmdQ" type="search" autocomplete="off" spellcheck="false"
+        placeholder="Search the seven products" aria-label="Search products">
+      <button class="cmd__x" type="button" id="cmdX" aria-label="Close">esc</button>
+    </div>
+    <div class="cmd__list" id="cmdList">
+      <p class="cmd__grp">Products</p>
+      <ul><li class="cmd__row" data-q="ai engine talbotiq ai engine the intelligence layer under every product intelligence one engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs pii before anything reaches a model, and answers from a knowledge base you load. every product is metered through it. model routing pii scrubbing knowledge base per-product metering api keys request logs">
+    <a class="cmd__hit" href="#c-ai-engine" style="--accent:#2E9E86">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3B4A52;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="8" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="14.125" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="20.25" y="5.5" width="3.75" height="11" rx="1.875" fill="var(--mk)"/>
+    <rect x="4" y="18" width="24" height="10" rx="3.25" fill="var(--mk-2)"/></svg></span>
+      <span class="cmd__t"><b>AI Engine</b><em>The intelligence layer under every product</em></span>
+      <span class="cmd__tag">Intelligence</span>
+      <span class="cmd__hint">06</span>
+    </a>
+    <a class="cmd__open" href="https://coe.talxone.com/dashboard/" target="_blank" rel="noopener"
+          aria-label="Open AI Engine">app<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+  </li><li class="cmd__row" data-q="mimic mimic screening intelligence, decided by humans people &amp; hiring mimic interviews every applicant the day they apply — across chat, voice, ai video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. it recommends. it never rejects anyone. six interview formats one weighted rubric evidence-linked scores bulk invitations interview pipelines audit history">
+    <a class="cmd__hit" href="#c-mimic" style="--accent:#0F7C93">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#0F7C93;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="15" rx="4.5" fill="var(--mk)"/>
+    <rect x="11" y="13" width="18" height="15" rx="4.5" fill="var(--mk-2)"/></svg></span>
+      <span class="cmd__t"><b>Mimic</b><em>Screening intelligence, decided by humans</em></span>
+      <span class="cmd__tag">People &amp; hiring</span>
+      <span class="cmd__hint">01</span>
+    </a>
+    <a class="cmd__open" href="https://talbotiq-9cc4e.web.app/" target="_blank" rel="noopener"
+          aria-label="Open Mimic">app<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+  </li><li class="cmd__row" data-q="recapr recapr minute taker the meeting, on the record knowledge &amp; work recapr transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. when someone contradicts a decision the team already made, it says so — and quotes both sides. live transcription decisions &amp; action items commitment tracker contradiction detection ask the record no bot to invite">
+    <a class="cmd__hit" href="#c-recapr" style="--accent:#3559C7">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#3559C7;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="5" y="9" width="4" height="14" rx="2" fill="var(--mk)"/>
+    <rect x="14" y="3.5" width="4" height="25" rx="2" fill="var(--mk)"/>
+    <rect x="23" y="11" width="4" height="10" rx="2" fill="var(--mk)"/>
+    <rect x="2.5" y="14.25" width="27" height="3.5" rx="1.75" fill="var(--mk-2)"/></svg></span>
+      <span class="cmd__t"><b>Recapr</b><em>The meeting, on the record</em></span>
+      <span class="cmd__tag">Knowledge &amp; work</span>
+      <span class="cmd__hint">02</span>
+    </a>
+    <a class="cmd__open" href="https://recapr-web-qxytyckrma-uc.a.run.app/" target="_blank" rel="noopener"
+          aria-label="Open Recapr">app<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+  </li><li class="cmd__row" data-q="nouscrm nouscrm sales crm opportunities, customers and what they owe revenue the sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard. opportunities by stage source attribution customers &amp; contacts invoices approvals rep targets">
+    <a class="cmd__hit" href="#c-nouscrm" style="--accent:#5A54B8">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#5A54B8;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="24" height="5.5" rx="2.75" fill="var(--mk)"/>
+    <rect x="7.5" y="13.25" width="17" height="5.5" rx="2.75" fill="var(--mk)" opacity=".58"/>
+    <rect x="11" y="21" width="10" height="5.5" rx="2.75" fill="var(--mk-2)"/></svg></span>
+      <span class="cmd__t"><b>NousCRM</b><em>Opportunities, customers and what they owe</em></span>
+      <span class="cmd__tag">Revenue</span>
+      <span class="cmd__hint">03</span>
+    </a>
+    <a class="cmd__open" href="https://salescrm-next-5iaoqvzvqq-el.a.run.app" target="_blank" rel="noopener"
+          aria-label="Open NousCRM">app<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+  </li><li class="cmd__row" data-q="lexerai lexerai document parser turn documents into structured data knowledge &amp; work reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local ocr as an automatic offline fallback. bring in bank statements and reconcile what it extracted against them. ai vision extraction offline ocr fallback any language currency conversion tamper checks reconciliation">
+    <a class="cmd__hit" href="#c-lexerai" style="--accent:#B2560C">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#B2560C;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><path d="M7 3.5h9.5L23 10v16.5a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5V6A2.5 2.5 0 0 1 7 3.5z"
+      fill="var(--mk)" opacity=".52"/>
+    <rect x="13.5" y="13.5" width="16.5" height="3.75" rx="1.875" fill="var(--mk-2)"/>
+    <rect x="13.5" y="20.25" width="11" height="3.75" rx="1.875" fill="var(--mk-2)" opacity=".62"/></svg></span>
+      <span class="cmd__t"><b>lexerai</b><em>Turn documents into structured data</em></span>
+      <span class="cmd__tag">Knowledge &amp; work</span>
+      <span class="cmd__hint">05</span>
+    </a>
+    <a class="cmd__open" href="https://docparser-748029981157.us-central1.run.app/" target="_blank" rel="noopener"
+          aria-label="Open lexerai">app<svg class="out" viewBox="0 0 12 12" width="11" height="11" fill="none"
+  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"
+  aria-hidden="true" focusable="false"><path d="M4 8 8.25 3.75"/>
+  <path d="M4.75 3.5h3.75v3.75"/></svg></a>
+  </li><li class="cmd__row" data-q="task manager task &amp; project management task manager plan, track and execute knowledge &amp; work tasks created, prioritised and assigned across boards, calendars and gantt views, with shared workspaces, in-task comments and file sharing. ai user triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity. boards, calendar &amp; gantt shared workspaces in-task comments timers &amp; recurring work slack, email &amp; calendar ai user triage">
+    <a class="cmd__hit" href="#c-task-manager" style="--accent:#7B54BE">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#7B54BE;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="3.5" y="4" width="19" height="19" rx="5.5" fill="var(--mk)" opacity=".5"/>
+    <path d="M10.5 17.5 L16.25 23.25 L28.5 7.5" fill="none" stroke="var(--mk-2)"
+      stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="cmd__t"><b>Task Manager</b><em>Plan, track and execute</em></span>
+      <span class="cmd__tag">Knowledge &amp; work</span>
+      <span class="cmd__hint">04</span>
+    </a>
+    <s class="cmd__off">no app</s>
+  </li><li class="cmd__row" data-q="pms pms in development knowledge &amp; work live on the talbotiq ai engine and in development. we will describe it here when there is something to describe.">
+    <a class="cmd__hit" href="#suite" style="--accent:#69787E">
+      <span class="cmd__chip"><svg class="mk" viewBox="0 0 32 32" width="26" height="26"
+    style="--mk:#69787E;--mk-2:#1F9A69" aria-hidden="true" focusable="false"><rect x="4.25" y="4.25" width="23.5" height="23.5" rx="6.5" fill="none"
+      stroke="var(--mk)" stroke-width="2.5" stroke-dasharray="5.5 4.5" stroke-linecap="round"/>
+    <circle cx="16" cy="16" r="3.75" fill="var(--mk-2)"/></svg></span>
+      <span class="cmd__t"><b>PMS</b><em>In development</em></span>
+      <span class="cmd__tag">Knowledge &amp; work</span>
+      <span class="cmd__hint">suite</span>
+    </a>
+    <s class="cmd__off">no app</s>
+  </li></ul>
+      <p class="cmd__grp">Elsewhere</p>
+      <ul><li class="cmd__row" data-q="ecosystem connect together lifecycle capture understand organise act meter shared">
+    <a class="cmd__hit" href="#connect">
+      <span class="cmd__chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+  stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+  <path d="M6 3.5h8l4.5 4.5V20a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z"/>
+  <path d="M8.5 12.5h7M8.5 16h4.5"/></svg></span>
+      <span class="cmd__t"><b>How the suite connects</b><em>One day&#39;s work, stage by stage</em></span>
+      <span class="cmd__tag">On this page</span>
+      <span class="cmd__hint">section</span>
+    </a>
+    <s class="cmd__off">no app</s>
+  </li><li class="cmd__row" data-q="suite everything all products list catalogue">
+    <a class="cmd__hit" href="#suite">
+      <span class="cmd__chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+  stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+  <path d="M6 3.5h8l4.5 4.5V20a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z"/>
+  <path d="M8.5 12.5h7M8.5 16h4.5"/></svg></span>
+      <span class="cmd__t"><b>The whole suite</b><em>All seven, side by side</em></span>
+      <span class="cmd__tag">On this page</span>
+      <span class="cmd__hint">section</span>
+    </a>
+    <s class="cmd__off">no app</s>
+  </li><li class="cmd__row" data-q="contact talk sales enquiry email phone call demo">
+    <a class="cmd__hit" href="https://talbotiq.com/contact-us/" target="_blank" rel="noopener">
+      <span class="cmd__chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false">
+  <path d="M13.5 5.5H19v5.5M19 5.5 11 13.5"/>
+  <path d="M17 15v3.5a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V8a.5.5 0 0 1 .5-.5H9.5"/></svg></span>
+      <span class="cmd__t"><b>Talk to us</b><em>Kuala Lumpur, Malaysia · +603 20 111 320</em></span>
+      <span class="cmd__tag">Company</span>
+      <span class="cmd__hint">opens</span>
+    </a>
+    <s class="cmd__off">no app</s>
+  </li><li class="cmd__row" data-q="about company who team story talbotiq">
+    <a class="cmd__hit" href="https://talbotiq.com/about-us/" target="_blank" rel="noopener">
+      <span class="cmd__chip"><svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true" focusable="false">
+  <path d="M13.5 5.5H19v5.5M19 5.5 11 13.5"/>
+  <path d="M17 15v3.5a.5.5 0 0 1-.5.5H6a.5.5 0 0 1-.5-.5V8a.5.5 0 0 1 .5-.5H9.5"/></svg></span>
+      <span class="cmd__t"><b>About TalbotIQ</b><em>Architecting the Intelligence Layer of Modern Businesses</em></span>
+      <span class="cmd__tag">Company</span>
+      <span class="cmd__hint">opens</span>
+    </a>
+    <s class="cmd__off">no app</s>
+  </li></ul>
+      <p class="cmd__none" id="cmdNone" hidden>Nothing matches that. The suite is seven products — try a category, or a word from what one of them does.</p>
+    </div>
+    <p class="cmd__foot">
+      <span><kbd>&uarr;</kbd><kbd>&darr;</kbd> move</span>
+      <span><kbd>&crarr;</kbd> go</span>
+      <span><kbd>esc</kbd> close</span>
+      <s id="cmdCount"></s>
+    </p>
+  </dialog>
+
+<script src="assets/js/vendor/lenis.min.js" defer></script>
+<script src="assets/js/app.js" defer></script>
+</body>
+</html>

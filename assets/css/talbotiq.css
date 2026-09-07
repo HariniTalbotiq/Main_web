@@ -1,0 +1,733 @@
+/* =============================================================================
+   TALBOTIQ — homepage
+   -----------------------------------------------------------------------------
+   The design is mockup-homepage.html: one display face doing all the talking,
+   hand-drawn marks landing on single words, flat band edges, and one
+   asymmetric corner. Structure follows odoo.com — a product grid high on the
+   page, then trust, then capability, then a closing offer.
+
+   The mockup curved the white page into the grey product band with a 96px SVG
+   arc. That is now a STRAIGHT edge — see the note on `.band` in §4. The cut
+   corner on `.caps` is a different device and is still there.
+
+   THE DISPLAY FACE IS MESHED DISPLAY, a high-contrast serif, self-hosted in
+   §0. The mockup used Caveat Brush, a brush script, and the swap is why §0 and
+   the .mark-hl block carry derivation notes: the marks were positioned against
+   a handwriting face's proportions and had to be re-derived against this one.
+
+   Everything from §1 to §12 is the mockup's own CSS, kept at its own values so
+   the page renders as designed. §13 onward is what a real page needs and a
+   mockup does not: the three nav panels, a menu that works on a phone, focus
+   states, and the markers that show which content is still a placeholder.
+   ========================================================================== */
+
+/* ---- 0 · THE DISPLAY FACE ----------------------------------------------
+   MESHED Display by Rajesh Rajput, self-hosted. Free for commercial use; the
+   licence forbids MODIFYING the files, so this is the vendor's own .woff2
+   copied verbatim out of the package — never subset or re-compressed. See
+   assets/fonts/README.md.
+
+   Only Bold is shipped because only Bold is used, and the @font-face declares
+   700 so the browser matches the real file instead of synthesising a bold from
+   something lighter. */
+@font-face {
+  font-family: "Meshed Display";
+  src: url("../fonts/MeshedDisplay-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --teal: #02A885;
+  --green: #027A5C;
+  --yellow: #F3E202;
+  --amber: #C48A00;
+  --blue: #1B7FC4;
+
+  --grey: #5D5B5B;
+  --ink: #1F2430;
+  --band: #F3F4F6;
+  --border: #E3E4E4;
+  --footer: #3A3A3A;
+
+  --dim: #6E6C6C;
+  --quiet: #8B8989;
+
+  /* The fallbacks are SERIFS now, not handwriting scripts: MESHED Display is a
+     high-contrast display serif, so if it fails to load a Didone-ish serif is
+     the near miss and Comic Sans would be a disaster. */
+  --f-hand: "Meshed Display", "Playfair Display", "Didot", "Bodoni MT", Georgia, serif;
+  --f-text: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --hdr-h: 72px;
+  --r: 5px;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+/* the header is sticky, so anything linked to by #id has to clear it */
+:target { scroll-margin-top: calc(var(--hdr-h) + 16px); }
+
+body {
+  margin: 0;
+  background: #fff;
+  color: var(--grey);
+  font-family: var(--f-text);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; }
+
+.hand {
+  font-family: var(--f-hand);
+  /* matches the one @font-face weight shipped, so nothing is synthesised */
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.08;
+  color: var(--ink);
+}
+
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 100;
+  background: var(--ink); color: #fff; padding: 12px 18px;
+  font-size: 15px; text-decoration: none; border-radius: 0 0 var(--r) 0;
+}
+.skip:focus { left: 0; }
+
+/* ---- 1 · HEADER --------------------------------------------------------- */
+header {
+  position: sticky; top: 0; z-index: 50;
+  background: #fff; height: var(--hdr-h);
+  display: flex; align-items: center;
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s;
+}
+header.stuck { border-bottom-color: var(--border); }
+
+.hdr {
+  max-width: 1320px; margin: 0 auto; padding: 0 32px; width: 100%;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px;
+}
+.logo { display: block; }
+.logo img { height: 40px; width: auto; display: block; }
+
+nav.mid { display: flex; gap: 34px; justify-content: center; align-items: center; }
+nav.mid > a,
+nav.mid > .navitem > button {
+  color: var(--ink); text-decoration: none;
+  font-family: var(--f-text); font-size: 15.5px; font-weight: 500;
+  white-space: nowrap;
+  background: none; border: 0; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+nav.mid > a:hover,
+nav.mid > .navitem > button:hover { color: var(--teal); }
+.car { font-size: 10px; opacity: .55; display: inline-block; vertical-align: 2px; }
+
+.hdr-right { display: flex; gap: 18px; justify-content: flex-end; align-items: center; }
+.hdr-right a.si {
+  color: var(--ink); text-decoration: none; font-size: 15.5px; font-weight: 500;
+  white-space: nowrap;
+}
+.hdr-right a.si:hover { color: var(--teal); }
+
+/* ---- 2 · BUTTONS -------------------------------------------------------- */
+.btn {
+  display: inline-block; border: 0; cursor: pointer; text-decoration: none;
+  font-family: var(--f-text); font-size: 15.5px; font-weight: 600;
+  padding: 11px 22px; border-radius: var(--r); white-space: nowrap;
+  transition: background .16s var(--ease), transform .16s var(--ease);
+}
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: var(--green); }
+.btn-ghost { background: var(--band); color: var(--ink); }
+.btn-ghost:hover { background: #E7E9EC; }
+.btn-white { background: #fff; color: var(--green); }
+.btn-outline-white {
+  background: transparent; color: #fff;
+  box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .75);
+}
+.btn-outline-white:hover { background: rgb(255 255 255 / .1); }
+.btn-lg { padding: 15px 30px; font-size: 17px; }
+
+/* ---- 3 · HERO ----------------------------------------------------------- */
+/* The bottom padding is NOT the mockup's. It was `74px 0 0` there, because the
+   subnote sat under the buttons and its own margin held the buttons clear of
+   the curve into the product band. With the subnote removed the buttons ended
+   up flush against that curve — measured at a 1px overlap — so the space the
+   subnote used to occupy is now stated directly. */
+.hero { text-align: center; padding: 74px 0 46px; position: relative; overflow: hidden; }
+h1.hand { font-size: 76px; margin: 0 0 26px; letter-spacing: -.01em; }
+
+/* The highlighter. The stroke is drawn BEHIND the words, so the text keeps its
+   own contrast and the mark reads as ink on top of paper.
+
+   THE VERTICAL NUMBERS ARE DERIVED, NOT EYEBALLED. A marker covers the
+   lowercase body of a word, not its whole line box, and where that body sits
+   depends entirely on the face. For MESHED Display Bold, measured off the
+   font itself:
+
+       ascent .724em   descent .197em   x-height .513em
+       line-height 1.08  ->  half-leading .079em
+       baseline      = .079 + .724 = .803em below the line-box top
+       x-height top  = .803 - .513 = .290em
+
+   so a stroke that starts a hair above the x-height and finishes a hair below
+   the baseline is top .24em, height .62em (ending at .86em). Both are in em,
+   so they hold at every size the hero uses — 76px, 62px and 44px — with no
+   per-breakpoint overrides.
+
+   These replaced `top: 24%; height: 78%`, which was tuned for Caveat Brush.
+   Against this face the same numbers painted from .53em to 1.02em — below the
+   baseline, under the letters rather than across them, reading as a thick
+   underline. Re-derive this block if the display face changes again. */
+.mark-hl { position: relative; display: inline-block; white-space: nowrap; }
+.mark-hl > span { position: relative; z-index: 2; }
+.mark-hl svg { position: absolute; left: -3%; top: .24em; width: 106%; height: .62em; z-index: 1; }
+
+.lede { font-size: 22px; line-height: 1.5; max-width: 23ch; margin: 0 auto 34px; color: var(--grey); }
+.lede b { color: var(--ink); font-weight: 600; }
+
+.cta-pair { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+/* The hero used to carry two more things under the buttons: a "Live in under
+   two weeks. See how" subnote, and a rotated pencilled aside out to the right
+   reading "8 products. 1 login." with an arrow pointing at it. Both were
+   removed, so `.subnote`, `.aside-note` and the arrow SVG went with them —
+   the hero is now the line, the lede and the two buttons, and nothing else.
+
+   The hero keeps `position: relative` and `overflow: hidden`: the curve into
+   the product band below still needs them. */
+
+/* ---- 4 · CURVED DIVIDER + PRODUCT BAND ---------------------------------- */
+/* A STRAIGHT EDGE. The mockup ran a 96px-tall SVG here that curved the white
+   page into this grey band — two stacked paths, one grey and one white, with
+   `preserveAspectRatio="none"` so the arc stretched to any width. It is gone,
+   and with it the only reason this band had no top padding: the curve WAS the
+   top padding, and the tiles sat under it. So the space is stated directly.
+
+   The arc is still in `design/mockup-homepage.html` if it is ever wanted back:
+   restore the two paths, put `.curve` first inside `.band`, and set this
+   padding back to `0 0 96px`.
+
+   The cut corner on the capability band further down (`.caps`) is a separate
+   device and was left alone. */
+.band { background: var(--band); position: relative; padding: 84px 0 96px; }
+
+.grid8 {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px 26px;
+  max-width: 1060px; margin: 0 auto;
+}
+.tile { text-align: center; text-decoration: none; display: block; }
+.tile .card {
+  width: 104px; height: 104px; margin: 0 auto 16px;
+  background: #fff; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.tile:hover .card { transform: translateY(-4px); }
+.tile .nm {
+  display: block; font-size: 17.5px; font-weight: 600;
+  color: var(--ink); margin-bottom: 5px;
+}
+.tile .ds {
+  display: block; font-size: 14.5px; line-height: 1.45;
+  color: var(--dim); max-width: 20ch; margin: 0 auto;
+}
+/* a tile with no application to open yet is still a tile, but it does not
+   pretend to be a door */
+.tile[aria-disabled="true"] { cursor: default; }
+.tile[aria-disabled="true"]:hover .card { transform: none; }
+
+.band .allp { text-align: right; max-width: 1060px; margin: 44px auto 0; padding: 0 4px; }
+.band .allp a { color: var(--green); font-weight: 600; text-decoration: none; font-size: 16.5px; }
+.band .allp a:hover { text-decoration: underline; }
+
+/* ---- 5 · GENERIC SECTIONS ----------------------------------------------- */
+section { padding: 96px 0; }
+h2.hand { font-size: 52px; margin: 0 0 22px; text-align: center; }
+h2.hand.left { text-align: left; }
+.sec-lede { font-size: 19px; max-width: 66ch; margin: 0 auto; text-align: center; line-height: 1.6; }
+.sec-lede b { color: var(--ink); font-weight: 600; }
+
+/* the three annotation wrappers: a ruled underline, a squiggle, a lasso */
+.u-line, .u-squig, .u-lasso { position: relative; display: inline-block; white-space: nowrap; }
+.u-line svg, .u-squig svg { position: absolute; left: 0; bottom: -6px; width: 100%; height: 14px; }
+.u-lasso svg { position: absolute; left: -8%; top: -14%; width: 116%; height: 128%; z-index: -1; }
+
+/* ---- 6 · ECOSYSTEM BAND ------------------------------------------------- */
+.eco {
+  background: #EAF7F3;
+  border-top: 1px solid #B9E4D8; border-bottom: 1px solid #B9E4D8;
+  padding: 74px 0;
+}
+.eco .eyebrow {
+  text-align: center; font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--green); font-weight: 600; margin-bottom: 14px;
+}
+.eco p { max-width: 74ch; margin: 0 auto; text-align: center; font-size: 18px; line-height: 1.62; }
+
+/* ---- 7 · TRUSTED BY ----------------------------------------------------- */
+.trust { padding: 64px 0 72px; }
+.trust .lbl { text-align: center; font-size: 15px; color: var(--quiet); margin-bottom: 30px; }
+/* ---- the static row (loop disabled, or no JS yet) ------------------- */
+.logos {
+  display: flex; gap: 30px 56px; margin: 0; padding: 0; list-style: none;
+  justify-content: center; align-items: center; flex-wrap: wrap;
+}
+
+/* =============================================================================
+   LOGO LOOP — React Bits' LogoLoop CSS, adapted
+   -----------------------------------------------------------------------------
+   Upstream class names are kept so this stays recognisably that component;
+   `assets/js/logo-loop.js` drives it. Three things are different:
+
+     · the vertical variant is gone, because nothing here scrolls vertically
+     · the fade colour has no dark-mode `--logoloop-fadeColorAuto`, because
+       this page has one theme and the colour is set explicitly from home.js
+     · sizing goes through this row's own `.logo` box, so `--s` still works
+       and the four mismatched lockups stay optically level
+
+   The row is CENTRED until the script reports `data-ready`, so the one
+   server-rendered sequence looks deliberate rather than stuck at the left if
+   the script is slow, blocked or absent.
+   ========================================================================== */
+.logoloop {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  --logoloop-gap: 32px;
+}
+
+.logoloop__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  user-select: none;
+  position: relative;
+  z-index: 0;
+}
+.logoloop:not([data-ready]) .logoloop__track {
+  width: 100%;
+  justify-content: center;
+}
+
+.logoloop__list {
+  display: flex;
+  align-items: center;
+  margin: 0; padding: 0; list-style: none;
+}
+
+.logoloop__item {
+  flex: 0 0 auto;
+  margin-right: var(--logoloop-gap);
+  line-height: 1;
+}
+
+/* the box that levels four different lockups — the same rule the static row
+   used, now on the loop's own item */
+.logoloop__item.logo,
+.logos .logo {
+  --s: 1;
+  display: flex; align-items: center; justify-content: center;
+  height: calc(42px * var(--s));
+}
+
+.logoloop__item img,
+.logos img {
+  height: 100%; width: auto; max-width: 200px; object-fit: contain;
+  display: block;
+  -webkit-user-drag: none;
+  /* THESE ARE SHOWN IN FULL COLOUR, and that is a correction rather than a
+     default. The usual client-wall treatment is `grayscale(1)` at reduced
+     opacity, to keep a row of foreign brand colours from shouting over the
+     page. It was tried here and it failed on these four specifically: two of
+     them — Pomod'Oro and Namaste India — are gold wordmarks, and greyscaling
+     gold produces a near-white that all but disappeared against this band.
+     A client logo nobody can read defeats the only job this section has.
+
+     The marks are muted enough as a set (two golds, a grey-and-green, a
+     grey-and-red) that full colour sits quietly anyway. For the calmer look,
+     add `filter: grayscale(1) opacity(.62)` here and clear it on hover — but
+     check the gold two before keeping it. */
+  opacity: .9;
+  transition: opacity .22s var(--ease), transform .3s cubic-bezier(.4, 0, .2, 1);
+}
+.logoloop__item:hover img,
+.logos .logo:hover img { opacity: 1; }
+
+.logoloop--scale-hover .logoloop__item { overflow: visible; }
+.logoloop--scale-hover .logoloop__item:hover img { transform: scale(1.12); transform-origin: center center; }
+
+/* The edge fades. `pointer-events: none` matters — these sit above the track
+   and would otherwise eat the hover that pauses it. */
+.logoloop--fade::before,
+.logoloop--fade::after {
+  content: ''; position: absolute; top: 0; bottom: 0;
+  width: clamp(24px, 8%, 120px);
+  pointer-events: none; z-index: 10;
+}
+.logoloop--fade::before {
+  left: 0;
+  background: linear-gradient(to right, var(--logoloop-fadeColor, #fff) 0%, rgb(255 255 255 / 0) 100%);
+}
+.logoloop--fade::after {
+  right: 0;
+  background: linear-gradient(to left, var(--logoloop-fadeColor, #fff) 0%, rgb(255 255 255 / 0) 100%);
+}
+
+/* Reduced motion: the script never starts the loop, so the track is already
+   still. This pins it at the origin and re-centres the row, so it reads as a
+   plain line of logos rather than a marquee frozen mid-scroll. */
+@media (prefers-reduced-motion: reduce) {
+  .logoloop__track {
+    transform: translate3d(0, 0, 0) !important;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .logoloop__list ~ .logoloop__list { display: none; }
+  .logoloop__item img { transition: none !important; }
+}
+
+/* the name-plate fallback, for a client with no logo file yet */
+.logos .plate,
+.logoloop .plate {
+  width: 132px; height: 34px; background: #C9C7C7; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: #fff; font-weight: 600; letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+/* ---- 8 · CAPABILITY CARDS ----------------------------------------------- */
+/* The one asymmetric corner on the page. It is the reason this band reads as
+   a card the page sits on rather than another full-bleed stripe. */
+.caps { background: var(--band); border-radius: 0 90px 0 0; padding: 88px 0 96px; }
+.capgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; }
+.cap { background: #fff; border-radius: 12px; padding: 30px 30px 32px; position: relative; }
+.cap h3 { font-size: 20px; font-weight: 600; color: var(--ink); margin: 0 0 10px; padding-right: 44px; }
+.cap p { margin: 0; font-size: 15.5px; line-height: 1.6; }
+.cap.wide { grid-column: span 2; }
+.cap .star { position: absolute; right: 22px; top: 20px; }
+.cap .star .glow {
+  position: absolute; right: -8px; top: -8px; width: 52px; height: 52px;
+  border-radius: 50%; background: #EDEEF0;
+}
+.cap .star svg { position: relative; }
+
+/* ---- 9 · WHY LEAD WITH TALBOTIQ ---------------------------------------- */
+/* This replaced the mockup's testimonial slot — a dashed box that said out
+   loud it had no quote to show. The three claims that sit here now are text
+   only: the source design put a photograph above each one and none are used.
+
+   Three columns of centred text rather than the cards used further up. The
+   capability band above is already a grid of white cards on grey, and a second
+   card grid one section later would read as the same idea twice. */
+.why { padding: 92px 0; }
+.whygrid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 44px 30px; margin: 54px auto 0; max-width: 1060px;
+  text-align: center;
+}
+.whyitem h3 {
+  font-size: 22px; font-weight: 600; color: var(--ink);
+  margin: 0 0 12px; line-height: 1.3; letter-spacing: -.01em;
+}
+.whyitem p { margin: 0; font-size: 16px; line-height: 1.65; }
+
+/* ---- 10 · BLOG ---------------------------------------------------------- */
+/* The cards carry real published articles now, so the thumbnail is a real
+   photograph rather than the mockup's gradient block. Everything else keeps
+   the mockup's measurements. */
+.blog {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 40px 26px; margin-top: 44px;
+}
+.post { text-decoration: none; display: flex; flex-direction: column; }
+.post .thumb {
+  height: 158px; width: 100%; border-radius: 11px; margin-bottom: 14px;
+  /* the source images are all 3:2 and wider than the card, so they are
+     cropped to the band rather than letterboxed into it */
+  object-fit: cover; display: block;
+  background: var(--band);
+  transition: transform .2s var(--ease);
+}
+.post .thumb--none { background: linear-gradient(135deg, #0FBF98, var(--green)); }
+a.post:hover .thumb { transform: translateY(-3px); }
+
+/* date · publisher. Small, mono-ish in tone, and above the headline — a
+   reader scanning a row of cards wants to know how current it is first. */
+.post .pmeta {
+  margin: 0 0 7px; font-size: 13px; line-height: 1.4; color: var(--quiet);
+  letter-spacing: .01em;
+}
+.post h3 { font-size: 18.5px; font-weight: 600; color: var(--ink); margin: 0 0 8px; line-height: 1.35; }
+.post p { margin: 0; font-size: 15px; line-height: 1.55; color: var(--dim); }
+a.post:hover h3 { color: var(--green); }
+
+/* The publisher's summaries run from 250 to 300 characters, which makes a row
+   of cards ragged. Clamped to four lines for LAYOUT only — the full text the
+   publisher wrote stays in the markup, so nothing is edited away, and the card
+   links to the article for the rest of it. */
+.post > p:last-child {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+/* the blog's "all articles" link sits left, under the grid, unlike the
+   product band's which is right-aligned against the tile block */
+.allp--blog { text-align: left; margin-top: 36px; max-width: none; }
+
+/* ---- 11 · CLOSING CTA --------------------------------------------------- */
+.cta { background: var(--teal); color: #fff; text-align: center; padding: 82px 0; }
+.cta h2 { color: #fff; font-size: 50px; margin: 0 0 28px; }
+/* This line was fine print in the mockup — 15px at 85% white, sized for
+   "Malaysia-based team · Response within one business day". It now carries the
+   company's creed, which is a statement rather than a footnote, so it is a
+   little larger and fully opaque. Still set in the body face, not the display
+   one: the mission heading upstairs already says this sentence loudly, and
+   saying it loudly twice would be shouting. Revert to `15px` and `/ .85` for
+   the mockup's weighting. */
+.cta .fine {
+  margin-top: 26px; font-size: 18px; line-height: 1.5; color: #fff;
+  max-width: 34ch; margin-inline: auto;
+}
+
+/* ---- 12 · FOOTER -------------------------------------------------------- */
+footer { background: var(--footer); color: #C9C7C7; padding: 60px 0 0; font-size: 15px; }
+footer img { height: 38px; width: auto; margin-bottom: 26px; }
+.fgrid { display: grid; grid-template-columns: 1.15fr 1fr 1fr .9fr 1.05fr; gap: 36px; }
+.fcol h4 {
+  font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase;
+  margin: 0 0 16px; font-weight: 600; padding-bottom: 9px;
+}
+/* five columns, five different rules — the device that stops the footer
+   reading as one undifferentiated block of links */
+.fcol:nth-child(1) h4 { color: #3FD4B0; border-bottom: 2px solid #3FD4B0; }
+.fcol:nth-child(2) h4 { color: #8FD6C4; border-bottom: 2px solid #8FD6C4; }
+.fcol:nth-child(3) h4 { color: #E8D86A; border-bottom: 2px solid #E8D86A; }
+.fcol:nth-child(4) h4 { color: #9FB8CC; border-bottom: 2px solid #9FB8CC; }
+.fcol:nth-child(5) h4 { color: #D8C9A0; border-bottom: 2px solid #D8C9A0; }
+.fcol a, .fcol span.soon { display: block; color: #C9C7C7; text-decoration: none; padding: 5px 0; font-size: 15px; }
+.fcol a:hover { color: #fff; }
+.fcol .book { color: #3FD4B0; font-weight: 600; }
+
+.news {
+  border-top: 1px solid #4E4C4C; margin-top: 50px; padding: 34px 0;
+  display: flex; gap: 28px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+}
+.news p { margin: 0; max-width: 46ch; font-size: 15px; }
+.news p b { color: #fff; display: block; font-size: 16.5px; margin-bottom: 4px; font-weight: 600; }
+.newsform { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.newsform input {
+  border: 0; border-radius: var(--r); padding: 12px 16px; width: 280px;
+  font-family: var(--f-text); font-size: 15px;
+}
+.newsform input:disabled { background: #575555; color: #9E9C9C; }
+.newsform .btn[aria-disabled="true"] { background: #575555; color: #9E9C9C; cursor: default; }
+
+.legal {
+  border-top: 1px solid #4E4C4C; padding: 24px 0 40px; font-size: 14px; color: #9E9C9C;
+  display: flex; gap: 20px; justify-content: space-between; flex-wrap: wrap;
+}
+.legal a { color: #9E9C9C; text-decoration: none; }
+.legal a:hover { color: #fff; }
+
+/* =============================================================================
+   BEYOND THE MOCKUP
+   The mockup drew a caret on three nav items but had nowhere for them to go,
+   had no menu below 820px, and had no focus states. A shipped page needs all
+   three.
+   ========================================================================== */
+
+/* ---- 13 · NAV PANELS ---------------------------------------------------- */
+.navitem { position: relative; display: flex; align-items: center; }
+nav.mid > .navitem > button[aria-expanded="true"] { color: var(--teal); }
+nav.mid > .navitem > button[aria-expanded="true"] .car { transform: rotate(180deg); }
+.car { transition: transform .18s var(--ease); }
+
+/* Anchored under the whole header rather than under the button, so all three
+   panels open on the same line and the bar reads as one surface. */
+.panel {
+  position: fixed; left: 0; right: 0; top: var(--hdr-h);
+  background: #fff; border-bottom: 1px solid var(--border);
+  box-shadow: 0 22px 44px -26px rgb(31 36 48 / .26);
+  z-index: 49;
+}
+.panel[hidden] { display: none; }
+.panel > .wrap { padding-block: 30px 26px; }
+
+.pgrid { display: grid; gap: 8px 26px; }
+.pgrid--products { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pgrid--solutions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pgrid--company { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.pitem {
+  display: flex; gap: 13px; align-items: flex-start;
+  padding: 11px 12px; border-radius: 9px; text-decoration: none;
+  transition: background .14s var(--ease);
+}
+a.pitem:hover { background: var(--band); }
+.pitem .pico {
+  flex: 0 0 38px; height: 38px; border-radius: 10px; background: var(--band);
+  display: flex; align-items: center; justify-content: center;
+}
+.pitem .ptx { min-width: 0; }
+.pitem .pn { display: block; font-size: 15.5px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+.pitem .pd { display: block; font-size: 13.5px; line-height: 1.45; color: var(--dim); margin-top: 3px; }
+
+.pfoot {
+  border-top: 1px solid var(--border); background: var(--band);
+}
+.pfoot > .wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 13px; font-size: 14px; color: var(--dim); flex-wrap: wrap;
+}
+.pfoot a { color: var(--green); font-weight: 600; text-decoration: none; }
+.pfoot a:hover { text-decoration: underline; }
+
+/* ---- 14 · PLACEHOLDER + UNLINKED MARKERS -------------------------------- */
+/* A destination that does not exist yet renders as text with this marker
+   rather than as a link that 404s. It is deliberately quiet — the reader who
+   does not care never notices it. */
+.soon { color: inherit; }
+.soon::after {
+  content: "soon"; margin-left: 7px;
+  font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--quiet); vertical-align: 1.5px;
+}
+.panel .soon { display: block; }
+
+/* A product that IS live but has no public front door — the AI Engine, whose
+   console is an internal surface. It reads as ordinary text: no marker,
+   because there is nothing pending about it, and no link, because there is
+   nowhere public to send anyone. */
+.nolink { color: inherit; }
+.fcol .nolink { display: block; padding: 5px 0; font-size: 15px; }
+.drawer .nolink { display: block; padding: 9px 0; font-size: 16.5px; font-weight: 500; color: var(--ink); }
+
+/* ---- 15 · MOBILE MENU --------------------------------------------------- */
+.burger {
+  display: none; width: 42px; height: 42px; margin-right: -8px;
+  background: none; border: 0; cursor: pointer;
+  place-items: center; padding: 0;
+}
+.burger i, .burger i::before, .burger i::after {
+  display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 2px;
+  transition: transform .2s var(--ease), opacity .16s;
+}
+.burger i::before, .burger i::after { content: ""; position: absolute; }
+.burger i::before { transform: translateY(-6px); }
+.burger i::after { transform: translateY(6px); }
+.burger[aria-expanded="true"] i { transform: rotate(45deg); }
+.burger[aria-expanded="true"] i::before { opacity: 0; }
+.burger[aria-expanded="true"] i::after { transform: rotate(-90deg); }
+
+.drawer {
+  position: fixed; inset: var(--hdr-h) 0 0; z-index: 48;
+  background: #fff; overflow-y: auto;
+  padding: 18px 32px 48px;
+  display: none;
+}
+.drawer[data-open="true"] { display: block; }
+.dgrp { border-bottom: 1px solid var(--border); padding: 6px 0 14px; }
+.dgrp > h4 {
+  font-size: 12.5px; letter-spacing: .13em; text-transform: uppercase;
+  color: var(--quiet); font-weight: 600; margin: 14px 0 6px;
+}
+.drawer a, .drawer .soon {
+  display: block; padding: 9px 0; color: var(--ink);
+  text-decoration: none; font-size: 16.5px; font-weight: 500;
+}
+.drawer .dcta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 22px; }
+.drawer .dcta .btn { flex: 1 1 auto; text-align: center; }
+
+/* ---- 16 · FOCUS + MOTION ------------------------------------------------ */
+:focus-visible {
+  outline: 2.5px solid var(--teal);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+.btn-white:focus-visible, .btn-outline-white:focus-visible, .cta :focus-visible { outline-color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* ---- 17 · RESPONSIVE ---------------------------------------------------- */
+@media (max-width: 1080px) {
+  .grid8 { grid-template-columns: repeat(3, 1fr); }
+  .capgrid { grid-template-columns: repeat(2, 1fr); }
+  .fgrid { grid-template-columns: repeat(3, 1fr); }
+  .pgrid--products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  h1.hand { font-size: 62px; }
+}
+
+@media (max-width: 900px) {
+  .pgrid--products, .pgrid--solutions, .pgrid--company { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Below this the centre nav is gone, so the header becomes logo + actions and
+   the panels are replaced by one drawer holding all of them.
+
+   The mockup put this at 820px, but it was drawn at ~1900px and never tested
+   in between: five nav items at 34px gaps, plus "Sign in" and a filled
+   button, start wrapping the header at about 900px. So the drawer takes over
+   at 1000px, while there is still room for it to look deliberate. */
+/* THE HEADER ONLY. The nav has to give up before the CONTENT does — five nav
+   items plus two actions run out of room around 900px, while a three-column
+   card grid is still perfectly comfortable there. So this block swaps the nav
+   for the drawer and touches nothing else; the content keeps its desktop
+   layout down to 820px in the next block.
+
+   (These were one block at 820px, which is how the mockup had it. Raising it
+   to 1000px for the nav dragged the phone content layout up with it and gave
+   tablets a single-column blog. Two concerns, two breakpoints.) */
+@media (max-width: 1000px) {
+  nav.mid { display: none; }
+  .panel { display: none !important; }
+  .burger { display: grid; }
+  .hdr { grid-template-columns: 1fr auto; }
+  .hdr-right { gap: 12px; }
+  .hdr-right a.si { display: none; }
+}
+
+/* THE CONTENT. Everything stacks here. */
+@media (max-width: 820px) {
+  h1.hand { font-size: 44px; }
+  h2.hand { font-size: 36px; }
+  .cta h2 { font-size: 36px; }
+  .grid8 { grid-template-columns: repeat(2, 1fr); }
+  .capgrid, .blog { grid-template-columns: 1fr; }
+  .whygrid { grid-template-columns: 1fr; gap: 34px; margin-top: 38px; }
+  .why { padding: 68px 0; }
+  .cap.wide { grid-column: span 1; }
+  .fgrid { grid-template-columns: repeat(2, 1fr); }
+  .caps { border-radius: 0 50px 0 0; }
+  section { padding: 68px 0; }
+  .band { padding: 56px 0 68px; }
+  .wrap { padding: 0 22px; }
+  .drawer { padding-inline: 22px; }
+  .newsform input { width: 100%; }
+  .newsform { width: 100%; }
+}
+
+/* Two cards rather than one from tablet down to the phone breakpoint — a
+   single column of 8 articles is a very long scroll. */
+@media (min-width: 640px) and (max-width: 820px) {
+  .blog { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 460px) {
+  h1.hand { font-size: 36px; }
+  .hdr-right .btn { padding: 10px 15px; font-size: 14.5px; }
+  .grid8 { gap: 26px 16px; }
+  .logos { gap: 26px; }
+}
