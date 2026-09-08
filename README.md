@@ -112,12 +112,11 @@ line wraps is a mark in the wrong place.
 | `index.html` | Generated output. Overwritten on every build. |
 | `assets/css/talbotiq.css` | The whole design system. §1–§12 is the mockup's own CSS; §13+ is what a shipped page needs and a mockup does not. |
 | `assets/js/app.js` | Three things: the header's hairline, the three nav panels, the mobile drawer. |
-| `assets/js/logo-loop.js` | The "Trusted by" marquee — React Bits' LogoLoop, ported to vanilla JS. |
 | `assets/js/stage.js` | **The eclipse, the signal and the convergence.** One fixed canvas, three scroll windows. Decorative; the page is complete without it. |
 | `assets/js/scenes.js` | **The constellation and the black hole.** Two section-local canvases. The constellation runs under reduced motion and on phones, deliberately. |
 | `design/mockup-homepage.html` | The design reference. |
 | `research/RESEARCH.md` | **The evidence log.** Every product claim traces to a line here. |
-| `assets/brand/clients/` | The four "Trusted by" logos, plus a README on how they were prepared. |
+| `assets/brand/clients/` | The four client logos and a README on how they were prepared. **Unused** — the "Trusted by" row was removed from the homepage; kept in case the row returns. |
 | `assets/fonts/` | The self-hosted display face and its licence. |
 | `.archive/v1-chapters/` | The previous design, complete and still buildable. |
 
@@ -137,8 +136,8 @@ rename stays visible:
 | Task Manager | tasca |
 | lexerai | Document Parser |
 | TalbotIQ AI Engine | Private AI Engine |
-| PMS | Axiom |
-| HRMS *(was hidden)* | HRMS *(shipped)* |
+| PMS | ERP |
+| HRMS *(was hidden)* | ATS *(shipped)* |
 
 ## Why lead with Talbotiq
 
@@ -180,67 +179,6 @@ at each of fifteen call sites silently became wrong, so the site started
 opening its own pages in new tabs. Centralising the decision means the next
 destination that moves cannot reintroduce it.
 
-## The logo loop
-
-The "Trusted by" row scrolls as an infinite marquee. It is **React Bits'
-`<LogoLoop />`** (reactbits.dev), ported to vanilla JS in
-`assets/js/logo-loop.js`. Tune it in `home.js` → `LOGO_LOOP`; the prop names
-match the original.
-
-### Why a port instead of the component
-
-This site has no React, no bundler and no `package.json` — `node build.js`
-stamps data into one HTML file and that is the entire toolchain. Adding React +
-ReactDOM to render one row of four logos would have been a larger change than
-the row, and would have cost the "no framework, no runtime dependencies"
-property the rest of this README depends on. So the component's *behaviour* was
-reproduced instead.
-
-Kept from upstream: the DOM shape (`.logoloop > __track > __list > li`), the
-class names (so the CSS is upstream's CSS), the animation model (one rAF loop,
-exponential smoothing toward a target velocity, `translate3d` on the track,
-offset wrapped modulo the measured sequence width), the constants
-(`SMOOTH_TAU 0.25`, `MIN_COPIES 2`, `COPY_HEADROOM 2`), the sizing rule (clone
-the sequence `ceil(container / sequence) + 2` times, remeasure on resize, wait
-for images first) and the hover contract (`hoverSpeed` becomes the target while
-hovered, `0` meaning pause).
-
-Dropped as unused: the vertical directions (`up`/`down`), `renderItem`, and the
-React-only plumbing. Horizontal is the one axis this row needs.
-
-Two things were improved rather than copied:
-
-- **It degrades without JavaScript.** The server renders exactly ONE real
-  sequence and the script clones it. If the script never runs, the row is a
-  plain centred line of logos — which is what this section was before the loop.
-  The React component renders nothing without React.
-- **Reduced motion stops the loop, not just the transform.** Upstream pins the
-  track with `transform: …!important` in CSS while the rAF loop keeps running
-  and keeps writing transforms that CSS then overrides. Here the loop is never
-  started, so it costs nothing.
-
-It also stops when scrolled out of view or the tab is hidden, and pauses on
-keyboard focus as well as hover — the logos are links, and one that slides away
-from the pointer is one nobody clicks.
-
-### Verified behaviour
-
-Driven with a synthetic clock, since a hidden document suspends `rAF`:
-
-| Check | Result |
-| --- | --- |
-| Easing curve | 29.9px travelled in the first second at `speed: 40`; the analytic value for `SMOOTH_TAU 0.25` is 30.2px |
-| Steady state | 0.667px/frame at 16.7ms = exactly 40px/s |
-| Hover | 0.002px/frame — a standstill — and resumes on leave |
-| Wrap | jumps −946.9 → −0.6, exactly the 947px sequence width, so the seam is invisible |
-| Copies | 3 for a 947px sequence, all clones `aria-hidden` |
-
-### Attribution
-
-`assets/js/logo-loop.js` credits the upstream project in its header. **Confirm
-React Bits' licence and attribution terms before this page goes public** — that
-is the upstream project's call, not something this repo can assert.
-
 ## The drawing
 
 The page is a drawing of the suite that assembles itself as you read it. There
@@ -258,7 +196,7 @@ stops at that section's edges.
 
 `build.js` emits `#stage-data` from `products.js`, and the field that matters is
 **`live`, which is `bus.served`**. Three products are on the AI Engine today, so
-**three traces are drawn** — Mimic and Recapr solid, Axiom dashed because it is
+**three traces are drawn** — Mimic and Recapr solid, ERP dashed because it is
 wired but not shipped. The other four get **nothing**: not a faint line, not a
 dotted courtesy one. The absence is the statement, and a hairline drawn for
 balance would reprint the claim this page already retired — eight applications
@@ -274,8 +212,8 @@ sideways, down a column rule, along the row rule on their own lane, and in to
 the hub's near face. No trace ever crosses a card or a caption.
 
 That is not decoration. The first version ran a bowed curve from each product
-straight to the engine, which put the Mimic trace through the words *"HRMS / The
-people platform"*. A diagram that crosses its own labels is one that was drawn
+straight to the engine, which put the Mimic trace through the words *"ATS /
+Requisition to signed offer"*. A diagram that crosses its own labels is one that was drawn
 without looking.
 
 **The whole drawing is derived from the grid that is actually on screen.** The
@@ -524,8 +462,8 @@ every product tile, the Products nav panel, the drawer and the footer.
 | Tile on the homepage | Page | The page calls it |
 | --- | --- | --- |
 | Mimic | `products/mimic.html` | Mimic |
-| HRMS | `products/hrms.html` | HRMS |
-| Axiom | `products/axiom.html` | Axiom |
+| ATS | `products/ats.html` | ATS |
+| ERP | `products/erp.html` | ERP |
 | Sales CRM | `products/nouscrm.html` | **NousCRM** |
 | tasca | `products/tasca.html` | tasca |
 | Recapr | `products/recapr.html` | Recapr |
@@ -533,7 +471,7 @@ every product tile, the Products nav panel, the drawer and the footer.
 | Private AI Engine | `products/vawlt.html` | **Vawlt** |
 
 Tiles resolve through `tileHref()` in `build.js`, which now prefers a local
-page over anything external, so all eight are linked — Axiom and Vawlt had no
+page over anything external, so all eight are linked — ERP and Vawlt had no
 destination at all before. Local pages open in the **same tab**; only external
 links get `target="_blank"`.
 
@@ -792,7 +730,8 @@ Ten entries are in that state today — Leadership, Memberships, Careers, all
 four Resources, AI Governance & Security, Terms and Security.
 
 There are two different reasons a product has no link and the page does not
-confuse them. **Axiom** is marked `soon` because it is not built. The **Private
+confuse them. A product is marked `soon` when it is not built — nothing is
+today, since all eight tiles resolve to a local page. The **Private
 AI Engine** is live and metering the rest of the suite, but its console is an
 internal admin surface, so it renders unlinked and *unmarked* — calling it
 "soon" would be false.

@@ -4,7 +4,7 @@
    This is the ONLY file you edit to change the landing page's product content.
    Then run:  node build.js
    -----------------------------------------------------------------------------
-   TO FILL IN A PENDING PRODUCT (e.g. PMS):
+   TO FILL IN A PENDING PRODUCT (e.g. ERP):
      1. set  url:      'https://…'
      2. set  status:   'live'
      3. write position / description / features from the REAL app
@@ -324,29 +324,30 @@ const PRODUCTS = [
     },
   },
 
-  /* ------------------------------------------------------------------- HRMS */
+  /* -------------------------------------------------------------------- ATS */
   {
-    slug: 'hrms',
+    slug: 'ats',
     chapter: null,
     hidden: true,   // set false (and give it a `chapter`) to publish it
-    name: 'TalbotIQ HRMS',
-    short: 'HRMS',
+    name: 'TalbotIQ ATS',
+    short: 'ATS',
     category: 'people',
     status: 'live',
     access: 'app',
-    url: 'https://hrms-app-production-6e3e.up.railway.app/',
+    url: null,
+    page: 'https://talbotiq.com/products/ats',
     accent: '#12857A',
     bus: { served: null, headroom: null },
-    position: 'The people workspace, through to payday',
+    position: 'Requisition to signed offer',
     description:
-      'Employees, attendance and shifts, leave with balances and a team calendar, and expense claims — all feeding one approvals inbox. Payroll runs the whole way through to payslips, bank payments and Malaysian statutory: EPF, SOCSO, EIS and PCB.',
-    features: ['Employee directory', 'Attendance & shifts', 'Leave & balances', 'Claims', 'One approvals inbox', 'Payroll & payslips', 'EPF · SOCSO · EIS · PCB'],
-    cta: 'Open HRMS',
-    evidence: 'Unbundled src/config/routes.js — the annotated route table. Payroll suite verified route-by-route. NOT claimed: recruitment, performance reviews, employee creation (route removed, no form behind it).',
+      'Seven modules and one administration area, on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms who bill clients \u2014 the same product, with one module swapped.',
+    features: ['Seven-stage pipeline', 'Manpower requisitions & approval routing', 'Client accounts, contracts & rate cards', 'Candidate database with parsed CVs', 'Resume parser, six named stages', 'Weighted matching across five criteria', 'Offer letters, nineteen signable fields'],
+    cta: 'Book a demo',
+    evidence: 'products/ats.html \u2014 the product page, written from the application itself. Seven modules, two modes, and the one module that swaps between them (Manpower Requisitions in Hire Mode, Customer Management in Agency Mode). NOT claimed: sourcing, and any automated rejection \u2014 the AI ranks, parses and drafts, and a named person takes every decision.',
     peek: {
-      chrome: 'Payroll run',
-      tabs: ['My space', 'Employees', 'Attendance', 'Leave', 'Payroll'], on: 4,
-      kv: [['Statutory', 'EPF · SOCSO · EIS · PCB'], ['Payslips', 'generated per run'], ['Bank payments', 'yes']],
+      chrome: 'Pipeline',
+      tabs: ['Dashboard', 'Jobs', 'Candidates', 'Offers', 'Matching'], on: 1,
+      kv: [['Modes', 'Hire \u00b7 Agency'], ['Pipeline', 'seven stages'], ['Auto-import', 'never']],
     },
   },
 
@@ -389,29 +390,33 @@ const PRODUCTS = [
     },
   },
 
-  /* -------------------------------------------------------------------- PMS */
+  /* -------------------------------------------------------------------- ERP */
   {
-    slug: 'pms',
-    chapter: null,        // real, but nothing about it is describable yet, and
-                          // a chapter saying so is not worth a reader's time
-    story: { kind: 'pms', arc: null },
-    name: 'PMS',
-    short: 'PMS',
-    category: 'knowledge',
-    status: 'pending',                // genuine placeholder — nothing is claimed
+    slug: 'erp',
+    chapter: null,
+    story: { kind: 'erp', arc: null },
+    name: 'TalbotIQ ERP',
+    short: 'ERP',
+    category: 'revenue',
+    status: 'building',
     access: 'pending-url',
     url: null,
+    page: 'https://talbotiq.com/products/erp',
     accent: '#69787E',
-    bus: { served: 'PMS', headroom: 83, state: 'near' },
-    position: 'In development',
+    bus: { served: 'ERP', headroom: 83, state: 'near' },
+    position: 'Order to cash, purchase to pay',
     description:
-      'Live on the TalbotIQ AI Engine and in development. We will describe it here when there is something to describe.',
-    features: [],
-    cta: null,
-    evidence: 'Product key "PMS" found in the AI Engine admin bundle alongside MIMIC and Recapr, under per-product metering. Name expansion and feature set NOT verifiable — deliberately left blank.',
-    registry: { keys: ['MIMIC', 'Recapr', 'PMS'], on: 'PMS' },
-    peek: null,
+      'Five lanes, one chain of records. A quotation becomes an order, an order becomes a delivery, a delivery becomes an invoice \u2014 and the money questions read off that same chain rather than a spreadsheet kept beside it.',
+    features: ['Versioned quotations with discount limits', 'Customer PO enforcement', 'Delivery orders & reversible picking', 'Three-way match: PO, GRN and bill', 'Recurring fixed & variable payments', 'Inventory by store, stock derived from movements', 'AR and AP ageing', 'MyInvois e-Invoice state'],
+    cta: 'Book a walkthrough',
+    evidence: 'products/erp.html \u2014 the product page, written from the application itself. Forty-seven named steps, each carrying a build state: 15 live, 25 partly built, 7 designed and not yet built. The seven unbuilt ones are named on the page rather than implied, and the SST statement is deliberately held until the treatment is verified with RMCD.',
+    peek: {
+      chrome: 'Order to cash',
+      tabs: ['Quotation', 'Order', 'Delivery', 'Invoice', 'Collected'], on: 3,
+      kv: [['Lanes', 'five, one chain'], ['Stock on hand', 'derived, never typed'], ['Build state', '15 live \u00b7 25 partial \u00b7 7 to come']],
+    },
   },
+
 ];
 
 /* =============================================================================
@@ -428,7 +433,7 @@ const PRODUCTS = [
    of them. What the suite genuinely shares is listed separately in SHARED,
    each item carrying how it was verified.
 
-   A product with `arc: null` — PMS — appears in no stage, on purpose. Absence
+   A product with `arc: null` — ERP — appears in no stage, on purpose. Absence
    of a claim is drawn as absence, the same rule the headroom gauges follow.
    ========================================================================== */
 const LIFECYCLE = [

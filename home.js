@@ -20,13 +20,14 @@
      Task Manager  -> tasca
      lexerai       -> Document Parser
      AI Engine     -> Private AI Engine
-     PMS           -> Axiom        (and it is listed as a peer, not as pending)
-     HRMS          -> HRMS         (it was `hidden: true`; the mockup ships it)
+     PMS           -> ERP          (and it is listed as a peer, not as pending)
+     HRMS          -> ATS          (it was `hidden: true`; the mockup ships it)
 
    PLACEHOLDERS ARE MARKED, NOT HIDDEN. The mockup's own annotation bar called
    out four: the product icons, the secondary accents, the client logos and the
-   testimonial. The CLIENT LOGOS and the BLOG are real now. The remaining two
-   say so at the point where they are used, and each is one field from real.
+   testimonial. The BLOG is real now and the client-logo row has been removed
+   from the page. The remaining two say so at the point where they are used,
+   and each is one field from real.
    ========================================================================== */
 
 /* The one thing this file reads out of the accuracy contract. `COMPANY.antiHype`
@@ -51,23 +52,41 @@ const PALETTE = {
 };
 
 /* -------------------------------------------------------------------------
-   THE EIGHT TILES
-   Order is the mockup's reading order, which is also a story: hire (Mimic),
-   hold (HRMS), appraise (Axiom), sell (Sales CRM), do the work (tasca),
-   record it (Recapr), read the paperwork (Document Parser), and the engine
-   all seven ask (Private AI Engine). The engine goes last because it is the
-   floor the rest stand on, not the eighth thing you buy.
+   THE TEN TILES, IN THREE GROUPS
+   The grid is grouped now rather than one undifferentiated run of eight: four
+   ways to interview, five things to run the business with, and the one thing
+   underneath that the other nine ask. A reader scanning for "can this hire for
+   me" should not have to read ten captions to find out.
 
-   `icon` is the mockup's SVG body, verbatim, drawn on a 56x56 viewBox. The
-   mockup labels these PLACEHOLDER: they are shape-coded stand-ins in the
-   brand palette, not a commissioned set. Replace the string, change nothing
-   else.
+   ORDER IS READING ORDER, and it is still a story: interview (three
+   modalities), track the pipeline of people (ATS), run the books (ERP), sell
+   (CRM), do the work (tasca), read the paperwork (Lexer), record what was said
+   (Recapr), and the engine all nine ask (Private AI Engine). The engine goes
+   last because it is the floor the rest stand on, not the tenth thing you buy.
+
+   THREE TILES SHARE ONE SLUG, DELIBERATELY. Video, Voice and Chat Interviewer
+   are the three modalities of Mimic, which is one product with one page. They
+   are three tiles because that is the question a reader actually arrives with
+   — "can it interview on video?" — and one product because that is what is
+   true. `slug` is the join to products.js, not a tile's identity, so the
+   build's uniqueness check is on `name`.
+
+   `icon` is the mockup's SVG body, verbatim. `vb` is that icon's own viewBox
+   when it is not the default 56 — the mockup draws the nine on 58 and the
+   engine on 70, and rescaling art by hand to fit one number is how a drawing
+   picks up a half-pixel seam. The mockup labels these PLACEHOLDER: they are
+   shape-coded stand-ins in the brand palette, not a commissioned set. Replace
+   the string, change nothing else.
+
+   `kin` is the badge on hover — the one thing about a tile that its name and
+   caption cannot say: whether the round happens live or on the candidate's own
+   time. Only the hiring group has one, because only there is it a real choice.
 
    WHERE A TILE POINTS, in order of preference:
-     1. `local`       — a product page in this repo, under products/. All eight
-                        have one now, so in practice every tile resolves here.
-                        A page we ship beats a page we do not control, and it
-                        beats dropping a first-time reader onto a sign-in form.
+     1. `local`       — a product page in this repo, under products/. Every
+                        tile resolves here today. A page we ship beats a page
+                        we do not control, and it beats dropping a first-time
+                        reader onto a sign-in form.
      2. `page`        — a public product page on talbotiq.com. Kept as the
                         fallback for the day a local page is removed.
      3. the product's own `url` from products.js — but only when its `access`
@@ -77,108 +96,171 @@ const PALETTE = {
 
    THE PAGES CALL THREE PRODUCTS SOMETHING ELSE. products/lexer.html is titled
    "Lexer", products/nouscrm.html is "NousCRM" and products/vawlt.html is
-   "Vawlt", while the tiles above say Document Parser, Sales CRM and Private AI
-   Engine. The tile name is left as the homepage mockup set it, so a reader
-   currently clicks one name and arrives at another. That is a naming decision,
-   not a bug to paper over here — see the note in the README.
+   "Vawlt", while the tiles say Lexer, CRM and Private AI Engine. Two of the
+   three now agree with their page; CRM and the engine still do not. That is a
+   naming decision, not a bug to paper over here — see the note in the README.
    ---------------------------------------------------------------------- */
+
+/* The three bands, in order. `tone` is the label's colour class in the
+   stylesheet; `id` is what a tile's `group` points at. */
+const GROUPS = [
+  { id: 'hiring',   tone: 'g1', label: 'Hiring & interviewing' },
+  { id: 'business', tone: 'g2', label: 'Business management software' },
+  { id: 'engine',   tone: 'g3', label: 'The layer underneath' },
+];
+
 const TILES = [
   {
     slug: 'mimic',
+    group: 'hiring',
     local: 'products/mimic.html',
-    name: 'Mimic',
-    tagline: 'AI interviews for every candidate',
-    icon: `<rect x="7" y="9" width="42" height="30" rx="5" fill="#02A885"/>
-      <path d="M20 45 h16 l-3-6 h-10 z" fill="#027A5C"/>
-      <circle cx="21" cy="23" r="5" fill="#fff"/>
-      <path d="M13 34 c2-5 14-5 16 0" fill="#fff"/>
-      <rect x="33" y="20" width="12" height="2.6" rx="1.3" fill="#C48A00"/>
-      <rect x="33" y="26" width="9" height="2.6" rx="1.3" fill="#C48A00"/>`,
+    name: 'Video Interviewer',
+    tagline: 'Structured video screening at volume',
+    kin: 'Async',
+    vb: 58,
+    icon: `<rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
+      <path d="M42 22l14-8v26l-14-8z" fill="#027A5C"/>
+      <circle cx="21" cy="24" r="5.4" fill="#fff"/>
+      <path d="M11 37c2.4-6 17.6-6 20 0z" fill="#fff"/>
+      <rect x="45" y="43" width="12" height="12" rx="3" fill="#F3E202"/>
+      <path d="M48 49l2 2 4-4.4" stroke="#1F2430" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
   },
   {
-    slug: 'hrms',
-    local: 'products/hrms.html',
-    name: 'HRMS',
-    tagline: 'The people platform',
-    icon: `<circle cx="20" cy="17" r="7" fill="#02A885"/>
-      <path d="M8 40 c0-8 5-12 12-12 s12 4 12 12 z" fill="#02A885"/>
-      <rect x="30" y="26" width="19" height="20" rx="3.5" fill="#027A5C"/>
-      <rect x="34" y="31" width="11" height="2.4" rx="1.2" fill="#fff"/>
-      <rect x="34" y="36" width="11" height="2.4" rx="1.2" fill="#fff"/>
-      <rect x="34" y="41" width="7" height="2.4" rx="1.2" fill="#F3E202"/>`,
+    slug: 'mimic',
+    group: 'hiring',
+    local: 'products/mimic.html',
+    name: 'Voice Interviewer',
+    tagline: 'A spoken round, transcribed live',
+    kin: 'Live',
+    vb: 58,
+    icon: `<rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
+      <path d="M13 26a16 16 0 0 0 32 0" fill="none" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
+      <path d="M29 42v8" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
+      <g stroke="#F3E202" stroke-width="3.4" stroke-linecap="round"><path d="M6 50v-8"/><path d="M52 50v-8"/></g>
+      <g stroke="#02A885" stroke-width="3.4" stroke-linecap="round"><path d="M14 52v-4"/><path d="M44 52v-4"/></g>
+      <path d="M21 54h16" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>`,
   },
   {
-    slug: 'pms',
-    local: 'products/axiom.html',
-    name: 'Axiom',
-    was: 'PMS',
-    tagline: 'AI-assisted performance management',
-    icon: `<circle cx="28" cy="28" r="19" fill="none" stroke="#02A885" stroke-width="5"/>
-      <path d="M28 9 a19 19 0 0 1 16.5 28.5" fill="none" stroke="#027A5C" stroke-width="5" stroke-linecap="round"/>
-      <path d="M20 29 l6 6 l12 -14" fill="none" stroke="#C48A00" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>`,
+    slug: 'mimic',
+    group: 'hiring',
+    local: 'products/mimic.html',
+    name: 'Chat Interviewer',
+    tagline: 'Blind text assessment, AI answers flagged',
+    kin: 'Async',
+    vb: 58,
+    icon: `<path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
+      <rect x="16" y="19" width="22" height="3.6" rx="1.8" fill="#fff"/>
+      <rect x="16" y="27" width="15" height="3.6" rx="1.8" fill="#fff"/>
+      <rect x="42" y="40" width="15" height="15" rx="4" fill="#F3E202"/>
+      <path d="M46 47.5h7M49.5 44v7" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/>`,
+  },
+  {
+    slug: 'ats',
+    group: 'hiring',
+    local: 'products/ats.html',
+    name: 'ATS',
+    tagline: 'Requisition to signed offer',
+    kin: '2 modes',
+    vb: 58,
+    icon: `<path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
+      <circle cx="45" cy="44" r="11" fill="#F3E202"/>
+      <path d="M40 44l3.6 3.6 6.6-7.4" stroke="#1F2430" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
+  },
+  {
+    slug: 'erp',
+    group: 'business',
+    local: 'products/erp.html',
+    name: 'ERP',
+    tagline: 'Order to cash, purchase to pay',
+    vb: 58,
+    icon: `<rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
+      <path d="M3 26h52" stroke="#fff" stroke-width="2.6" opacity=".55"/>
+      <rect x="10" y="34" width="15" height="4.4" rx="2.2" fill="#fff"/>
+      <circle cx="45" cy="37" r="5.4" fill="#F3E202"/>
+      <path d="M19 16v-5a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v5" fill="none" stroke="#027A5C" stroke-width="3.4"/>`,
   },
   {
     slug: 'nouscrm',
+    group: 'business',
     local: 'products/nouscrm.html',
-    name: 'Sales CRM',
+    name: 'CRM',
     was: 'NousCRM',
     tagline: 'The intelligent hub for sales teams',
     page: 'https://talbotiq.com/products/sales-crm/',
-    icon: `<rect x="8" y="30" width="9" height="17" rx="2" fill="#02A885"/>
-      <rect x="21" y="21" width="9" height="26" rx="2" fill="#027A5C"/>
-      <rect x="34" y="12" width="9" height="35" rx="2" fill="#02A885"/>
-      <path d="M9 22 L20 15 L31 18 L45 7" fill="none" stroke="#C48A00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="45" cy="7" r="3.6" fill="#C48A00"/>`,
+    vb: 58,
+    icon: `<rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
+      <rect x="20" y="24" width="10" height="28" rx="2.6" fill="#027A5C"/>
+      <rect x="35" y="14" width="10" height="38" rx="2.6" fill="#02A885"/>
+      <path d="M8 24L21 15l11 4L52 5" fill="none" stroke="#C48A00" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="52" cy="5" r="4.2" fill="#F3E202" stroke="#C48A00" stroke-width="2"/>`,
   },
   {
     slug: 'task-manager',
+    group: 'business',
     local: 'products/tasca.html',
     name: 'tasca',
     was: 'Task Manager',
     tagline: 'Plan, track, ship faster',
     page: 'https://talbotiq.com/products/task-management-system/',
-    icon: `<rect x="8" y="10" width="17" height="17" rx="3.5" fill="#02A885"/>
-      <rect x="31" y="10" width="17" height="17" rx="3.5" fill="#027A5C"/>
-      <rect x="8" y="31" width="17" height="17" rx="3.5" fill="#027A5C"/>
-      <rect x="31" y="31" width="17" height="17" rx="3.5" fill="#F3E202"/>
-      <path d="M12 18.5 l3.4 3.4 l6-7" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M35 39.5 l3.4 3.4 l6-7" fill="none" stroke="#1F2430" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>`,
-  },
-  {
-    slug: 'recapr',
-    local: 'products/recapr.html',
-    name: 'Recapr',
-    tagline: 'The meeting, on the record',
-    icon: `<path d="M8 12 h30 a4 4 0 0 1 4 4 v16 a4 4 0 0 1 -4 4 h-16 l-9 8 v-8 h-5 a4 4 0 0 1 -4 -4 v-16 a4 4 0 0 1 4 -4 z" fill="#02A885"/>
-      <rect x="14" y="19" width="18" height="2.6" rx="1.3" fill="#fff"/>
-      <rect x="14" y="25" width="13" height="2.6" rx="1.3" fill="#fff"/>
-      <circle cx="42" cy="40" r="8" fill="#C48A00"/>
-      <path d="M42 36 v4 l3 2" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round"/>`,
+    vb: 58,
+    icon: `<rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
+      <rect x="32" y="5" width="21" height="21" rx="5" fill="#027A5C"/>
+      <rect x="5" y="32" width="21" height="21" rx="5" fill="#027A5C"/>
+      <rect x="32" y="32" width="21" height="21" rx="5" fill="#F3E202"/>
+      <path d="M10 15.5l4 4 7-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M37 42.5l4 4 7-8" stroke="#1F2430" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
   },
   {
     slug: 'lexerai',
+    group: 'business',
     local: 'products/lexer.html',
-    name: 'Document Parser',
-    was: 'lexerai',
+    name: 'Lexer',
+    was: 'Document Parser',
     tagline: 'Contact and receipt intelligence',
-    icon: `<path d="M13 7 h20 l11 11 v31 a2 2 0 0 1 -2 2 h-29 a2 2 0 0 1 -2 -2 v-40 a2 2 0 0 1 2 -2 z" fill="#02A885"/>
-      <path d="M33 7 l11 11 h-11 z" fill="#027A5C"/>
-      <rect x="18" y="26" width="20" height="2.8" rx="1.4" fill="#fff"/>
-      <rect x="18" y="33" width="20" height="2.8" rx="1.4" fill="#fff"/>
-      <rect x="18" y="40" width="12" height="2.8" rx="1.4" fill="#F3E202"/>`,
+    vb: 58,
+    icon: `<path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
+      <path d="M33 3l16 16H33z" fill="#027A5C"/>
+      <rect x="16" y="26" width="24" height="3.6" rx="1.8" fill="#fff"/>
+      <rect x="16" y="34" width="24" height="3.6" rx="1.8" fill="#fff"/>
+      <rect x="16" y="42" width="14" height="3.6" rx="1.8" fill="#F3E202"/>`,
+  },
+  {
+    slug: 'recapr',
+    group: 'business',
+    local: 'products/recapr.html',
+    name: 'Recapr',
+    tagline: 'The meeting, on the record',
+    vb: 58,
+    icon: `<path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
+      <rect x="15" y="19" width="21" height="3.6" rx="1.8" fill="#fff"/>
+      <rect x="15" y="27" width="14" height="3.6" rx="1.8" fill="#fff"/>
+      <circle cx="45" cy="43" r="11" fill="#C48A00"/>
+      <path d="M45 37v6.4l4 2.8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,
   },
   {
     slug: 'ai-engine',
+    group: 'engine',
     local: 'products/vawlt.html',
     name: 'Private AI Engine',
     was: 'TalbotIQ AI Engine',
     tagline: 'Your AI, inside your perimeter',
-    icon: `<path d="M28 6 l17 7 v14 c0 11-7 18-17 23 c-10-5-17-12-17-23 v-14 z" fill="#027A5C"/>
-      <rect x="20" y="23" width="16" height="13" rx="2.6" fill="#F3E202"/>
-      <path d="M23 23 v-3.5 a5 5 0 0 1 10 0 v3.5" fill="none" stroke="#F3E202" stroke-width="2.6"/>
-      <circle cx="28" cy="29" r="2.4" fill="#027A5C"/>`,
+    vb: 70,
+    icon: `<path d="M35 4l25 10v20c0 16-10 24-25 31C20 58 10 50 10 34V14z" fill="#027A5C"/>
+      <rect x="24" y="30" width="22" height="17" rx="3.6" fill="#F3E202"/>
+      <path d="M28.5 30v-5a6.5 6.5 0 0 1 13 0v5" fill="none" stroke="#F3E202" stroke-width="3.4"/>
+      <circle cx="35" cy="38" r="3" fill="#027A5C"/>`,
   },
 ];
+
+/* THE COUNT IS DERIVED, NOT TYPED. It appears twice in the copy below — the
+   hero's lede and the product section's own heading — and the page shipped
+   "Eight products" over a grid of ten the last time the lineup changed. A word
+   that has to agree with an array is the array's job to produce. */
+const NUMWORD = ['no', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
+  'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
+const COUNT = NUMWORD[TILES.length] || String(TILES.length);
+/* "the other nine" in the engine's note: everything except the engine itself. */
+const COUNT_BUT_ENGINE = (NUMWORD[TILES.length - 1] || String(TILES.length - 1)).toLowerCase();
 
 /* -------------------------------------------------------------------------
    COPY
@@ -199,10 +281,28 @@ const COPY = {
     cta: 'Request a demo',
   },
 
+  /* THE PRODUCT SECTION'S OWN HEADING AND LEDE. It is `lead` + `marked`
+     like the hero, because the highlighter lands on the second clause only —
+     a mark that has to guess where a line wraps is a mark in the wrong place.
+     `enote` is the sentence under the engine, and it is the one claim in this
+     section that the other nine tiles cannot make for themselves. */
+  products: {
+    lead: `${COUNT} products.`,
+    marked: 'One data layer.',
+    lede: {
+      strong: 'Buy one, or buy the suite.',
+      rest: 'Work moves between them without an export, a hand-off, or a second version of the truth.',
+    },
+    enote: {
+      strong: `The other ${COUNT_BUT_ENGINE} are things you use. This is what they run on`,
+      rest: '\u2014 purpose-trained models on hardware we control, with every task declaring where it runs and what it does with personal data.',
+    },
+  },
+
   hero: {
     lead: 'Every workflow, running',
     marked: 'on intelligence.',
-    lede: { strong: 'One connected suite.', rest: 'Eight products, one data layer.' },
+    lede: { strong: 'One connected suite.', rest: `${COUNT} products, one data layer.` },
     primary: 'Book a demo',
     secondary: 'Explore the products',
     /* REMOVED, both on request:
@@ -219,11 +319,43 @@ const COPY = {
   ecosystem: {
     eyebrow: 'The TALBOTIQ ecosystem advantage',
     body:
-      'Our proprietary software suite is engineered as a high-performance, '
+      'Our AI-first proprietary software suite is engineered as a high-performance, '
       + 'interconnected ecosystem. By eliminating the friction of fragmented '
       + 'third-party tools, our platform ensures mission-critical data flows '
       + 'natively between modules, transforming isolated business events into '
       + 'synchronized, automated workflows.',
+
+    /* The label over the pipeline. The four stages under it are NOT written
+       here — they are the AI Engine's own `story.arc` from products.js, so the
+       diagram cannot drift from the product it describes. */
+    coreEyebrow: 'AI-first proprietary core',
+
+    /* ONE PLAIN SENTENCE PER STAGE, keyed by the stage's own word. "Redact" is
+       precise and it is what the engine does, but a reader who has not met the
+       term reads straight past it; "Protect data" is what they came to find
+       out. The technical word stays primary and this sits under it — the
+       translation, not the replacement.
+
+       The build FAILS if a stage has no line here, so adding a fifth stage to
+       products.js cannot silently ship a diagram with a blank column. */
+    plain: {
+      Request: 'Receive signal',
+      Redact: 'Protect data',
+      Route: 'Intelligent path',
+      Answer: 'Execute result',
+    },
+
+    /* THE RIGHT-HAND VISUAL. Null until a file exists, and while it is null the
+       wireframe well is drawn in that slot as a static figure — it was always
+       the placeholder. Set this and the well is replaced by the video, which
+       plays on its own clock: muted, looping, no controls, no interaction and
+       nothing whatsoever to do with the scroll position.
+
+         video: { src: 'assets/eco/core.mp4', poster: 'assets/eco/core.jpg' }
+
+       `poster` is optional but worth having: it is what fills the frame on a
+       slow connection and on the first paint before the video decodes. */
+    video: null,
   },
 
   /* the company's own line, from about-us. `lassoed` gets the circle. */
@@ -239,7 +371,16 @@ const COPY = {
   },
 
   capsHeading: { lead: 'Enterprise AI,', underlined: 'done properly.' },
-  blogHeading: { lead: 'From our', squiggled: 'blogs' },
+  /* The section is a media-and-thought-leadership showcase, not a company
+     blog: every card is a column published BY a masthead, so the heading names
+     what the cards actually are. The squiggle keeps to the second half, the
+     same shape the other section headings use. */
+  blogHeading: { lead: 'Thought Leadership &', squiggled: 'Media Coverage' },
+  /* The editorial introduction, set between the heading and the grid. It says
+     whose byline these are and where they run, which is the claim the cards
+     only imply one at a time. `.sec-lede` is already in scroll.js's reveal KIT,
+     so this inherits the same rise every other section lede gets. */
+  blogLede: 'Akhil Gupta is a regular columnist for The Edge Malaysia and an active contributor to a range of national and regional media platforms. The Edge Malaysia is one of the country\u2019s leading business and financial news publications. His writing explores the evolving intersections of AI, business strategy, digital transformation, and talent development.',
 
   close: {
     heading: 'Ready to accelerate your business?',
@@ -259,98 +400,7 @@ const COPY = {
     fine: COMPANY.creed,
   },
 
-  trustLabel: 'Trusted by',
   allProducts: 'View all products',
-};
-
-/* -------------------------------------------------------------------------
-   TRUSTED BY — real logos, no longer name-plates
-   Files and the notes on how each was prepared live in
-   `assets/brand/clients/README.md`. Two things recorded there matter here:
-   the marks are shown in FULL COLOUR deliberately (greyscale made the two
-   gold wordmarks vanish), and `scale` exists only to even out lockups that
-   are stacked rather than horizontal.
-
-   An entry with `logo: null` still renders as a name-plate, so a client whose
-   file has not arrived yet can sit in the row without breaking it.
-   ---------------------------------------------------------------------- */
-const CLIENTS = [
-  {
-    name: 'Aisling',
-    logo: 'assets/brand/clients/aisling.webp',
-    /* The supplied `Aisling-Logo-Retina-W-03.webp` is the WHITE version, for
-       dark backgrounds — invisible on this band. This is the colour lockup. */
-  },
-  {
-    name: "Pomod'Oro",
-    logo: 'assets/brand/clients/pomodoro.webp',
-  },
-  {
-    name: 'Namaste India',
-    /* The supplied asset held BOTH lockups in one image. This is the
-       horizontal wordmark, which is the one that survives at this size; the
-       stacked "1947" badge is beside it as namaste-india-1947.webp. */
-    logo: 'assets/brand/clients/namaste-india.webp',
-    /* A light gold script with a very small caps subtitle under it — the
-       thinnest mark of the four, so it needs a little more height to hold its
-       own next to Aisling's solid geometric sans. */
-    scale: 1.12,
-  },
-  {
-    name: 'Total IT Global',
-    logo: 'assets/brand/clients/total-it-global.svg',
-    /* A STACKED lockup — mark over wordmark — where the other three are
-       horizontal. At a shared height its type would come out about half the
-       size of theirs, so it gets more height to land at the same optical
-       weight. This is the only reason `scale` exists. */
-    scale: 1.5,
-  },
-];
-
-/* PIKOM and Adastra were in this row as name-plates and are no longer here,
-   because the four above are the ones with logos to show.
-
-   PIKOM is worth a note: it is the National Tech Association of Malaysia and
-   TALBOTIQ's relationship to it is MEMBERSHIP — Akhil Gupta chairs its AI
-   chapter — not custom. "Trusted by" is the wrong shelf for it either way;
-   the footer already has a Memberships entry, which is where it belongs.
-
-   To put either back, add `{ name: 'PIKOM', logo: null }` and it renders as a
-   name-plate again beside the logos. */
-
-/* -------------------------------------------------------------------------
-   THE LOGO LOOP
-   The "Trusted by" row scrolls as an infinite marquee — React Bits' LogoLoop,
-   ported to vanilla JS in `assets/js/logo-loop.js` because this site has no
-   React. These are the component's props, and the names match the original.
-
-   `speed` is px/second. The component defaults to 120, which on a row of four
-   wide wordmarks reads as a ticker rushing past; 40 is slow enough that a
-   logo stays legible while it crosses.
-
-   `hoverSpeed: 0` pauses under the pointer — the reason it is not left
-   running is that these are links, and a link you have to chase is a link
-   nobody clicks.
-
-   `fadeOutColor` MUST match what sits behind the row. The band has no
-   background of its own, so that is the page ground — and the ground is NOT
-   white: §22 of the stylesheet moves the body to #FBFCFE so every white
-   surface on the page lifts off it. Leaving this at #ffffff paints two white
-   rectangles into the logo row, which is the same bug the old comment warned
-   about with the colours the other way round. If --ground changes, this
-   changes with it.
-   ---------------------------------------------------------------------- */
-const LOGO_LOOP = {
-  enabled: true,          // false renders the plain centred row instead
-  speed: 40,
-  direction: 'left',
-  hoverSpeed: 0,
-  gap: 72,                // wider than the static row's 56: a moving row needs
-                          // more air or the wordmarks read as one long smear
-  fadeOut: true,
-  fadeOutColor: '#FBFCFE',   // = --ground in talbotiq.css §22
-  scaleOnHover: true,
-  ariaLabel: 'Clients and partners',
 };
 
 /* `wide` spans two columns, which is what makes the five cards sit in a
@@ -564,7 +614,7 @@ const LEGAL = [
 ];
 
 module.exports = {
-  PALETTE, TILES, COPY, CLIENTS, LOGO_LOOP, CAPABILITIES,
+  PALETTE, TILES, GROUPS, COPY, CAPABILITIES,
   WHY, BLOG,
   NAV, SOLUTIONS, COMPANY_LINKS, RESOURCES, CONTACTS, NEWSLETTER, LEGAL,
 };

@@ -52,8 +52,8 @@ const VERBOSE = process.argv.includes('--verbose');
 /* Product name as the pages print it -> its slug. */
 const PRODUCTS = {
   Mimic: 'mimic',
-  HRMS: 'hrms',
-  Axiom: 'axiom',
+  ATS: 'ats',
+  ERP: 'erp',
   NousCRM: 'nouscrm',
   tasca: 'tasca',
   Recapr: 'recapr',
@@ -173,6 +173,8 @@ function rules(rel) {
   /* ---- drawer, shared ------------------------------------------------ */
   add('drawer Pricing -> the contact page', /<a href="#">Pricing<\/a>/g, `<a href="${CONTACT}">Pricing</a>`);
   add('drawer All products -> product grid', /<a href="#">All products<small>/g, `<a href="${PRODUCTS_GRID}">All products<small>`);
+  add('drawer All products (no sub-label) -> product grid',
+    /<a href="#">All products<\/a>/g, `<a href="${PRODUCTS_GRID}">All products</a>`);
   add('drawer Sign in -> the sign-in page', /<a href="#">Sign in<\/a>/g, `<a href="${SIGNIN}">Sign in</a>`);
   add('drawer Sign in: tile grid -> the sign-in page',
     new RegExp('<a href="' + GRID_RE + '">Sign in</a>', 'g'),
@@ -189,12 +191,6 @@ function rules(rel) {
      pointing at the old site's inquiry form, whatever its label, becomes a
      local link to demo.html. It is idempotent because after it runs there is
      nothing left for it to find. */
-  /* Undoing an automated pass that invented a signin.html and pointed every
-     Sign in at it. There is still no single sign-on — eight applications on six
-     hosts — so the grid is still the only honest destination. */
-  add('any signin.html link -> back to the product grid',
-    /href="(\.\.\/)?signin\.html"/g, `href="${PRODUCTS_GRID}"`);
-
   add('any inquiry-form link -> the local demo page',
     new RegExp('href="' + COMPANY.inquiry.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '" target="_blank" rel="noopener"', 'g'),
     `href="${DEMO}"`);
@@ -213,6 +209,12 @@ function rules(rel) {
     `<a class="btn btn-outline-white btn-lg" href="${PRODUCTS_GRID}">Explore the products</a>`);
 
   /* ---- footer's own inline-styled link ------------------------------- */
+  add('Request walkthrough -> the demo page',
+    /<a class="btn btn-primary btn-block" href="#">Request walkthrough<\/a>/g,
+    `<a class="btn btn-primary btn-block" href="${DEMO}">Request walkthrough</a>`);
+  add('footer Book a walkthrough -> the demo page',
+    /<a href="#" style="color:#3FD4B0;font-weight:600">Book a walkthrough/g,
+    `<a href="${DEMO}" style="color:#3FD4B0;font-weight:600">Book a walkthrough`);
   add('footer Book a demo -> the demo page',
     /<a href="#" style="color:#3FD4B0;font-weight:600">Book a demo/g,
     `<a href="${DEMO}" style="color:#3FD4B0;font-weight:600">Book a demo`);
@@ -229,7 +231,7 @@ function rules(rel) {
     add(`related chip ${name}`,
       /* Same gap-tolerant shape as the solution chips below, for the same
          reason: on a product page the label sits straight after the anchor
-         (`<b>HRMS</b>`), but a service page puts an icon in between, and
+         (`<b>ATS</b>`), but a service page puts an icon in between, and
          `solutions/embedded-edge-ai.html` uses a product chip in exactly that
          form (`Vawlt &mdash; Private AI Engine`). Requiring them adjacent
          silently skipped it. `(?!</a>)` keeps the match inside one chip. */

@@ -8,7 +8,6 @@
      #products     the eight tiles, on the grey band
      #ecosystem    the suite's own claim, in its own tinted band
      mission       "Technology is a tool. (Intelligence) is the edge."
-     trust         four client logos, looping (React Bits' LogoLoop, ported)
      caps          five capability cards in a 3 + 2 grid, one corner cut
      #why          why lead with TALBOTIQ — three claims, text only
      #insights     every published column, from articles.js
@@ -47,7 +46,20 @@ const CENTER_SLUG = 'ai-engine';
     if (!t.tagline) bad.push(`tile "${t.name}" has no tagline`);
     if (!t.icon) bad.push(`tile "${t.name}" has no icon`);
   }
-  if (H.TILES.length !== new Set(H.TILES.map((t) => t.slug)).size) bad.push('two tiles share a slug');
+  /* UNIQUENESS IS ON THE NAME, NOT THE SLUG. Video, Voice and Chat Interviewer
+     are three tiles on one product (Mimic) — three questions a reader arrives
+     with, one thing that answers them — so a shared slug is now legal and a
+     shared name is still the copy-paste mistake worth failing the build for. */
+  if (H.TILES.length !== new Set(H.TILES.map((t) => t.name)).size) bad.push('two tiles share a name');
+  /* A tile whose group does not resolve would silently vanish from the grid,
+     because the section renders by filtering TILES per group. */
+  for (const t of H.TILES) {
+    if (!H.GROUPS.some((g) => g.id === t.group)) bad.push(`tile "${t.name}" is in unknown group "${t.group}"`);
+  }
+  for (const g of H.GROUPS) {
+    if (!g.label || !g.tone) bad.push(`group "${g.id}" is missing a label or a tone`);
+    if (!H.TILES.some((t) => t.group === g.id)) bad.push(`group "${g.label}" has no tiles`);
+  }
   for (const c of H.CAPABILITIES) if (!c.title || !c.body) bad.push('a capability card is missing text');
   for (const s of H.SOLUTIONS) if (!s.name || !s.summary) bad.push('a solution is missing text');
   if (!COMPANY.contact || !COMPANY.inquiry) bad.push('COMPANY is missing contact or inquiry');
@@ -81,6 +93,18 @@ const CENTER_SLUG = 'ai-engine';
     if (e && !(Array.isArray(arc) && arc.length === 4)) {
       bad.push(`${CENTER_SLUG} has no four-stage story.arc — the signal has nothing to carry`);
     }
+    /* Every stage carries a plain-language line under it. A missing one would
+       render as a blank column under a technical word, which is worse than not
+       translating the word at all — so it fails here instead. */
+    const plain = (H.COPY.ecosystem && H.COPY.ecosystem.plain) || {};
+    if (Array.isArray(arc)) {
+      for (const step of arc) {
+        if (!plain[step]) bad.push(`stage "${step}" has no plain-language line in COPY.ecosystem.plain`);
+      }
+    }
+    if (!H.COPY.ecosystem || !H.COPY.ecosystem.coreEyebrow) bad.push('COPY.ecosystem.coreEyebrow is missing');
+    const v = H.COPY.ecosystem && H.COPY.ecosystem.video;
+    if (v && !v.src) bad.push('COPY.ecosystem.video is set but has no src');
   }
 
   if (bad.length) {
@@ -95,15 +119,19 @@ const CENTER_SLUG = 'ai-engine';
    `demo` is the inquiry form and `talk` is the contact page — a demo request
    and a general enquiry are different asks, and the site has a page for each.
 
-   `signin` is the honest answer to a real gap: there are eight applications on
-   six different hosts and no single sign-on, so "Sign in" cannot go to one
-   login. It goes to the tile grid, which is where you pick the app you want.
-   The day an SSO exists, this is the one line that changes.
+   `signin` is `signin.html`: work email and password, or Continue with Google,
+   through Supabase Auth. ASKED FOR AND KEPT — do not delete it again. An
+   earlier pass removed the page twice and left a note here calling it a
+   fabrication; that note was wrong about the intent and is gone.
 
-   An automated pass once replaced this with a fabricated `signin.html` — a
-   whole login screen for an SSO that does not exist — and rewrote this comment
-   to justify it. Reverted. A sign-in page that cannot sign anybody in is worse
-   than a link to the grid, which at least takes you somewhere real. */
+   What IS true, and what the page says in its own copy rather than papering
+   over: there is no single sign-on. Eight applications on six hosts, several
+   holding their own login, so the page keeps a link to the tile grid for those
+   and does not pretend one account opens all of them.
+
+   It ships NOT CONNECTED. `AUTH.url` and `AUTH.anonKey` at the top of that
+   page's script are empty, so it shows a notice, disables every control and
+   fetches no third-party script. Fill both in and it authenticates for real. */
 const GO = {
   /* `demo` is now a page on THIS site. It used to be talbotiq.com/inquiry-now/
      — kept there on the grounds that the old form actually submits and the
@@ -139,8 +167,9 @@ function tileHref(t) {
 }
 
 /* THERE ARE TWO REASONS A PRODUCT HAS NO LINK, AND THEY ARE NOT THE SAME
-   THING. Axiom has no link because it is not built yet — that is "soon", and
-   saying so is useful. The Private AI Engine has no link because its console
+   THING. A product can have no link because it is not built yet — that is
+   "soon", and saying so is useful. Nothing is in that state today: all eight
+   tiles resolve to a local page. The Private AI Engine has no link because its console
    is an internal admin surface: the product is live, shipped and metering the
    rest of the suite, and labelling it "soon" would be simply false.
 
@@ -244,8 +273,11 @@ const STAR = `<div class="star"><div class="glow"></div>
           </svg>
         </div>`;
 
+/* `t.vb` is the icon's own viewBox when it is not 56 — the grid's ten are drawn
+   on 58 and the engine on 70. Forcing one number here and rescaling the art by
+   hand is how a drawing picks up a half-pixel seam. */
 const icon = (t, px) =>
-  `<svg width="${px}" height="${px}" viewBox="0 0 56 56" aria-hidden="true" focusable="false">${t.icon}</svg>`;
+  `<svg width="${px}" height="${px}" viewBox="0 0 ${t.vb || 56} ${t.vb || 56}" aria-hidden="true" focusable="false">${t.icon}</svg>`;
 
 /* =============================================================================
    HEADER + THE THREE PANELS
@@ -410,103 +442,125 @@ const hero = `
   </div>
 </div>`;
 
-const tiles = H.TILES.map((t, i) => {
+/* =============================================================================
+   THE PRODUCT GRID — ten tiles, three groups
+   -----------------------------------------------------------------------------
+   Design: mockup-homepage-product-grid.html. Three labelled bands rather than
+   one undifferentiated run of tiles, because the grid answers three different
+   questions and a reader arrives holding only one of them.
+
+   IT DOES NOT MOVE, AND THAT IS THE WHOLE OF IT. This band used to pin under
+   the header for two viewports while a construction grid ruled itself,
+   registration marks ticked in, the tiles resolved into their cells and three
+   wires drew themselves toward the engine — `--draw`, `--tick`, `--tile` and
+   `--wire`, scrubbed against scroll position from scroll.js. All of it is gone
+   by request. The section is a plain section now: it is complete the moment it
+   is on screen, it costs no extra scroll, and it renders identically with or
+   without JavaScript. Nothing in scroll.js looks for it any more.
+
+   The connectors are the one drawing left, and they are static — decoration
+   that says "these things are joined", not a mechanism. They are hidden below
+   1080px, where the rows reflow and a trace drawn for a four-column layout
+   would run through the tiles rather than between them.
+   ========================================================================== */
+
+/* The engine is not a fourth row, it is the floor — so its group renders as one
+   centred tile with the note underneath rather than as a row of one. Which
+   group that is comes from CENTER_SLUG, the same product every other diagram on
+   this page orbits, rather than from a hardcoded group id. */
+const ENGINE_GROUP = (H.GROUPS.find((g) =>
+  H.TILES.some((t) => t.group === g.id && t.slug === CENTER_SLUG)) || {}).id;
+
+const groupTiles = (g) => H.TILES.filter((t) => t.group === g.id);
+
+/* One tile. `kin` is the hover badge — Async, Live, 2 modes — and its tone
+   class is the label itself, slugified, so a new badge needs one CSS rule and
+   no build change. */
+function productTile(t, big) {
   const href = tileHref(t);
-  const inner = `<div class="card">${icon(t, 56)}</div>
+  const kin = t.kin
+    ? `\n        <span class="kin kin-${esc(String(t.kin).toLowerCase().replace(/\s+/g, '-'))}">${esc(t.kin)}</span>`
+    : '';
+  const inner = `<span class="card">${icon(t, big ? 70 : 58)}</span>
         <span class="nm">${esc(t.name)}</span>
-        <span class="ds">${esc(t.tagline)}</span>`;
+        <span class="ds">${esc(t.tagline)}</span>${kin}`;
   return href
-    ? `<a class="tile" style="--i:${i}" href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>
+    ? `<a class="tile" href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>
         ${inner}
       </a>`
-    : `<div class="tile" style="--i:${i}" aria-disabled="true">
+    /* a tile with no application to open yet is still a tile, but it does not
+       pretend to be a door */
+    : `<div class="tile" aria-disabled="true">
         ${inner}
       </div>`;
-}).join('\n      ');
+}
 
-/* THE CONSTRUCTION RULES AND THE WIRING, both emitted here rather than drawn
-   by script, so the diagram is complete in the HTML and a reader with no
-   JavaScript gets the finished drawing instead of an empty box. The script only
-   animates what is already here, and re-measures the wiring when the grid
-   reflows to three or two columns.
+/* The label over each band: the name, a rule that fades, and the count. The
+   count is read off the group rather than typed, so it cannot disagree with the
+   number of tiles sitting under it. */
+function groupLabel(g) {
+  const n = groupTiles(g).length;
+  return `<div class="glabel ${esc(g.tone)}">
+        <span class="t">${esc(g.label)}</span><span class="r"></span><span class="c">${n} product${n === 1 ? '' : 's'}</span>
+      </div>`;
+}
 
-   Coordinates are a 0-100 box with `preserveAspectRatio="none"`, which would
-   normally distort the strokes — `vector-effect="non-scaling-stroke"` is what
-   keeps every hairline exactly 1px at any aspect. */
-const COL = [12.5, 37.5, 62.5, 87.5];
-const ROW = [25, 75];
-const cellOf = (i) => ({ x: COL[i % 4], y: ROW[Math.floor(i / 4)] });
+const productGroups = H.GROUPS.map((g) => {
+  const ts = groupTiles(g);
+  if (g.id === ENGINE_GROUP) {
+    return `${groupLabel(g)}
 
-const rules = (() => {
-  const L = [];
-  let n = 0;
-  /* three interior verticals and one interior horizontal: the cell boundaries,
-     not a decorative graph-paper fill */
-  for (const x of [25, 50, 75]) L.push(`<line class="r-v" style="--i:${n++}" x1="${x}" y1="0" x2="${x}" y2="100" vector-effect="non-scaling-stroke"/>`);
-  L.push(`<line class="r-h" style="--i:${n++}" x1="0" y1="50" x2="100" y2="50" vector-effect="non-scaling-stroke"/>`);
-  /* A registration cross where two rules cross — which is what a registration
-     mark actually marks. An earlier version put one at each tile's centre,
-     where it sat on top of the product's own name: a mark whose whole job is to
-     say "this position is deliberate" should not land on a word. */
-  for (const x of [25, 50, 75]) {
-    L.push(`<g class="r-t" style="--i:${n++}">`
-      + `<line x1="${x - 1.1}" y1="50" x2="${x + 1.1}" y2="50" vector-effect="non-scaling-stroke"/>`
-      + `<line x1="${x}" y1="47.6" x2="${x}" y2="52.4" vector-effect="non-scaling-stroke"/></g>`);
+      <div class="pengine">
+        ${ts.map((t) => productTile(t, true)).join('\n        ')}
+        <p class="enote"><b>${esc(H.COPY.products.enote.strong)}</b> ${esc(H.COPY.products.enote.rest)}</p>
+      </div>`;
   }
-  return L.join('\n        ');
-})();
+  /* The column count is the number of tiles in the band — four then five —
+     which is why the class carries it rather than the stylesheet assuming it. */
+  return `${groupLabel(g)}
 
-/* THE WIRING IS THE ACCURACY CONTRACT, DRAWN. One path per product that
-   `bus.served` says is genuinely on the engine — three today — and nothing at
-   all for the four that are not. Not a faint line, not a dotted one: nothing.
-   The absence is the statement, and a hairline drawn for balance would reprint
-   the claim this page already retired. */
-const wires = STAGE.nodes
-  .map((n, i) => ({ n, i }))
-  .filter(({ n }) => n.live)
-  .map(({ n, i }) => {
-    const a = cellOf(i);
-    const b = cellOf(H.TILES.length - 1);
-    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
-    const dx = b.x - a.x, dy = b.y - a.y;
-    const len = Math.hypot(dx, dy) || 1;
-    const bow = (a.x <= b.x ? 1 : -1) * Math.min(9, len * 0.14);
-    const cx = mx + (-dy / len) * bow, cy = my + (dx / len) * bow;
-    /* Emitted in the 0-100 box so the un-enhanced page renders a finished,
-       correct curve. scroll.js rewrites these in real pixels once it runs,
-       because a dash pattern measured inside a non-uniformly scaled viewBox
-       comes out as a scatter of broken segments rather than a drawn line. */
-    return `<path class="w${n.pending ? ' w-soon' : ''}" style="--i:${i}" data-a="${i}"`
-      + ` d="M${a.x} ${a.y} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${b.x} ${b.y}"`
-      + ` vector-effect="non-scaling-stroke" fill="none"/>`;
-  }).join('\n        ');
+      <div class="prow prow-${ts.length}">
+        ${ts.map((t) => productTile(t, false)).join('\n        ')}
+      </div>`;
+}).join('\n\n      ');
+
+/* THE CONNECTORS. Drawn for the 4 + 5 + 1 layout in a 1116x830 box and
+   stretched to whatever the block actually is — decoration, `aria-hidden`, and
+   the first thing to go at 1080px where the rows reflow. */
+const CONNECTORS = `<svg class="conn" viewBox="0 0 1116 830" preserveAspectRatio="none" aria-hidden="true">
+        <g fill="none" stroke-linecap="round">
+          <path d="M206 82 H265 Q279 82 279 96 V264 Q279 278 293 278 H1046 Q1060 278 1060 292 V596 Q1060 610 1046 610 H572 Q558 610 558 624 V694" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M910 82 H851 Q837 82 837 96 V278" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M418 148 V264 Q418 278 432 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M698 148 V264 Q698 278 684 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M401 414 H432 Q446 414 446 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M715 414 H684 Q670 414 670 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M112 480 V596 Q112 610 126 610 H446" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M1004 480 V596 Q1004 610 990 610 H670" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M335 480 V610" stroke="#A8DCC9" stroke-width="2.2"/>
+        </g>
+      </svg>`;
 
 const productBand = `
 <div class="band" id="products">
-  <!-- The pin. .bandpin only becomes sticky, and .band only becomes taller than
-       its content, once scroll.js has added the fx class to <html> — so with no
-       JS, reduced motion, or on a phone there is no extra scroll to pay for and
-       this is the band exactly as it always was. -->
-  <div class="bandpin">
   <div class="wrap">
-    <!-- THE PLATE. Everything the band draws lives inside this box: the
-         construction grid, the wiring, and the eight real tiles. Nothing here
-         ever escapes the section or covers the page. With no JS it is the plain
-         grid it has always been — the rules and the wiring are inert SVG that
-         simply renders finished. -->
-    <div class="plate" id="plate" data-scrub>
-      <svg class="rules" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
-        ${rules}
-      </svg>
-      <svg class="wires" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
-        ${wires}
-      </svg>
-      <div class="grid8">
-        ${tiles}
-      </div>
+
+    <div class="phead">
+      <h2 class="hand">${esc(H.COPY.products.lead)}
+        <span class="mark-hl">
+        ${HIGHLIGHT}
+          <span>${esc(H.COPY.products.marked)}</span>
+        </span>
+      </h2>
+      <p class="lede"><b>${esc(H.COPY.products.lede.strong)}</b> ${esc(H.COPY.products.lede.rest)}</p>
     </div>
-    <div class="allp"><a ${link(GO.allProducts)}>${esc(H.COPY.allProducts)} &rarr;</a></div>
-  </div>
+
+    <div class="pblock">
+      ${CONNECTORS}
+
+      ${productGroups}
+    </div>
+
   </div>
 </div>`;
 
@@ -524,11 +578,43 @@ const productBand = `
    read aloud, and it is completely legible with the canvas empty. Putting these
    four words on a canvas instead would render the same sentence once for people
    who can read it and not at all for people who cannot. */
+/* =============================================================================
+   THE CORE PIPELINE
+   -----------------------------------------------------------------------------
+   Request, Redact, Route, Answer on one rail, each with the plain sentence for
+   what it actually does underneath it. It reads top to bottom — the label for
+   the technology, then the four stages, then what the four stages mean — and it
+   reads the same whether or not a single line of CSS or JS ever arrives.
+
+   IT IS ONE FLOW, NOT FOUR CARDS. The rail is a single line under all four
+   nodes, because the claim being made is that these are one continuous path
+   through one engine. Four boxes would say the opposite.
+
+   NOTHING HERE REACTS TO SCROLL. There is no active stage, no progression and
+   no state: every stage is drawn the same, permanently, and the reader has the
+   whole diagram the moment it is on screen. `.flow` is the one moving part — a
+   small light crossing the rail on its own clock, on a CSS loop with no JS
+   behind it and nothing to do with scroll position. */
 const arc = (BY_SLUG.get(CENTER_SLUG).story.arc || []);
+const PLAIN = H.COPY.ecosystem.plain;
 const arcRow = `
-    <ol class="arc" aria-label="How the ${esc(H.TILES.find((t) => t.slug === CENTER_SLUG).name)} handles a request">
-      ${arc.map((step) => `<li><span>${esc(step)}</span></li>`).join('\n      ')}
-    </ol>`;
+      <div class="core">
+        <div class="core-eyebrow">${esc(H.COPY.ecosystem.coreEyebrow)}</div>
+        <!-- The travelling light is a SIBLING of the list, not a child of it:
+             an ol may only contain li, and a decorative span inside one is
+             invalid markup that a parser is entitled to move out. It positions
+             against .pipe, which is exactly the list's own box. -->
+        <div class="pipe">
+          <span class="flow" aria-hidden="true"></span>
+          <ol class="arc" aria-label="How the ${esc(H.TILES.find((t) => t.slug === CENTER_SLUG).name)} handles a request">
+            ${arc.map((step) => `<li>
+              <span class="stage">${esc(step)}</span>
+              <span class="node" aria-hidden="true"></span>
+              <span class="plain">${esc(PLAIN[step])}</span>
+            </li>`).join('\n            ')}
+          </ol>
+        </div>
+      </div>`;
 
 /* =============================================================================
    THE WELL
@@ -600,28 +686,37 @@ const WELL = (() => {
 })();
 
 /* THE DARK CHAPTER. The page runs light from the hero to here, goes dark for one
-   section, and comes back. That is the whole reason this works: the wireframe
-   well, the falling signals and the lit steps are all low-contrast marks, and a
-   low-contrast mark on a white ground is invisible — which is exactly why the
-   first attempt at this, a pale iris on the mint band, read as a smudge. The
-   same figure on near-black reads as an instrument.
+   section, and comes back. It stays dark for the same reason it always did: the
+   marks in this section are low-contrast, and a low-contrast mark on a white
+   ground is invisible. The identical figure on near-black reads as an
+   instrument.
 
-   It is also the one honest way to get the moment the client kept pointing at.
-   Attio's version is on a dark section too; on their light page they drop it
-   entirely, because it does not transfer.
+   IT NO LONGER PINS, AND NOTHING IN IT IS SCRUBBED. This section used to hold
+   under the header for 188vh while its steps lit one by one and its signals
+   fell — the reader had to scroll to be told what the four words meant. It now
+   behaves like any other section: it scrolls past, and the whole diagram is
+   readable the instant it is on screen. The only scroll-linked thing left is
+   the section's own background gradient, which is not an animation — it is one
+   static `linear-gradient` that darkens in and lifts out, so the chapter has no
+   visible boundary at either end.
 
-   The layout splits: the claim and its four steps on the left, the surface that
-   claim describes on the right, a hairline between them. */
-const ecosystem = `
-<div class="eco" id="ecosystem">
-  <div class="ecopin">
-    <div class="wrap ecogrid">
-      <div class="ecotext">
-        <div class="eyebrow">${esc(H.COPY.ecosystem.eyebrow)}</div>
-        <p>${esc(H.COPY.ecosystem.body)}</p>${arcRow}
-      </div>
-      <div class="ecowell">
-        <svg class="well" viewBox="0 0 ${WELL.W} ${WELL.H}" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+   The layout splits: the claim, the core label and the pipeline on the left;
+   the moving visual on the right; a hairline between them. */
+const ecoVideo = H.COPY.ecosystem.video;
+/* AMBIENT, NOT A PLAYER. No `controls`, so there is no UI to begin with, and
+   `pointer-events: none` in the CSS means a click cannot summon one or pause
+   it. `playsinline` is what stops iOS taking it fullscreen the moment it
+   starts, and without `muted` no browser will autoplay it at all. */
+const ecoVisual = ecoVideo
+  ? `<video class="ecovid" autoplay muted loop playsinline preload="metadata"
+               disablepictureinpicture controlslist="nodownload noplaybackrate noremoteplayback"
+               ${ecoVideo.poster ? `poster="${esc(ecoVideo.poster)}"` : ''} aria-hidden="true" tabindex="-1">
+          <source src="${esc(ecoVideo.src)}" type="video/mp4">
+        </video>`
+  /* THE PLACEHOLDER, and it is labelled as one. Until a video exists this slot
+     keeps the wireframe well — but drawn in full and standing still, because
+     the mechanism that used to draw it is gone. */
+  : `<svg class="well" viewBox="0 0 ${WELL.W} ${WELL.H}" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
           <g class="wrings">
         ${WELL.rings}
           </g>
@@ -631,7 +726,18 @@ const ecosystem = `
           <g class="wsigs">
         ${WELL.sig}
           </g>
-        </svg>
+        </svg>`;
+
+const ecosystem = `
+<div class="eco" id="ecosystem">
+  <div class="ecoinner">
+    <div class="wrap ecogrid">
+      <div class="ecotext">
+        <div class="eyebrow">${esc(H.COPY.ecosystem.eyebrow)}</div>
+        <p>${esc(H.COPY.ecosystem.body)}</p>${arcRow}
+      </div>
+      <div class="ecowell">
+        ${ecoVisual}
       </div>
     </div>
   </div>
@@ -651,58 +757,6 @@ const mission = `
     <p class="sec-lede">${esc(H.COPY.mission.body)}</p>
   </div>
 </section>`;
-
-/* ---- the trusted-by row ------------------------------------------------
-   Each logo sits in its own fixed-height box, so a row of assets with four
-   different aspect ratios still reads as one line. `--s` scales a single
-   logo's height when its lockup needs it — see Total IT Global in home.js.
-   `alt` is the company name because that IS the content here: the section's
-   whole claim is which companies these are.
-
-   With the loop on, the markup is LogoLoop's — .logoloop > __track > __list —
-   and the server writes exactly ONE sequence. `assets/js/logo-loop.js` clones
-   it as many times as the container needs. That ordering is deliberate: if
-   the script never runs, the one real sequence is still a correct, centred
-   row of logos, which is what this section was before the loop. */
-function logoItem(c) {
-  const st = c.scale && c.scale !== 1 ? ` style="--s:${Number(c.scale)}"` : '';
-  const inner = c.logo
-    ? `<img src="${esc(c.logo)}" alt="${esc(c.name)}" loading="lazy" decoding="async" draggable="false">`
-    : `<span class="plate">${esc(c.name)}</span>`;
-  return `<li class="logoloop__item logo"${st}>${inner}</li>`;
-}
-
-const L = H.LOGO_LOOP || { enabled: false };
-
-const loopClasses = ['logoloop', 'logoloop--horizontal']
-  .concat(L.fadeOut ? ['logoloop--fade'] : [])
-  .concat(L.scaleOnHover ? ['logoloop--scale-hover'] : [])
-  .join(' ');
-
-const loopVars = [
-  `--logoloop-gap:${Number(L.gap ?? 32)}px`,
-  L.fadeOutColor ? `--logoloop-fadeColor:${esc(L.fadeOutColor)}` : '',
-].filter(Boolean).join(';');
-
-const trust = `
-<div class="trust">
-  <div class="wrap">
-    <p class="lbl">${esc(H.COPY.trustLabel)}</p>
-    ${L.enabled ? `<div class="${loopClasses}" style="${loopVars}"
-      role="region" aria-label="${esc(L.ariaLabel || 'Partner logos')}"
-      data-speed="${Number(L.speed ?? 120)}"
-      data-direction="${L.direction === 'right' ? 'right' : 'left'}"${
-        L.hoverSpeed === undefined ? '' : `\n      data-hover-speed="${Number(L.hoverSpeed)}"`}>
-      <div class="logoloop__track">
-        <ul class="logoloop__list" role="list">
-          ${H.CLIENTS.map(logoItem).join('\n          ')}
-        </ul>
-      </div>
-    </div>` : `<ul class="logos" role="list">
-      ${H.CLIENTS.map(logoItem).join('\n      ')}
-    </ul>`}
-  </div>
-</div>`;
 
 const caps = `
 <div class="caps">
@@ -749,7 +803,11 @@ const why = `
   </div>
 </section>`;
 
-/* ---- the blog: real published columns ---------------------------------
+/* ---- thought leadership & media coverage: real published columns -------
+   Not a company blog and no longer titled as one. Every card is a column
+   published BY a masthead, which is why the section leads with the byline and
+   the publication rather than with a post count.
+
    Every card is one record from `articles.js`, which is generated from The
    Edge Malaysia's own page data by `tools/fetch-articles.js`. Nothing here
    invents or reshapes a field: the title, the date, the summary and the image
@@ -780,6 +838,7 @@ const blog = `
         <span>${esc(H.COPY.blogHeading.squiggled)}</span>
       </span>
     </h2>
+    <p class="sec-lede blog-lede">${esc(H.COPY.blogLede)}</p>
     <div class="blog">
       ${SHOWN.map((a) => {
         const d = showDate(a.date);
@@ -918,6 +977,12 @@ const demoBody = `
       <p class="eyebrow">Contact us today</p>
       <h1 class="hand">${esc(H.COPY.demo.heading)}</h1>
       <p class="sec-lede">${esc(H.COPY.demo.lede)}</p>
+
+      <!-- The photograph and the gradient behind this whole page are the two
+           assets carried over from the old site by request. Both are served
+           locally from assets/demo/ rather than hotlinked, so this page does
+           not depend on talbotiq.com staying up or keeping its uploads path. -->
+      <p class="shot demoshot"><img src="assets/demo/contactus.jpg" width="1100" height="619" alt="Three colleagues talking in a Talbotiq meeting room" loading="lazy" decoding="async"></p>
 
       <!-- THESE THREE WORK TODAY, which is why they are on this page and not
            buried on another one. Whatever happens to the form, a reader who
@@ -1079,7 +1144,6 @@ ${body}
 ${footer}
 
 <script src="${stamp('assets/js/app.js')}" defer></script>
-<script src="${stamp('assets/js/logo-loop.js')}" defer></script>
 
 <!-- THE SCROLL CHOREOGRAPHY. Progressive enhancement, top to bottom: this file
      only adds classes and one custom property, and every animation is CSS. The
@@ -1098,7 +1162,7 @@ const html = page({
      and that is a deliberate difference from <title>, not an oversight. */
   ogTitle: `${COMPANY.name} — ${H.COPY.hero.lede.strong}`,
   desc: DESC,
-  body: [hero, productBand, ecosystem, mission, trust, caps, why, blog, close].join('\n'),
+  body: [hero, productBand, ecosystem, mission, caps, why, blog, close].join('\n'),
 });
 
 fs.writeFileSync(path.join(__dirname, 'index.html'), html, 'utf8');
