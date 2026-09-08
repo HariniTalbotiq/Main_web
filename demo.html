@@ -16,7 +16,7 @@
 <!-- the display face is self-hosted and used by the very first line of the
      page, so it is preloaded rather than discovered late in the stylesheet -->
 <link rel="preload" href="assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/talbotiq.css?v=a65f666a">
+<link rel="stylesheet" href="assets/css/talbotiq.css?v=cd0095b3">
 <!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
      that hides or moves anything is scoped to html.fx, so the class decides
      whether the page animates at all. A deferred script sets it too late: the
@@ -267,8 +267,8 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
             <select id="product" name="product" required>
               <option value="">Select a product</option>
               <option value="mimic">Video Interviewer</option>
-              <option value="mimic">Voice Interviewer</option>
-              <option value="mimic">Chat Interviewer</option>
+              <option value="mimic-voice-interviewer">Voice Interviewer</option>
+              <option value="mimic-chat-interviewer">Chat Interviewer</option>
               <option value="ats">ATS</option>
               <option value="erp">ERP</option>
               <option value="nouscrm">CRM</option>
@@ -376,7 +376,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
      page above is complete without it — no content lives inside a transition,
      nothing is ever covered, and under prefers-reduced-motion the reveals
      resolve instantly instead of moving. -->
-<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"mimic","name":"Voice Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"mimic","name":"Chat Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"ATS","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"ERP","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"tasca","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Lexer","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Recapr","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
-<script defer src="assets/js/scroll.js?v=9d2bb22c"></script>
+<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"ATS","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"ERP","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"tasca","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Lexer","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Recapr","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
+<script defer src="assets/js/scroll.js?v=e2775d39"></script>
 </body>
 </html>

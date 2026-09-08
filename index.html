@@ -16,7 +16,7 @@
 <!-- the display face is self-hosted and used by the very first line of the
      page, so it is preloaded rather than discovered late in the stylesheet -->
 <link rel="preload" href="assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/talbotiq.css?v=a65f666a">
+<link rel="stylesheet" href="assets/css/talbotiq.css?v=cd0095b3">
 <!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
      that hides or moves anything is scoped to html.fx, so the class decides
      whether the page animates at all. A deferred script sets it too late: the
@@ -230,128 +230,152 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 </div>
 
 <div class="band" id="products">
-  <!-- The pin. .bandpin only becomes sticky, and .band only becomes taller than
-       its content, once scroll.js has added the fx class to <html> — so with no
-       JS, reduced motion, or on a phone there is no extra scroll to pay for and
-       this is the band exactly as it always was. -->
-  <div class="bandpin">
   <div class="wrap">
-    <!-- THE PLATE. Everything the band draws lives inside this box: the
-         construction grid, the wiring, and the eight real tiles. Nothing here
-         ever escapes the section or covers the page. With no JS it is the plain
-         grid it has always been — the rules and the wiring are inert SVG that
-         simply renders finished. -->
-    <div class="plate" id="plate" data-scrub>
-      <svg class="rules" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <line class="r-v" style="--i:0" x1="25" y1="0" x2="25" y2="100" vector-effect="non-scaling-stroke"/>
-        <line class="r-v" style="--i:1" x1="50" y1="0" x2="50" y2="100" vector-effect="non-scaling-stroke"/>
-        <line class="r-v" style="--i:2" x1="75" y1="0" x2="75" y2="100" vector-effect="non-scaling-stroke"/>
-        <line class="r-h" style="--i:3" x1="0" y1="50" x2="100" y2="50" vector-effect="non-scaling-stroke"/>
-        <g class="r-t" style="--i:4"><line x1="23.9" y1="50" x2="26.1" y2="50" vector-effect="non-scaling-stroke"/><line x1="25" y1="47.6" x2="25" y2="52.4" vector-effect="non-scaling-stroke"/></g>
-        <g class="r-t" style="--i:5"><line x1="48.9" y1="50" x2="51.1" y2="50" vector-effect="non-scaling-stroke"/><line x1="50" y1="47.6" x2="50" y2="52.4" vector-effect="non-scaling-stroke"/></g>
-        <g class="r-t" style="--i:6"><line x1="73.9" y1="50" x2="76.1" y2="50" vector-effect="non-scaling-stroke"/><line x1="75" y1="47.6" x2="75" y2="52.4" vector-effect="non-scaling-stroke"/></g>
+
+    <div class="phead">
+      <h2 class="hand">Ten products.
+        <span class="mark-hl">
+        <svg viewBox="0 22 300 36" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M6 40 C 60 26, 130 46, 210 30 C 250 22, 275 34, 294 24 L 296 52 C 250 44, 190 58, 120 50 C 70 44, 34 56, 8 50 Z" fill="#F3E202" opacity=".92"/>
+    </svg>
+          <span>One data layer.</span>
+        </span>
+      </h2>
+      <p class="lede"><b>Buy one, or buy the suite.</b> Work moves between them without an export, a hand-off, or a second version of the truth.</p>
+    </div>
+
+    <div class="pblock">
+      <svg class="conn" viewBox="0 0 1116 830" preserveAspectRatio="none" aria-hidden="true">
+        <g fill="none" stroke-linecap="round">
+          <path d="M206 82 H265 Q279 82 279 96 V264 Q279 278 293 278 H1046 Q1060 278 1060 292 V596 Q1060 610 1046 610 H572 Q558 610 558 624 V694" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M910 82 H851 Q837 82 837 96 V278" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M418 148 V264 Q418 278 432 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M698 148 V264 Q698 278 684 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M401 414 H432 Q446 414 446 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M715 414 H684 Q670 414 670 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
+          <path d="M112 480 V596 Q112 610 126 610 H446" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M1004 480 V596 Q1004 610 990 610 H670" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
+          <path d="M335 480 V610" stroke="#A8DCC9" stroke-width="2.2"/>
+        </g>
       </svg>
-      <svg class="wires" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <path class="w" style="--i:0" data-a="0" d="M12.5 25 QNaN NaN 37.5 undefined" vector-effect="non-scaling-stroke" fill="none"/>
-        <path class="w" style="--i:1" data-a="1" d="M37.5 25 QNaN NaN 37.5 undefined" vector-effect="non-scaling-stroke" fill="none"/>
-        <path class="w" style="--i:2" data-a="2" d="M62.5 25 QNaN NaN 37.5 undefined" vector-effect="non-scaling-stroke" fill="none"/>
-        <path class="w" style="--i:4" data-a="4" d="M12.5 75 QNaN NaN 37.5 undefined" vector-effect="non-scaling-stroke" fill="none"/>
-        <path class="w" style="--i:8" data-a="8" d="M12.5 undefined QNaN NaN 37.5 undefined" vector-effect="non-scaling-stroke" fill="none"/>
-      </svg>
-      <div class="grid8">
-        <a class="tile" style="--i:0" href="products/mimic.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
+
+      <div class="glabel g1">
+        <span class="t">Hiring &amp; interviewing</span><span class="r"></span><span class="c">4 products</span>
+      </div>
+
+      <div class="prow prow-4">
+        <a class="tile" href="products/mimic.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
       <path d="M42 22l14-8v26l-14-8z" fill="#027A5C"/>
       <circle cx="21" cy="24" r="5.4" fill="#fff"/>
       <path d="M11 37c2.4-6 17.6-6 20 0z" fill="#fff"/>
       <rect x="45" y="43" width="12" height="12" rx="3" fill="#F3E202"/>
-      <path d="M48 49l2 2 4-4.4" stroke="#1F2430" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <path d="M48 49l2 2 4-4.4" stroke="#1F2430" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="nm">Video Interviewer</span>
         <span class="ds">Structured video screening at volume</span>
+        <span class="kin kin-async">Async</span>
       </a>
-      <a class="tile" style="--i:1" href="products/mimic.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
+        <a class="tile" href="products/mimic.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
       <path d="M13 26a16 16 0 0 0 32 0" fill="none" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <path d="M29 42v8" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <g stroke="#F3E202" stroke-width="3.4" stroke-linecap="round"><path d="M6 50v-8"/><path d="M52 50v-8"/></g>
       <g stroke="#02A885" stroke-width="3.4" stroke-linecap="round"><path d="M14 52v-4"/><path d="M44 52v-4"/></g>
-      <path d="M21 54h16" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/></svg></div>
+      <path d="M21 54h16" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/></svg></span>
         <span class="nm">Voice Interviewer</span>
         <span class="ds">A spoken round, transcribed live</span>
+        <span class="kin kin-live">Live</span>
       </a>
-      <a class="tile" style="--i:2" href="products/mimic.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
+        <a class="tile" href="products/mimic.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
       <rect x="16" y="19" width="22" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="27" width="15" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="42" y="40" width="15" height="15" rx="4" fill="#F3E202"/>
-      <path d="M46 47.5h7M49.5 44v7" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <path d="M46 47.5h7M49.5 44v7" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/></svg></span>
         <span class="nm">Chat Interviewer</span>
         <span class="ds">Blind text assessment, AI answers flagged</span>
+        <span class="kin kin-async">Async</span>
       </a>
-      <a class="tile" style="--i:3" href="products/ats.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
+        <a class="tile" href="products/ats.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
       <circle cx="45" cy="44" r="11" fill="#F3E202"/>
-      <path d="M40 44l3.6 3.6 6.6-7.4" stroke="#1F2430" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <path d="M40 44l3.6 3.6 6.6-7.4" stroke="#1F2430" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="nm">ATS</span>
         <span class="ds">Requisition to signed offer</span>
+        <span class="kin kin-2-modes">2 modes</span>
       </a>
-      <a class="tile" style="--i:4" href="products/erp.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
+      </div>
+
+      <div class="glabel g2">
+        <span class="t">Business management software</span><span class="r"></span><span class="c">5 products</span>
+      </div>
+
+      <div class="prow prow-5">
+        <a class="tile" href="products/erp.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
       <path d="M3 26h52" stroke="#fff" stroke-width="2.6" opacity=".55"/>
       <rect x="10" y="34" width="15" height="4.4" rx="2.2" fill="#fff"/>
       <circle cx="45" cy="37" r="5.4" fill="#F3E202"/>
-      <path d="M19 16v-5a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v5" fill="none" stroke="#027A5C" stroke-width="3.4"/></svg></div>
+      <path d="M19 16v-5a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v5" fill="none" stroke="#027A5C" stroke-width="3.4"/></svg></span>
         <span class="nm">ERP</span>
         <span class="ds">Order to cash, purchase to pay</span>
       </a>
-      <a class="tile" style="--i:5" href="products/nouscrm.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
+        <a class="tile" href="products/nouscrm.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
       <rect x="20" y="24" width="10" height="28" rx="2.6" fill="#027A5C"/>
       <rect x="35" y="14" width="10" height="38" rx="2.6" fill="#02A885"/>
       <path d="M8 24L21 15l11 4L52 5" fill="none" stroke="#C48A00" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="52" cy="5" r="4.2" fill="#F3E202" stroke="#C48A00" stroke-width="2"/></svg></div>
+      <circle cx="52" cy="5" r="4.2" fill="#F3E202" stroke="#C48A00" stroke-width="2"/></svg></span>
         <span class="nm">CRM</span>
         <span class="ds">The intelligent hub for sales teams</span>
       </a>
-      <a class="tile" style="--i:6" href="products/tasca.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
+        <a class="tile" href="products/tasca.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
       <rect x="32" y="5" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="5" y="32" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="32" y="32" width="21" height="21" rx="5" fill="#F3E202"/>
       <path d="M10 15.5l4 4 7-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M37 42.5l4 4 7-8" stroke="#1F2430" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <path d="M37 42.5l4 4 7-8" stroke="#1F2430" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span class="nm">tasca</span>
         <span class="ds">Plan, track, ship faster</span>
       </a>
-      <a class="tile" style="--i:7" href="products/lexer.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
+        <a class="tile" href="products/lexer.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
       <path d="M33 3l16 16H33z" fill="#027A5C"/>
       <rect x="16" y="26" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="34" width="24" height="3.6" rx="1.8" fill="#fff"/>
-      <rect x="16" y="42" width="14" height="3.6" rx="1.8" fill="#F3E202"/></svg></div>
+      <rect x="16" y="42" width="14" height="3.6" rx="1.8" fill="#F3E202"/></svg></span>
         <span class="nm">Lexer</span>
         <span class="ds">Contact and receipt intelligence</span>
       </a>
-      <a class="tile" style="--i:8" href="products/recapr.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
+        <a class="tile" href="products/recapr.html">
+        <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
       <rect x="15" y="19" width="21" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="15" y="27" width="14" height="3.6" rx="1.8" fill="#fff"/>
       <circle cx="45" cy="43" r="11" fill="#C48A00"/>
-      <path d="M45 37v6.4l4 2.8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></div>
+      <path d="M45 37v6.4l4 2.8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></span>
         <span class="nm">Recapr</span>
         <span class="ds">The meeting, on the record</span>
       </a>
-      <a class="tile" style="--i:9" href="products/vawlt.html">
-        <div class="card"><svg width="56" height="56" viewBox="0 0 70 70" aria-hidden="true" focusable="false"><path d="M35 4l25 10v20c0 16-10 24-25 31C20 58 10 50 10 34V14z" fill="#027A5C"/>
+      </div>
+
+      <div class="glabel g3">
+        <span class="t">The layer underneath</span><span class="r"></span><span class="c">1 product</span>
+      </div>
+
+      <div class="pengine">
+        <a class="tile" href="products/vawlt.html">
+        <span class="card"><svg width="70" height="70" viewBox="0 0 70 70" aria-hidden="true" focusable="false"><path d="M35 4l25 10v20c0 16-10 24-25 31C20 58 10 50 10 34V14z" fill="#027A5C"/>
       <rect x="24" y="30" width="22" height="17" rx="3.6" fill="#F3E202"/>
       <path d="M28.5 30v-5a6.5 6.5 0 0 1 13 0v5" fill="none" stroke="#F3E202" stroke-width="3.4"/>
-      <circle cx="35" cy="38" r="3" fill="#027A5C"/></svg></div>
+      <circle cx="35" cy="38" r="3" fill="#027A5C"/></svg></span>
         <span class="nm">Private AI Engine</span>
         <span class="ds">Your AI, inside your perimeter</span>
       </a>
+        <p class="enote"><b>The other nine are things you use. This is what they run on</b> — purpose-trained models on hardware we control, with every task declaring where it runs and what it does with personal data.</p>
       </div>
     </div>
-  </div>
+
   </div>
 </div>
 
@@ -690,7 +714,7 @@ Businesses that fai...</p>
      page above is complete without it — no content lives inside a transition,
      nothing is ever covered, and under prefers-reduced-motion the reveals
      resolve instantly instead of moving. -->
-<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"mimic","name":"Voice Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"mimic","name":"Chat Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"ATS","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"ERP","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"tasca","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Lexer","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Recapr","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
-<script defer src="assets/js/scroll.js?v=9d2bb22c"></script>
+<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"ATS","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"ERP","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"tasca","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Lexer","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Recapr","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
+<script defer src="assets/js/scroll.js?v=e2775d39"></script>
 </body>
 </html>

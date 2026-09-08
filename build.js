@@ -414,7 +414,20 @@ const stageNode = (t) => {
 
 const STAGE = {
   center: stageNode(H.TILES.find((t) => t.slug === CENTER_SLUG)),
-  nodes: H.TILES.filter((t) => t.slug !== CENTER_SLUG).map(stageNode),
+  /* ONE NODE PER PRODUCT, NOT PER TILE. Several tiles may present the same
+     product under different names — Mimic ships as Video, Voice and Chat
+     Interviewer — and the grid is right to show all three. The diagram is not:
+     it claims what is wired to the engine, so drawing Mimic three times would
+     turn three products on the engine into five. First tile with a given slug
+     wins; the rest are the same record seen again. */
+  nodes: (() => {
+    const seen = new Set();
+    return H.TILES.filter((t) => {
+      if (t.slug === CENTER_SLUG || seen.has(t.slug)) return false;
+      seen.add(t.slug);
+      return true;
+    }).map(stageNode);
+  })(),
   palette: H.PALETTE,
 };
 
@@ -1007,7 +1020,14 @@ const demoBody = `
             <label for="product">Which product ${'<span class="req" aria-hidden="true">*</span>'}</label>
             <select id="product" name="product" required>
               <option value="">Select a product</option>
-              ${H.TILES.map((t) => `<option value="${esc(t.slug)}">${esc(t.name)}</option>`).join('\n              ')}
+              ${(() => { const used = new Set(); return H.TILES.map((t) => {
+                /* Tiles that share a product still need to submit distinctly,
+                   or a Voice Interviewer enquiry arrives looking like Video. */
+                let v = t.slug;
+                if (used.has(v)) v = `${t.slug}-${t.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+                used.add(v);
+                return `<option value="${esc(v)}">${esc(t.name)}</option>`;
+              }).join('\n              '); })()}
               <option value="not-sure">Not sure yet — help me choose</option>
             </select>
           </p>
