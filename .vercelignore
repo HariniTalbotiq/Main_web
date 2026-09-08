@@ -1,0 +1,20 @@
+# .vercelignore uses gitignore syntax, where '#' only starts a comment at the
+# START of a line. A trailing comment after a pattern becomes part of the
+# pattern and silently matches nothing — which is exactly how research/ and
+# archive/ ended up publicly served on the first deploy. Keep comments on
+# their own lines.
+
+# Internal. Must never be published.
+archive
+research
+.impeccable
+.DS_Store
+.env.local
+
+# Research captures, not referenced by any page.
+assets/shots
+
+# Source. The site is pre-built, so the generator is not needed at the edge.
+build.js
+products.js
+README.md

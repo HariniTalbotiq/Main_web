@@ -103,14 +103,18 @@ line wraps is a mark in the wrong place.
 | `products/*.html` | The eight product pages. Standalone mockups, linked from the tiles. |
 | `about.html` | The about page. A standalone mockup, like the product pages. |
 | `contact.html` | The contact page. Standalone mockup; carries the office address and the working phone/email/WhatsApp links. |
+| `signin.html` | The sign-in page. Work email + password, or Continue with Google, through Supabase Auth. Ships **not connected**: fill in the two keys at the top of its script to switch it on. |
 | `solutions/*.html` | One page per service. Four of five; only AI Governance & Security to come. |
 | `tools/fix-pages.js` | Wires the placeholder links in `about.html` and `products/*.html`, fixes the bugs they shipped with, and swaps their display face. |
+| `tools/check-signin.py` | Drives `signin.html`'s sign-in flow in headless Chrome against a stubbed provider — 29 assertions across the not-connected and connected states. `python3 tools/check-signin.py`, exit 0 only if all pass. |
 | `home.js` | **How the homepage is COMPOSED.** The eight tiles, every word of copy, the nav, the footer. Joins to `products.js` by `slug`. |
 | `build.js` | The template + generator. One function per section. |
 | `index.html` | Generated output. Overwritten on every build. |
 | `assets/css/talbotiq.css` | The whole design system. §1–§12 is the mockup's own CSS; §13+ is what a shipped page needs and a mockup does not. |
 | `assets/js/app.js` | Three things: the header's hairline, the three nav panels, the mobile drawer. |
 | `assets/js/logo-loop.js` | The "Trusted by" marquee — React Bits' LogoLoop, ported to vanilla JS. |
+| `assets/js/stage.js` | **The eclipse, the signal and the convergence.** One fixed canvas, three scroll windows. Decorative; the page is complete without it. |
+| `assets/js/scenes.js` | **The constellation and the black hole.** Two section-local canvases. The constellation runs under reduced motion and on phones, deliberately. |
 | `design/mockup-homepage.html` | The design reference. |
 | `research/RESEARCH.md` | **The evidence log.** Every product claim traces to a line here. |
 | `assets/brand/clients/` | The four "Trusted by" logos, plus a README on how they were prepared. |
@@ -237,6 +241,278 @@ Driven with a synthetic clock, since a hidden document suspends `rAF`:
 React Bits' licence and attribution terms before this page goes public** — that
 is the upstream project's call, not something this repo can assert.
 
+## The drawing
+
+The page is a drawing of the suite that assembles itself as you read it. There
+is **no overlay** — no fixed layer, no canvas over the content, nothing that
+covers the header. Every drawn thing lives inside the section it describes and
+stops at that section's edges.
+
+| Where | What happens |
+| --- | --- |
+| `#products` | The band holds still under the header while its drawing is made: construction rules register the grid, a cross marks each rule crossing, the eight products resolve into their cells, and the wiring that is genuinely there draws itself between them. |
+| `#ecosystem` | The engine's four steps — *Request, Redact, Route, Answer* — fill along a rail as the request reaches each one. |
+| everywhere else | Sections rise, sharpen and arrive as they enter. One pattern, one curve. |
+
+### The wiring is the accuracy contract, drawn
+
+`build.js` emits `#stage-data` from `products.js`, and the field that matters is
+**`live`, which is `bus.served`**. Three products are on the AI Engine today, so
+**three traces are drawn** — Mimic and Recapr solid, Axiom dashed because it is
+wired but not shipped. The other four get **nothing**: not a faint line, not a
+dotted courtesy one. The absence is the statement, and a hairline drawn for
+balance would reprint the claim this page already retired — eight applications
+on six hosts, no single sign-on.
+
+Wire a fourth product in `products.js` and the drawing redraws itself. The build
+**fails** if a product loses its `bus`, or the engine its four-step `story.arc`.
+
+### The traces are routed, not drawn straight
+
+They run **only in the gutters the rules already mark** — leave the card
+sideways, down a column rule, along the row rule on their own lane, and in to
+the hub's near face. No trace ever crosses a card or a caption.
+
+That is not decoration. The first version ran a bowed curve from each product
+straight to the engine, which put the Mimic trace through the words *"HRMS / The
+people platform"*. A diagram that crosses its own labels is one that was drawn
+without looking.
+
+**The whole drawing is derived from the grid that is actually on screen.** The
+grid is four columns, three below 1080px and two below 820px, so `scroll.js`
+reads the real card boxes, works out where the column and row gutters are, and
+rebuilds both the rules and the routing from them — at any width, on every
+resize. An earlier version hardcoded the four-column geometry, and at 1024px it
+drew its traces straight through the tiles.
+
+`build.js` still emits a four-column version so the un-enhanced page has
+something correct to show. Below 1081px that version is no longer true, so with
+no JS to re-derive it, it is hidden rather than shown wrong.
+
+### No framework, and no canvas
+
+The whole choreography is **one 250-line file that animates nothing**. It adds a
+class, marks what should reveal, and writes five numbers into custom properties
+as you scroll. Every transition, curve and stagger is in §18 of the stylesheet.
+
+Motion is limited to `opacity`, `translate`, `scale`, `filter` and
+`stroke-dashoffset` — all cheap, none of them causing layout.
+
+### How it degrades
+
+Every rule in §18 that hides or moves anything is scoped to `html.fx`, and that
+class is set by **one inline line in `<head>`**. It has to be inline: a deferred
+script sets it too late, and the browser would paint the finished drawing and
+then snap it back to the start.
+
+| Condition | What happens |
+| --- | --- |
+| **No JS** | The rules, the crosses, the eight tiles and all three traces are **already in the HTML**, and above 1081px the drawing simply renders, finished. Below that the grid has reflowed and the static drawing no longer matches it, so it is hidden and the band is the plain grid it always was. |
+| **`prefers-reduced-motion`** | No class, so nothing is hidden and nothing moves. The band stays its natural height — the page is **870px shorter** than the animated one. |
+| **≤ 820px** | Same. The phone never pays for the pin. 820 because `app.js` already says 820. |
+
+Nothing on the page exists only inside a transition.
+
+### Verified
+
+| Check | Result |
+| --- | --- |
+| axe-core, against `main` | **identical** violation sets, **0 added** |
+| No JS | 8 tiles, 3 traces, 10 rules, all four step words, band at its natural height |
+| Reduced motion / ≤820px | `fx` absent, tiles at full opacity, no extra scroll |
+| Horizontal overflow | none, 390px through 1440px |
+| The other 13 pages | byte-identical to `main` |
+
+## The atmosphere
+
+Five CSS-only additions, no JS and no new DOM, that give the page air without
+putting anything on top of it.
+
+| | What |
+| --- | --- |
+| **The weave** (§19) | A 1px line every 8px across the product band, white at 55% so it lightens rather than dirties. Attio runs the same 8px period over both its light and dark sections; it is most of why their surfaces read as engineered. |
+| **The wash** (§20) | A colour field deepening down the product band until it meets the mint of the ecosystem section. |
+| **The seam** (§21) | The two bands joined into one surface, and the ecosystem band's two hard borders replaced by one drawn rule that fades out at both ends. |
+| **The iris** (§21) | A four-bladed lens diaphragm behind the ecosystem band, turning 48° as you scroll. |
+| **The ground** (§22) | The body stops being pure white. |
+| **The floor** (§23) | The closing CTA darkens toward its own floor. |
+
+### The dark chapter
+
+The page runs light from the hero, **goes dark for one section, and comes back**.
+That is the eclipse — not a disc crossing the viewport, but the page itself
+dimming for a chapter. The dim lives in the section's own background: going in
+it starts at the product band's exact grey, coming out it resolves to the page's
+exact ground, so there is no boundary at either end and no separate element
+doing the fade.
+
+Inside it, pinned under the header: the claim and its four steps on the left, a
+hairline, and on the right **a wireframe well** — eight rings, one per product,
+falling into a throat that is the AI Engine. Five signals fall down its
+meridians as you scroll.
+
+**It has to be dark, and that is the whole point.** A wireframe, five faint
+signals and four lit steps are all low-contrast marks, and a low-contrast mark
+on a white ground is invisible — which is exactly why the first attempt at this,
+a pale iris on the mint band, read as a smudge however it was tuned. The
+identical figure on near-black reads as an instrument. Attio's own version is on
+a dark section; on their light page they drop it entirely.
+
+**The geometry is computed, not drawn.** A gravity well is a surface of
+revolution in perspective, so it falls out of two functions and a projection:
+
+```
+R(u) = radius at u, u=1 at the rim and 0 at the throat
+d(u) = how far the surface has fallen — steep near the throat
+x = cx + R·cos t        y = cy + R·k·sin t + d
+```
+
+Generating it in `build.js` means the eight rings are eight *because there are
+eight products*, and it stays correct if the tilt or the count changes.
+
+**The signals are travelling dashes, not moving dots.** Each is a copy of its
+meridian stroked with one very short dash on an enormous gap, so what renders is
+a bright segment sitting exactly on the curve. A circle moved with `offset-path`
+would put its coordinates in CSS pixels while the path is in viewBox units — the
+two only agree at one window width. A dash cannot leave its own path at any size.
+
+### The entrance kit — four treatments, not one
+
+The first version gave every element the same entrance: 12px of rise, 3px of
+blur, 400ms, on twenty-eight things across seven sections. One idea repeated is
+what makes a page read as a template however good the idea is. It is now four
+treatments, assigned by what the content **is**:
+
+| | Content | What it does |
+| --- | --- | --- |
+| `.rv-head` | display headings | **Uncovered**, not faded — clipped from below so the Didone is at full contrast from the first frame. |
+| `.rv-text` | body copy | A 10px rise, and **no blur**. |
+| `.rv-card` | cards, columns | Rise + `scale(.985)` + 2px blur, staggered 70ms. The star badge lands 200ms after its card, with the only overshoot on the page. |
+| `.post .shot` | article images | A **wipe**: the frame opens while the picture drifts 1.07 → 1 inside it, so two edges move at different rates. |
+
+**The blur came off the text.** Blurring body copy on entry is the clearest tell
+of an amateur scroll animation — for 400ms the reader's own eyes are told they
+are out of focus. Blur stays only where there is a shape to soften.
+
+Four, not seven. A page where every section invents its own effect is not
+sophisticated, it is noisy, and the reader stops trusting that motion means
+anything.
+
+### The marks draw themselves
+
+Four hand-drawn pen marks — a highlighter behind the hero's last clause, a lasso
+around *Intelligence*, a ruled underline, a squiggle. Until now they were
+drawings of pen strokes that were simply *there*. Two techniques, because there
+are two kinds of mark:
+
+- the lasso, underline and squiggle are **stroked**, so they walk a
+  `stroke-dashoffset` along their own length. `pathLength="1"` normalises them so
+  the short underline and the long lasso draw at the same rate.
+- the highlighter is a **filled closed path** — a fill has no stroke to dash — so
+  it is wiped behind a leading edge held 10% off vertical. That slant is the
+  difference between a marker dragged across a word and a rectangle growing.
+
+Each is timed to the kind of stroke it is: the lasso is a whole loop and takes
+780ms, the ruled underline is one confident pull at 440ms. Every mark lands
+*after* its own word, which is the order the two things happen on paper.
+
+### The dead-man's switch
+
+Everything §18–25 hides is scoped to `html.fx`, and `.fx` is set by an inline
+line in `<head>` **before `scroll.js` loads**. If that file 404s or throws,
+nothing would ever unhide the page — content would be gone, not just unanimated.
+So `scroll.js` signals `fx-on`, and if that has not happened in 2 seconds `.fx`
+comes off and the page resolves to its finished state. Verified by aborting the
+request: hidden at +0.5s, fully recovered at +2.8s.
+
+### The gradient signature, which is measured rather than invented
+
+The same construction appears in Attio's hero and six times on Stripe's
+homepage. Two teams arriving independently at one shape:
+
+- an ellipse **oversized** to ~90–103% of the box on both axes
+- origin **`at 50% 100%–106%`** — centred, at or *below* the edge, so the
+  saturated core is off-canvas and **you never see the light source**
+- six to eight stops, spacing **widening** toward the end
+- a terminal stop that is **exactly the section's own background colour**
+
+That last rule is the whole thing. Terminating in the page means the wash has no
+boundary anywhere; you see only falloff. A gradient ending in a colour the page
+does not already have is a blob with a visible edge — the difference between
+atmosphere and a stock hero graphic. Every wash here follows it.
+
+### Why the hue is rotated 11°, not 90°
+
+Pure teal `#02A885` is OKLCH C .127 — *more* chromatic than Attio's periwinkle.
+Across an area this size it reads as a wellness brand. But **the hue is not what
+does that**; C ≥ .06 held at L .85–.95 is. Rotating all the way to blue would be
+worse: the mint band is H 176 and the green H 168, so a wash at H 200+ would sit
+30° off its own family and read as an accident.
+
+H **182** is eleven degrees off pure green — out of the leaf corner, still the
+same colour as the section it runs into. Every visible stop is capped at C ≤
+.068, about half Attio's. `oklch(.965 .015 176)` renders as exactly `#EAF7F3`,
+so the existing mint band **is** the top of the ramp.
+
+### Why the iris is not the planet
+
+On geometry, not on size:
+
+- **hollow inside 71%** of its radius — there is no disc
+- one arc terminates in `#EAF7F3`, the band's exact ground, so the ring is
+  visibly **open**
+- **four blade seams** interrupt the rim, the way a lens diaphragm does
+- it **never translates** — it rotates about its own centre, and nothing passes
+  in front of or behind it
+- it is a `background-image` on a pseudo-element inside one 373px band. The
+  rejected version was a fixed fullscreen canvas with a filled disc crossing the
+  viewport
+
+The colour shift is the conic hues sweeping past the rim mask as it turns —
+48°, driven entirely by scroll through `animation-timeline: view()`. **No
+clock**, so it cannot run off-screen or cost a battery. Amber is deliberately
+absent from the ramp: amber means *pending* on this page, and a warm point on a
+decorative rim would read as a status.
+
+> **`overflow: clip`, never `hidden`.** Both crop. But `hidden` makes the element
+> a scroll container, and a `view()` timeline resolves against the nearest one —
+> so the iris measured itself against a box that never scrolls and its rotation
+> froze at a single angle. This cost an hour; it is one word.
+
+### Contrast went up, not down
+
+The CTA floor **darkens** toward the bottom. That direction is an accessibility
+decision: white on `#02A885` is 3.02:1, and `.cta .fine` is 18px, so it fails AA
+today. Lightening the floor — the more obvious move — would take it to 2.36:1.
+Deepening puts the darkest tone where the smallest type sits: **3.55:1**.
+
+axe-core against `main`: **26 violations → 24. Zero added, two removed.**
+
+### What was rejected
+
+**~80% of 21st.dev's atmosphere catalogue is WebGL** in 2026 — every Paper
+Shaders export, every aurora, every gradient orb. All out on the
+zero-dependency rule. The black-hole and orrery entries were out twice over.
+
+The one close match, *Iridescent Foil*, was rejected on maths: its layers
+combine with `overlay` and `soft-light`, which are **identity operations over
+white**. Four of its five layers would render as literally nothing here.
+
+And Attio itself does not attempt this on white — their light page has zero
+canvases and no wash, only hairlines. The moon is a dark-surface technique. What
+transfers to a light page is the gradient signature and the weave.
+
+### What this replaced
+
+The first attempt at this was a fullscreen fixed canvas that played an eclipse
+over the page — a dark disc crossing the viewport, orbits, a corona. It was
+measured, it performed well, and it was **the wrong idea**: a show happening on
+top of a website rather than a website behaving well, borrowing a cosmic
+metaphor that had nothing to do with the product, and covering the header to do
+it. It is gone, along with the 46kB of GSAP it briefly needed. This is the
+replacement, and the rule it is built on is the one the old version broke:
+**nothing is ever covered.**
+
 ## The standalone pages
 
 `about.html`, `contact.html`, `solutions/*.html` and `products/*.html` are
@@ -275,6 +551,47 @@ things on it turned into real destinations elsewhere:
 The nav item for the page you are on (`class="on"`) is rendered **unlinked with
 `aria-current="page"`** rather than as a link to itself — a nav item that
 reloads the page you are reading misrepresents what it does.
+
+### The sign-in page
+
+`signin.html` sits at the root, matching a canonical of `/signin`. It is the
+destination for every **Sign in** in every header and drawer on the site — 30
+links across 15 pages, set from `GO.signin` in `build.js` for the generated
+pages and from `SIGNIN` in `tools/fix-pages.js` for the standalone ones.
+
+**Its shell is `contact.html`'s, sliced whole** — the same `<style>` block, the
+same header, drawer, mobar and footer, the same base64 logo. Only what a login
+screen needs and a contact page does not is added, in a `13 · SIGN IN` section
+at the end of the CSS. Two root pages that share a design system and retype it
+are two pages that will disagree eventually.
+
+**It ships not connected, and says so.** `AUTH.url` and `AUTH.anonKey` at the
+top of the page's script are empty, so the page shows a "not connected" notice,
+keeps every control disabled, and requests no third-party script at all. Fill
+both in (Supabase → Project Settings → API) and it authenticates for real. A
+login form that looks live and is not is worse than no login form, which is why
+that state is a visible notice rather than a silent no-op.
+
+**Google** needs the provider switched on once in the same dashboard, plus this
+page's URL in the redirect allow-list. The flow is PKCE, so no token ever lands
+in a URL.
+
+**What it does not claim.** There is still no single sign-on: eight applications
+on six hosts, several holding their own login. The page says that in its own
+copy and keeps a link to the tile grid, so it does not quietly reinstate the
+"8 products. 1 login." claim this site already retired.
+
+**Two things were deliberately left out** — self-serve sign-up, and a real
+password reset. Accounts are issued by the team today, so both point at
+`contact.html`. Wiring `resetPasswordForEmail` is a small edit to the same
+script when that changes.
+
+**Swapping provider** means rewriting two functions. Only `signInWithPassword`
+and `signInWithOAuth` touch Supabase; Firebase, Auth0 and Clerk expose the same
+pair. The pinned CDN build carries an SRI `sha384` hash — this is the script
+that will hold a password field, so a swapped file on the CDN is the one
+supply-chain failure that matters here. Bumping the version means recomputing
+the hash; the command is in the comment above it.
 
 ### The contact page
 

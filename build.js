@@ -36,6 +36,9 @@ const esc = (s) => String(s == null ? '' : s)
 
 const BY_SLUG = new Map(PRODUCTS.map((p) => [p.slug, p]));
 
+/* The product every diagram on this page orbits. */
+const CENTER_SLUG = 'ai-engine';
+
 /* ---- integrity checks: fail the build, not the page -------------------- */
 {
   const bad = [];
@@ -58,6 +61,28 @@ const BY_SLUG = new Map(PRODUCTS.map((p) => [p.slug, p]));
     if (!a.summary) bad.push(`article ${a.nid} has no summary`);
   }
   if (ARTICLES.length !== new Set(ARTICLES.map((a) => a.nid)).size) bad.push('two articles share an nid');
+  /* THE STAGE DRAWS A DIAGRAM OF THE SUITE, AND A DIAGRAM IS A CLAIM. It needs
+     a centre to orbit and a `bus` on every product to know which of them are
+     genuinely on the engine. A missing one would draw a blank node or, worse,
+     silently assert an integration that does not exist — so it fails here. */
+  if (!H.TILES.some((t) => t.slug === CENTER_SLUG)) {
+    bad.push(`no tile with slug "${CENTER_SLUG}" — the stage has no centre to draw`);
+  }
+  for (const t of H.TILES) {
+    const p = BY_SLUG.get(t.slug);
+    if (p && !p.bus) bad.push(`product "${t.slug}" has no bus — the stage cannot tell whether it is on the engine`);
+  }
+  /* The signal that crosses the page carries the ENGINE's own four words —
+     Request, Redact, Route, Answer — because the engine is the layer under
+     every product. No arc, nothing to carry. */
+  {
+    const e = BY_SLUG.get(CENTER_SLUG);
+    const arc = e && e.story && e.story.arc;
+    if (e && !(Array.isArray(arc) && arc.length === 4)) {
+      bad.push(`${CENTER_SLUG} has no four-stage story.arc — the signal has nothing to carry`);
+    }
+  }
+
   if (bad.length) {
     console.error('\nBUILD FAILED\n' + bad.map((b) => '  · ' + b).join('\n') + '\n');
     process.exit(1);
@@ -73,14 +98,25 @@ const BY_SLUG = new Map(PRODUCTS.map((p) => [p.slug, p]));
    `signin` is the honest answer to a real gap: there are eight applications on
    six different hosts and no single sign-on, so "Sign in" cannot go to one
    login. It goes to the tile grid, which is where you pick the app you want.
-   The day an SSO exists, this is the one line that changes. */
+   The day an SSO exists, this is the one line that changes.
+
+   An automated pass once replaced this with a fabricated `signin.html` — a
+   whole login screen for an SSO that does not exist — and rewrote this comment
+   to justify it. Reverted. A sign-in page that cannot sign anybody in is worse
+   than a link to the grid, which at least takes you somewhere real. */
 const GO = {
-  /* `demo` stays on talbotiq.com/inquiry-now/ because that form actually
-     works. `talk` is the LOCAL contact page: its phone, email and WhatsApp
-     links are live, so it is useful even though its own form is not wired. */
-  demo: COMPANY.inquiry,
+  /* `demo` is now a page on THIS site. It used to be talbotiq.com/inquiry-now/
+     — kept there on the grounds that the old form actually submits and the
+     local one did not — but that meant the site's single most important button
+     handed the reader to the old site. demo.html carries the same form, fixed,
+     and its submit still falls through to the working one until an endpoint is
+     set, so the reason for the old routing is preserved without the cost.
+
+     `talk` is the LOCAL contact page: its phone, email and WhatsApp links are
+     live, so it is useful even though its own form is not wired. */
+  demo: 'demo.html',
   talk: 'contact.html',
-  signin: '#products',
+  signin: 'signin.html',
   products: '#products',
   allProducts: COMPANY.site + '/products/',
 };
@@ -158,6 +194,16 @@ function stamp(rel) {
   }
 }
 
+/* THE MARKS DRAW THEMSELVES. `pathLength="1"` on the three STROKED marks
+   normalises each path to a length of 1 whatever its real length, so one CSS
+   rule draws the short underline and the long lasso at the same rate instead of
+   the lasso taking three times as long. The highlighter is a FILLED closed
+   path — a fill cannot be dashed, so it is wiped instead; see §24.
+
+   None of these carry `vector-effect`, which is what makes pathLength safe
+   here: the schematic traces in the product band hit exactly that combination
+   and had to be rebuilt in pixel coordinates. */
+
 /* =============================================================================
    THE HAND-DRAWN MARKS
    Three SVGs, all decorative, all aria-hidden, each stroked in the colour of
@@ -178,17 +224,17 @@ const HIGHLIGHT = `<svg viewBox="0 22 300 36" preserveAspectRatio="none" aria-hi
 
 /* the lasso around one word of the mission */
 const LASSO = `<svg viewBox="0 0 260 80" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M132 8 C 66 2, 8 20, 12 42 C 16 66, 104 76, 170 72 C 232 68, 254 50, 246 32 C 239 16, 196 6, 150 7" fill="none" stroke="${H.PALETTE.teal}" stroke-width="4.2" stroke-linecap="round"/>
+      <path pathLength="1" d="M132 8 C 66 2, 8 20, 12 42 C 16 66, 104 76, 170 72 C 232 68, 254 50, 246 32 C 239 16, 196 6, 150 7" fill="none" stroke="${H.PALETTE.teal}" stroke-width="4.2" stroke-linecap="round"/>
     </svg>`;
 
 /* the ruled underline under the capability heading */
 const UNDERLINE = `<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M3 9 C 50 3, 130 12, 197 5" fill="none" stroke="${H.PALETTE.blue}" stroke-width="4.4" stroke-linecap="round"/>
+      <path pathLength="1" d="M3 9 C 50 3, 130 12, 197 5" fill="none" stroke="${H.PALETTE.blue}" stroke-width="4.4" stroke-linecap="round"/>
     </svg>`;
 
 /* the squiggle under the blog heading */
 const SQUIGGLE = `<svg viewBox="0 0 150 14" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M3 8 q 12 -7 24 0 t 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="${H.PALETTE.teal}" stroke-width="3.6" stroke-linecap="round"/>
+      <path pathLength="1" d="M3 8 q 12 -7 24 0 t 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="${H.PALETTE.teal}" stroke-width="3.6" stroke-linecap="round"/>
     </svg>`;
 
 /* the star on every capability card */
@@ -304,6 +350,43 @@ const drawer = `
 </div>`;
 
 /* =============================================================================
+   THE STAGE'S DATA — what the five scroll scenes are allowed to draw
+   -----------------------------------------------------------------------------
+   A diagram of the suite is a claim about the suite, so none of this is typed
+   here. Every field is read back out of the accuracy contract, and the field
+   that matters most — `live` — is `bus.served`, computed, never asserted.
+
+   FOUR OF THE EIGHT ARE ON THE ENGINE TODAY. Drawing all eight wired to a
+   glowing centre would reprint the one claim this page already retired: eight
+   applications on six hosts, no single sign-on, so "1 login" was not true. The
+   scenes therefore draw four lit paths and four unwired orbits. The day the
+   others land, someone edits `bus` in products.js and every diagram on the
+   page redraws itself — no scene file is touched.
+
+   `name` comes from home.js, not products.js, because home.js is where this
+   design's renames live (Sales CRM, tasca, Document Parser, Private AI
+   Engine). A diagram that called a tile something the tile does not say would
+   be its own small lie. */
+const stageNode = (t) => {
+  const p = BY_SLUG.get(t.slug);
+  return {
+    slug: t.slug,
+    name: t.name,
+    cat: p.category,
+    live: !!(p.bus && p.bus.served),
+    pending: p.status === 'pending',
+    arc: Array.isArray(p.story && p.story.arc) ? p.story.arc : null,
+    accent: p.accent || H.PALETTE.teal,
+  };
+};
+
+const STAGE = {
+  center: stageNode(H.TILES.find((t) => t.slug === CENTER_SLUG)),
+  nodes: H.TILES.filter((t) => t.slug !== CENTER_SLUG).map(stageNode),
+  palette: H.PALETTE,
+};
+
+/* =============================================================================
    SECTIONS
    ========================================================================== */
 
@@ -327,35 +410,230 @@ const hero = `
   </div>
 </div>`;
 
-const tiles = H.TILES.map((t) => {
+const tiles = H.TILES.map((t, i) => {
   const href = tileHref(t);
   const inner = `<div class="card">${icon(t, 56)}</div>
         <span class="nm">${esc(t.name)}</span>
         <span class="ds">${esc(t.tagline)}</span>`;
   return href
-    ? `<a class="tile" href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>
+    ? `<a class="tile" style="--i:${i}" href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>
         ${inner}
       </a>`
-    : `<div class="tile" aria-disabled="true">
+    : `<div class="tile" style="--i:${i}" aria-disabled="true">
         ${inner}
       </div>`;
 }).join('\n      ');
 
+/* THE CONSTRUCTION RULES AND THE WIRING, both emitted here rather than drawn
+   by script, so the diagram is complete in the HTML and a reader with no
+   JavaScript gets the finished drawing instead of an empty box. The script only
+   animates what is already here, and re-measures the wiring when the grid
+   reflows to three or two columns.
+
+   Coordinates are a 0-100 box with `preserveAspectRatio="none"`, which would
+   normally distort the strokes — `vector-effect="non-scaling-stroke"` is what
+   keeps every hairline exactly 1px at any aspect. */
+const COL = [12.5, 37.5, 62.5, 87.5];
+const ROW = [25, 75];
+const cellOf = (i) => ({ x: COL[i % 4], y: ROW[Math.floor(i / 4)] });
+
+const rules = (() => {
+  const L = [];
+  let n = 0;
+  /* three interior verticals and one interior horizontal: the cell boundaries,
+     not a decorative graph-paper fill */
+  for (const x of [25, 50, 75]) L.push(`<line class="r-v" style="--i:${n++}" x1="${x}" y1="0" x2="${x}" y2="100" vector-effect="non-scaling-stroke"/>`);
+  L.push(`<line class="r-h" style="--i:${n++}" x1="0" y1="50" x2="100" y2="50" vector-effect="non-scaling-stroke"/>`);
+  /* A registration cross where two rules cross — which is what a registration
+     mark actually marks. An earlier version put one at each tile's centre,
+     where it sat on top of the product's own name: a mark whose whole job is to
+     say "this position is deliberate" should not land on a word. */
+  for (const x of [25, 50, 75]) {
+    L.push(`<g class="r-t" style="--i:${n++}">`
+      + `<line x1="${x - 1.1}" y1="50" x2="${x + 1.1}" y2="50" vector-effect="non-scaling-stroke"/>`
+      + `<line x1="${x}" y1="47.6" x2="${x}" y2="52.4" vector-effect="non-scaling-stroke"/></g>`);
+  }
+  return L.join('\n        ');
+})();
+
+/* THE WIRING IS THE ACCURACY CONTRACT, DRAWN. One path per product that
+   `bus.served` says is genuinely on the engine — three today — and nothing at
+   all for the four that are not. Not a faint line, not a dotted one: nothing.
+   The absence is the statement, and a hairline drawn for balance would reprint
+   the claim this page already retired. */
+const wires = STAGE.nodes
+  .map((n, i) => ({ n, i }))
+  .filter(({ n }) => n.live)
+  .map(({ n, i }) => {
+    const a = cellOf(i);
+    const b = cellOf(H.TILES.length - 1);
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const bow = (a.x <= b.x ? 1 : -1) * Math.min(9, len * 0.14);
+    const cx = mx + (-dy / len) * bow, cy = my + (dx / len) * bow;
+    /* Emitted in the 0-100 box so the un-enhanced page renders a finished,
+       correct curve. scroll.js rewrites these in real pixels once it runs,
+       because a dash pattern measured inside a non-uniformly scaled viewBox
+       comes out as a scatter of broken segments rather than a drawn line. */
+    return `<path class="w${n.pending ? ' w-soon' : ''}" style="--i:${i}" data-a="${i}"`
+      + ` d="M${a.x} ${a.y} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${b.x} ${b.y}"`
+      + ` vector-effect="non-scaling-stroke" fill="none"/>`;
+  }).join('\n        ');
+
 const productBand = `
 <div class="band" id="products">
+  <!-- The pin. .bandpin only becomes sticky, and .band only becomes taller than
+       its content, once scroll.js has added the fx class to <html> — so with no
+       JS, reduced motion, or on a phone there is no extra scroll to pay for and
+       this is the band exactly as it always was. -->
+  <div class="bandpin">
   <div class="wrap">
-    <div class="grid8">
-      ${tiles}
+    <!-- THE PLATE. Everything the band draws lives inside this box: the
+         construction grid, the wiring, and the eight real tiles. Nothing here
+         ever escapes the section or covers the page. With no JS it is the plain
+         grid it has always been — the rules and the wiring are inert SVG that
+         simply renders finished. -->
+    <div class="plate" id="plate" data-scrub>
+      <svg class="rules" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
+        ${rules}
+      </svg>
+      <svg class="wires" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
+        ${wires}
+      </svg>
+      <div class="grid8">
+        ${tiles}
+      </div>
     </div>
     <div class="allp"><a ${link(GO.allProducts)}>${esc(H.COPY.allProducts)} &rarr;</a></div>
   </div>
+  </div>
 </div>`;
 
+/* THE ENGINE'S OWN FOUR WORDS, in real markup.
+
+   This paragraph claims that data "flows natively between modules", and until
+   now nothing on the page said what that flow actually is. It is recorded in
+   the accuracy contract as the engine's `story.arc` — Request, Redact, Route,
+   Answer — so it is read from there rather than written here, and Redact in
+   particular is a real property of the product that the prose never mentions.
+
+   IT IS TEXT, NOT A DRAWING. The black hole scene animates a packet along this
+   row, and the row is the content: it is in the DOM, it is in the tab order of
+   nothing (it is not interactive), it is selectable, findable, translatable and
+   read aloud, and it is completely legible with the canvas empty. Putting these
+   four words on a canvas instead would render the same sentence once for people
+   who can read it and not at all for people who cannot. */
+const arc = (BY_SLUG.get(CENTER_SLUG).story.arc || []);
+const arcRow = `
+    <ol class="arc" aria-label="How the ${esc(H.TILES.find((t) => t.slug === CENTER_SLUG).name)} handles a request">
+      ${arc.map((step) => `<li><span>${esc(step)}</span></li>`).join('\n      ')}
+    </ol>`;
+
+/* =============================================================================
+   THE WELL
+   -----------------------------------------------------------------------------
+   A wireframe funnel: eight rings, one per product, falling into a throat that
+   is the AI Engine. It is the ecosystem band's own sentence — "data flows
+   natively between modules" — drawn as the surface that flow happens on.
+
+   THE GEOMETRY IS COMPUTED, NOT DRAWN. A gravity well is a surface of
+   revolution seen in perspective, so the whole thing falls out of two functions
+   and a projection. Generating it here rather than hand-drawing an SVG means it
+   stays correct if the ring count or the tilt changes, and it means the eight
+   rings are eight because there are eight products rather than because eight
+   looked right.
+
+     R(u) = radius at parameter u, u=1 at the rim and u=0 at the throat
+     d(u) = how far the surface has fallen at u — steep near the throat
+     project: x = cx + R cos t
+              y = cy + R k sin t + d      (k squashes the circle into perspective)
+
+   Everything is a <path>, everything is stroked, and nothing is filled — so the
+   whole figure can draw itself with one stroke-dashoffset rule. */
+const WELL = (() => {
+  const W = 1000, H = 720, cx = 500, cy = 286;
+  const RMIN = 38, RMAX = 476, K = 0.335, DMAX = 226;
+  const R = (u) => RMIN + (RMAX - RMIN) * u;
+  const d = (u) => DMAX * Math.pow(1 - u, 1.85);
+  const px = (u, t) => [cx + R(u) * Math.cos(t), cy + R(u) * K * Math.sin(t) + d(u)];
+  const fmt = (pt) => `${pt[0].toFixed(1)} ${pt[1].toFixed(1)}`;
+
+  /* eight rings, one per product, bunched toward the throat because that is
+     where a real well's curvature actually is */
+  const rings = [1, .845, .70, .565, .44, .325, .222, .13].map((u, i) => {
+    const pts = [];
+    for (let a = 0; a <= 360; a += 4) pts.push(px(u, a * Math.PI / 180));
+    return `<path class="wr" style="--i:${i}" d="M${fmt(pts[0])}L${pts.slice(1).map(fmt).join('L')}Z"/>`;
+  }).join('\n        ');
+
+  /* meridians run from rim to throat. Twelve is enough to read as a surface and
+     few enough that the throat does not turn into a solid blob. */
+  const mer = [];
+  const merPaths = [];
+  for (let m = 0; m < 12; m++) {
+    const t = m * 30 * Math.PI / 180;
+    const pts = [];
+    for (let u = 1; u >= 0.09; u -= 0.035) pts.push(px(u, t));
+    const dstr = `M${fmt(pts[0])}L${pts.slice(1).map(fmt).join('L')}`;
+    merPaths.push(dstr);
+    mer.push(`<path class="wm" style="--i:${m}" d="${dstr}"/>`);
+  }
+
+  /* THE SIGNALS. Five points falling down five different meridians toward the
+     throat.
+
+     Each one is a COPY OF ITS MERIDIAN, stroked with a dash pattern of one very
+     short mark and an enormous gap, so what renders is a single bright segment
+     sitting on the path. Sliding the dash offset walks that segment down the
+     curve. The alternative — a circle moved along the line with CSS
+     `offset-path` — puts the coordinates in CSS pixels while the path is in
+     viewBox units, so the two only agree at one window width. A dash cannot
+     drift off its own path at any size, by construction.
+
+     `pathLength="1"` normalises every meridian, so one rule drives all five and
+     a long path does not travel slower than a short one. */
+  const sig = [0, 3, 5, 8, 10].map((m, i) =>
+    `<path class="ws" style="--i:${i}" pathLength="1" d="${merPaths[m]}"/>`).join('\n        ');
+
+  return { W, H, rings, mer: mer.join('\n        '), sig, cx, cy, DMAX };
+})();
+
+/* THE DARK CHAPTER. The page runs light from the hero to here, goes dark for one
+   section, and comes back. That is the whole reason this works: the wireframe
+   well, the falling signals and the lit steps are all low-contrast marks, and a
+   low-contrast mark on a white ground is invisible — which is exactly why the
+   first attempt at this, a pale iris on the mint band, read as a smudge. The
+   same figure on near-black reads as an instrument.
+
+   It is also the one honest way to get the moment the client kept pointing at.
+   Attio's version is on a dark section too; on their light page they drop it
+   entirely, because it does not transfer.
+
+   The layout splits: the claim and its four steps on the left, the surface that
+   claim describes on the right, a hairline between them. */
 const ecosystem = `
 <div class="eco" id="ecosystem">
-  <div class="wrap">
-    <div class="eyebrow">${esc(H.COPY.ecosystem.eyebrow)}</div>
-    <p>${esc(H.COPY.ecosystem.body)}</p>
+  <div class="ecopin">
+    <div class="wrap ecogrid">
+      <div class="ecotext">
+        <div class="eyebrow">${esc(H.COPY.ecosystem.eyebrow)}</div>
+        <p>${esc(H.COPY.ecosystem.body)}</p>${arcRow}
+      </div>
+      <div class="ecowell">
+        <svg class="well" viewBox="0 0 ${WELL.W} ${WELL.H}" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+          <g class="wrings">
+        ${WELL.rings}
+          </g>
+          <g class="wmers">
+        ${WELL.mer}
+          </g>
+          <g class="wsigs">
+        ${WELL.sig}
+          </g>
+        </svg>
+      </div>
+    </div>
   </div>
 </div>`;
 
@@ -463,6 +741,7 @@ const why = `
     <p class="sec-lede">${esc(H.WHY.lede)}</p>
     <div class="whygrid">
       ${H.WHY.points.map((pt) => `<div class="whyitem">
+        ${pt.image ? `<span class="shot"><img class="whyshot" src="${esc(pt.image)}" alt="" width="900" height="506" loading="lazy" decoding="async"></span>` : ''}
         <h3>${esc(pt.title)}</h3>
         <p>${esc(pt.body)}</p>
       </div>`).join('\n      ')}
@@ -508,9 +787,13 @@ const blog = `
         /* alt="" — the headline sits right beside the image and repeating it
            would make a screen reader say the same sentence twice. The image
            carries no information the card does not already state. */
+        /* The image is wrapped so the frame and the picture can move
+           independently: §25 opens `.shot` as a clip while the <img> inside it
+           drifts from 1.07 to 1. On one element the clip edge would scale with
+           the picture and the reveal would slide instead of wipe. */
         const thumb = a.img
-          ? `<img class="thumb" src="${esc(a.img)}" alt="" width="1200" height="800" loading="lazy" decoding="async">`
-          : '<div class="thumb thumb--none" aria-hidden="true"></div>';
+          ? `<span class="shot"><img class="thumb" src="${esc(a.img)}" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>`
+          : '<span class="shot"><span class="thumb thumb--none" aria-hidden="true"></span></span>';
         return `<a class="post" ${link(href)}>
         ${thumb}
         <p class="pmeta"><time datetime="${esc(d.attr)}">${esc(d.text)}</time> &middot; ${esc(H.BLOG.attribution)}</p>
@@ -538,7 +821,10 @@ const close = `
 const footer = `
 <footer>
   <div class="wrap">
-    <img src="${LOGO}" alt="${esc(COMPANY.name)}" width="262" height="72">
+    <!-- The footer logo is a link here for the same reason tools/fix-pages.js
+         makes it one on the other fourteen pages: two ways back, and the one at
+         the bottom is the one you want after reading to the bottom. -->
+    <a class="flogo" href="index.html" aria-label="${esc(COMPANY.name)} home"><img src="${LOGO}" alt="${esc(COMPANY.name)}" width="262" height="72"></a>
     <div class="fgrid">
       <div class="fcol"><h4>Products</h4>
         ${H.TILES.map((t) => {
@@ -586,6 +872,108 @@ const footer = `
 </footer>`;
 
 /* =============================================================================
+   THE DEMO REQUEST PAGE
+   -----------------------------------------------------------------------------
+   Rebuilt from the form on talbotiq.com/inquiry-now/, which is a WordPress
+   Forminator form: it posts over AJAX with a per-page nonce and a reCAPTCHA
+   token, so a static page cannot submit to it and there was no honest way to
+   proxy it. This is that form, owned by this site.
+
+   THREE THINGS ARE FIXED RATHER THAN COPIED.
+
+   1. The company e-mail field's placeholder on the live form reads "Enter
+      Company Name". It is the company-name placeholder pasted one field too far
+      down, and it tells the reader to type the wrong thing into the one field
+      the whole enquiry depends on.
+   2. The product list is stale. It offers "ERP System" and "Video Interview
+      toll" and is missing five of the eight products that actually exist. Here
+      it is generated from the same TILES the rest of the page is built from, so
+      it cannot drift again.
+   3. Nothing on the live form is actually `required`, despite every label
+      carrying a red asterisk. The asterisks now mean something.
+
+   THE PLACEHOLDER PERSON. The live form uses John / Doe. The rest of this repo
+   already removed exactly that: a made-up identity as example input teaches a
+   reader nothing on a field that is already labelled. These are kept because
+   they were asked for, but they are an ordinary Malaysian name rather than the
+   stock placeholder every generated form in the world ships with.
+
+   THE SUBMIT IS NEVER DEAD. With COMPANY.demoAction unset the button is a link
+   to the form on the old site, which works. Set the endpoint and the same
+   markup becomes a real POST. Either way nobody types an enquiry into a field
+   that goes nowhere. */
+const DEMO_ACTION = COMPANY.demoAction;
+
+const demoField = (id, label, opts = {}) => `
+        <p class="ff${opts.wide ? ' ff--wide' : ''}">
+          <label for="${id}">${esc(label)}${opts.req ? ' <span class="req" aria-hidden="true">*</span>' : ''}</label>
+          <input id="${id}" name="${id}" type="${opts.type || 'text'}"${opts.ph ? ` placeholder="${esc(opts.ph)}"` : ''}${opts.req ? ' required' : ''}${opts.ac ? ` autocomplete="${opts.ac}"` : ''}>
+        </p>`;
+
+const demoBody = `
+<div class="demo">
+  <div class="wrap demogrid">
+
+    <div class="demoside">
+      <p class="eyebrow">Contact us today</p>
+      <h1 class="hand">${esc(H.COPY.demo.heading)}</h1>
+      <p class="sec-lede">${esc(H.COPY.demo.lede)}</p>
+
+      <!-- THESE THREE WORK TODAY, which is why they are on this page and not
+           buried on another one. Whatever happens to the form, a reader who
+           wants a demo can always reach somebody from here. -->
+      <ul class="demoreach">
+        <li><span>Email</span><a href="mailto:${esc(H.CONTACTS.email)}">${esc(H.CONTACTS.email)}</a></li>
+        ${H.CONTACTS.phones.map((n) => `<li><span>Phone</span><a href="tel:${esc(n.replace(/[\s-]/g, ''))}">${esc(n)}</a></li>`).join('\n        ')}
+        <li><span>Office</span>${esc(COMPANY.base)}</li>
+      </ul>
+    </div>
+
+    <div class="demoform">
+      <form class="dform"${DEMO_ACTION ? ` action="${esc(DEMO_ACTION)}" method="post"` : ''} novalidate>
+        <div class="ffgrid">
+          ${demoField('first_name', 'First name', { req: true, ph: 'Farah', ac: 'given-name' })}
+          ${demoField('last_name', 'Last name', { req: true, ph: 'Ismail', ac: 'family-name' })}
+          ${demoField('company', 'Company name', { ph: 'Company Sdn Bhd', ac: 'organization' })}
+          ${demoField('email', 'Company e-mail address', { req: true, type: 'email', ph: 'farah@company.com.my', ac: 'email' })}
+          ${demoField('phone', 'Phone number', { req: true, type: 'tel', ph: '+60 12 345 6789', ac: 'tel' })}
+
+          <p class="ff ff--wide">
+            <label for="product">Which product ${'<span class="req" aria-hidden="true">*</span>'}</label>
+            <select id="product" name="product" required>
+              <option value="">Select a product</option>
+              ${H.TILES.map((t) => `<option value="${esc(t.slug)}">${esc(t.name)}</option>`).join('\n              ')}
+              <option value="not-sure">Not sure yet — help me choose</option>
+            </select>
+          </p>
+
+          <p class="ff ff--wide">
+            <label for="notes">Anything we should know</label>
+            <textarea id="notes" name="notes" rows="5" maxlength="600" placeholder="${esc(H.COPY.demo.notesPlaceholder)}"></textarea>
+          </p>
+        </div>
+
+        <!-- The old form carries a honeypot and so does this one: a field no
+             human can see, and a submission that fills it is a bot. -->
+        <p class="hp" aria-hidden="true"><label for="company_url">Do not fill this in</label><input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off"></p>
+
+        ${DEMO_ACTION
+          ? `<button class="btn btn-primary btn-lg dsubmit" type="submit">${esc(H.COPY.demo.cta)}</button>`
+          : `<a class="btn btn-primary btn-lg dsubmit" ${link(COMPANY.inquiry)}>${esc(H.COPY.demo.cta)} &rarr;</a>
+        <!-- NOT WIRED YET. COMPANY.demoAction in products.js is null, so this
+             button is a link to the form on the old site, which does submit.
+             Set demoAction to an endpoint and the same markup above becomes a
+             real POST with no other change. The note below is deliberately
+             written for a customer, not for whoever maintains this: nobody
+             buying software should be told the name of a config field. -->
+        <p class="dnote">Prefer to talk to a person? ${esc(H.CONTACTS.email)} or ${esc(H.CONTACTS.phones[0])}.</p>`}
+      </form>
+    </div>
+
+  </div>
+</div>`;
+
+/* =============================================================================
    THE DOCUMENT
    ========================================================================== */
 const DESC = `${H.COPY.hero.lede.strong} ${H.COPY.hero.lede.rest} `
@@ -616,18 +1004,24 @@ const jsonld = {
   }),
 };
 
-const html = `<!DOCTYPE html>
+/* ONE DOCUMENT SHELL, TWO PAGES. Everything outside <main> — the head, the
+   sticky header, the three nav panels, the drawer, the footer and the scripts —
+   is identical on every page this generator makes, so it lives here once and
+   takes the body as an argument. The alternative is what `products/*.html` and
+   `about.html` already are: standalone copies that drift, and that tools/
+   fix-pages.js exists to keep in line. Anything generated should not need that. */
+const page = ({ title, ogTitle, desc, body }) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(COMPANY.name)} — ${esc(H.COPY.hero.lead)} ${esc(H.COPY.hero.marked)}</title>
-<meta name="description" content="${esc(DESC)}">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="${H.PALETTE.teal}">
 ${COMPANY.pageUrl ? `<link rel="canonical" href="${esc(COMPANY.pageUrl)}">\n<meta property="og:url" content="${esc(COMPANY.pageUrl)}">` : '<!-- no canonical: COMPANY.pageUrl is null until this page has a home -->'}
 <meta property="og:type" content="website">
-<meta property="og:title" content="${esc(COMPANY.name)} — ${esc(H.COPY.hero.lede.strong)}">
-<meta property="og:description" content="${esc(DESC)}">
+<meta property="og:title" content="${esc(ogTitle || title)}">
+<meta property="og:description" content="${esc(desc)}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -635,6 +1029,22 @@ ${COMPANY.pageUrl ? `<link rel="canonical" href="${esc(COMPANY.pageUrl)}">\n<met
      page, so it is preloaded rather than discovered late in the stylesheet -->
 <link rel="preload" href="assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${stamp('assets/css/talbotiq.css')}">
+<!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
+     that hides or moves anything is scoped to html.fx, so the class decides
+     whether the page animates at all. A deferred script sets it too late: the
+     browser would paint the finished drawing, then the class would arrive and
+     snap it back to the start. Setting it before the body is parsed means there
+     is nothing to flash. JS off, reduced motion, or a phone -> no class, and
+     none of §18 applies. -->
+<script>try{var m=window.matchMedia,d=document.documentElement;if(m&&!m('(prefers-reduced-motion: reduce)').matches&&!m('(max-width: 820px)').matches){d.className+=' fx';
+/* THE DEAD-MAN'S SWITCH. Everything §18-24 hides is scoped to .fx, and .fx is
+   set here, BEFORE scroll.js has loaded. If that file 404s, is blocked, or
+   throws, nothing would ever add the classes that unhide it — and the page
+   would sit there with its tiles, its reveals and its pen marks permanently
+   invisible. Content would be gone, not just unanimated. So scroll.js signals
+   that it is alive by adding fx-on, and if that has not happened within two
+   seconds .fx comes off and the whole page resolves to its finished state. */
+setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx');}},2000);}}catch(e){}</script>
 <script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>
 </head>
 <body>
@@ -642,7 +1052,12 @@ ${COMPANY.pageUrl ? `<link rel="canonical" href="${esc(COMPANY.pageUrl)}">\n<met
 
 <header id="hdr">
   <div class="hdr">
-    <a class="logo" href="${esc(COMPANY.site)}" aria-label="${esc(COMPANY.name)} home">
+    <!-- HOME IS THIS PAGE. This used to be COMPANY.site, which is the address
+         of the site rather than a link to it — so the one control every reader
+         trusts to get them back took them off this site and onto the old one.
+         COMPANY.site is still correct for the canonical and the JSON-LD, which
+         is what it is actually for. -->
+    <a class="logo" href="index.html" aria-label="${esc(COMPANY.name)} home">
       <img src="${LOGO}" alt="${esc(COMPANY.name)}" width="262" height="72">
     </a>
     <nav class="mid" aria-label="Primary">
@@ -659,28 +1074,49 @@ ${panelMarkup}
 ${drawer}
 
 <main id="main">
-${hero}
-${productBand}
-${ecosystem}
-${mission}
-${trust}
-${caps}
-${why}
-${blog}
-${close}
+${body}
 </main>
 ${footer}
 
 <script src="${stamp('assets/js/app.js')}" defer></script>
 <script src="${stamp('assets/js/logo-loop.js')}" defer></script>
+
+<!-- THE SCROLL CHOREOGRAPHY. Progressive enhancement, top to bottom: this file
+     only adds classes and one custom property, and every animation is CSS. The
+     page above is complete without it — no content lives inside a transition,
+     nothing is ever covered, and under prefers-reduced-motion the reveals
+     resolve instantly instead of moving. -->
+<script type="application/json" id="stage-data">${JSON.stringify(STAGE).replace(/</g, '\\u003c')}</script>
+<script defer src="${stamp('assets/js/scroll.js')}"></script>
 </body>
 </html>
 `;
 
+const html = page({
+  title: `${COMPANY.name} — ${H.COPY.hero.lead} ${H.COPY.hero.marked}`,
+  /* The share card has always led with the promise rather than the headline,
+     and that is a deliberate difference from <title>, not an oversight. */
+  ogTitle: `${COMPANY.name} — ${H.COPY.hero.lede.strong}`,
+  desc: DESC,
+  body: [hero, productBand, ecosystem, mission, trust, caps, why, blog, close].join('\n'),
+});
+
 fs.writeFileSync(path.join(__dirname, 'index.html'), html, 'utf8');
+
+const demoHtml = page({
+  title: `${H.COPY.demo.heading} — ${COMPANY.name}`,
+  desc: H.COPY.demo.lede,
+  body: demoBody,
+});
+fs.writeFileSync(path.join(__dirname, 'demo.html'), demoHtml, 'utf8');
 
 const linked = H.TILES.filter((t) => tileHref(t)).length;
 const soon = [...H.SOLUTIONS, ...H.COMPANY_LINKS, ...H.RESOURCES, ...H.LEGAL].filter((x) => !x.url).length;
+console.log(
+  `demo.html  — ${(Buffer.byteLength(demoHtml) / 1024).toFixed(1)}kB · `
+  + `${H.TILES.length + 1} products to choose from · `
+  + `${DEMO_ACTION ? 'posts to ' + DEMO_ACTION : 'NOT WIRED — submit falls through to ' + COMPANY.inquiry}`
+);
 console.log(
   `index.html — ${(Buffer.byteLength(html) / 1024).toFixed(1)}kB · `
   + `${H.TILES.length} products (${linked} linked, ${H.TILES.length - linked} awaiting a destination) · `

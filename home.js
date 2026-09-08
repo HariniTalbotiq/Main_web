@@ -189,6 +189,16 @@ const TILES = [
    place.
    ---------------------------------------------------------------------- */
 const COPY = {
+  /* THE DEMO PAGE'S OWN WORDS. The heading is the company's own line, taken
+     from the live inquiry page because it is a good one; the rest is written
+     for a form that now sits on this site rather than on the old one. */
+  demo: {
+    heading: 'Ready to accelerate your business with AI?',
+    lede: 'Tell us which product you want to see and we will come back to you within one business day.',
+    notesPlaceholder: 'What you would like the demo to cover, and roughly how many people would use it.',
+    cta: 'Request a demo',
+  },
+
   hero: {
     lead: 'Every workflow, running',
     marked: 'on intelligence.',
@@ -323,8 +333,12 @@ const CLIENTS = [
    nobody clicks.
 
    `fadeOutColor` MUST match what sits behind the row. The band has no
-   background of its own, so that is the page white; get this wrong and the
-   fade shows as two grey smears at the edges.
+   background of its own, so that is the page ground — and the ground is NOT
+   white: §22 of the stylesheet moves the body to #FBFCFE so every white
+   surface on the page lifts off it. Leaving this at #ffffff paints two white
+   rectangles into the logo row, which is the same bug the old comment warned
+   about with the colours the other way round. If --ground changes, this
+   changes with it.
    ---------------------------------------------------------------------- */
 const LOGO_LOOP = {
   enabled: true,          // false renders the plain centred row instead
@@ -334,7 +348,7 @@ const LOGO_LOOP = {
   gap: 72,                // wider than the static row's 56: a moving row needs
                           // more air or the wordmarks read as one long smear
   fadeOut: true,
-  fadeOutColor: '#ffffff',
+  fadeOutColor: '#FBFCFE',   // = --ground in talbotiq.css §22
   scaleOnHover: true,
   ariaLabel: 'Clients and partners',
 };
@@ -375,8 +389,19 @@ const CAPABILITIES = [
    claims about how the company works fill that space instead, which needs no
    third-party permission to publish.
 
-   Text only, by request: the source design ran a photograph above each of the
-   three, and none of them are used.
+   EACH ONE CARRIES ITS PHOTOGRAPH, as the live site does. This section was
+   text-only for a long time because that was the original request; the client
+   has since asked for the images back, so they are here.
+
+   They are the company's own uploads, taken from talbotiq.com and downscaled to
+   900px into `assets/why/` rather than hotlinked — the whole point of this site
+   is not to depend on the old one. They are illustrative, not informative: the
+   heading and the sentence under each carry the meaning, so they ship with
+   empty alt and a screen reader skips straight to the words.
+
+   (An automated pass once added these on its own, rewriting this paragraph to
+   justify it. That was reverted. The difference is that this time it was asked
+   for — worth remembering if a future pass finds this note.)
 
    `Realistic Innovation` reads its body from `COMPANY.antiHype` rather than
    repeating the string. That line — "No 'AI hype.' ..." — is the company's
@@ -390,14 +415,17 @@ const WHY = {
   points: [
     {
       title: 'Elite Expertise',
+      image: 'assets/why/elite-expertise.jpg',
       body: 'We combine deep AI research with robust full-stack engineering.',
     },
     {
       title: 'Realistic Innovation',
+      image: 'assets/why/realistic-innovation.jpg',
       body: COMPANY.antiHype,
     },
     {
       title: 'Scalable by Design',
+      image: 'assets/why/scalable-by-design.jpg',
       body: 'Every line of code is written to handle your growth tomorrow.',
     },
   ],

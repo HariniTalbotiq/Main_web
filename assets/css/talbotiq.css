@@ -423,8 +423,8 @@ h2.hand.left { text-align: left; }
 
 /* ---- 9 · WHY LEAD WITH TALBOTIQ ---------------------------------------- */
 /* This replaced the mockup's testimonial slot — a dashed box that said out
-   loud it had no quote to show. The three claims that sit here now are text
-   only: the source design put a photograph above each one and none are used.
+   loud it had no quote to show. The three claims that sit here now each run
+   the photograph the live site runs above them.
 
    Three columns of centred text rather than the cards used further up. The
    capability band above is already a grid of white cards on grey, and a second
@@ -435,6 +435,26 @@ h2.hand.left { text-align: left; }
   gap: 44px 30px; margin: 54px auto 0; max-width: 1060px;
   text-align: center;
 }
+/* THE THREE SOURCE PHOTOS ARE NOT THE SAME SHAPE — one 16:9 and two 3:2 — so
+   the box sets the ratio and the picture is cropped into it. Left to their own
+   proportions they would be three different heights and the row of headings
+   underneath would step up and down, which is the thing the eye notices before
+   it notices any of the photographs. */
+.whyitem .shot { display: block; margin: 0 0 22px; border-radius: 12px; overflow: clip; }
+.whyshot {
+  display: block;
+  width: 100%;
+  /* `height: auto` is load-bearing, not tidiness. The width/height attributes on
+     the <img> map to real CSS width and height in the UA stylesheet, and
+     `aspect-ratio` is ignored the moment BOTH dimensions are definite — so
+     without this the pictures rendered at their attribute height of 506px in a
+     333px column, i.e. portrait, and the 16/9 below did nothing at all. */
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: center;
+}
+
 .whyitem h3 {
   font-size: 22px; font-weight: 600; color: var(--ink);
   margin: 0 0 12px; line-height: 1.3; letter-spacing: -.01em;
@@ -502,6 +522,11 @@ a.post:hover h3 { color: var(--green); }
 /* ---- 12 · FOOTER -------------------------------------------------------- */
 footer { background: var(--footer); color: #C9C7C7; padding: 60px 0 0; font-size: 15px; }
 footer img { height: 38px; width: auto; margin-bottom: 26px; }
+/* The footer logo is wrapped in a link now. The margin has to move to the
+   anchor, or the inline-level <a> keeps its own baseline gap and the columns
+   below shift down by a few pixels. */
+footer .flogo { display: inline-block; margin-bottom: 26px; }
+footer .flogo img { margin-bottom: 0; display: block; }
 .fgrid { display: grid; grid-template-columns: 1.15fr 1fr 1fr .9fr 1.05fr; gap: 36px; }
 .fcol h4 {
   font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase;
@@ -731,3 +756,692 @@ a.pitem:hover { background: var(--band); }
   .grid8 { gap: 26px 16px; }
   .logos { gap: 26px; }
 }
+
+
+/* ---- 18 · THE DRAWING --------------------------------------------------- */
+/* The page is a drawing of the suite that assembles itself as you read it.
+   Construction rules register the grid, the eight products resolve into their
+   cells, and the wiring that is actually there draws itself between them.
+
+   THREE RULES, AND THEY ARE WHY THIS IS NOT A SHOW.
+   1. Nothing is ever covered. There is no overlay, no fixed layer, no canvas
+      over the page. Every drawn thing lives inside the section it belongs to
+      and stops at that section's edges. The header is never obscured.
+   2. Nothing is hidden by default. Every rule that hides something is scoped to
+      `html.fx`, a class scroll.js adds only once it has decided to animate. No
+      JS, reduced motion, or a phone, and nothing here applies — the page is the
+      page, complete, with the drawing already finished.
+   3. Only opacity, translate, scale, filter and stroke-dashoffset move. All are
+      compositor- or paint-cheap, and none of them cause layout. */
+
+:root {
+  /* Instant departure, long settle. This is the curve that makes motion read as
+     mechanical rather than bouncy, and it is doing most of the work here. */
+  --ease-out: cubic-bezier(0, 0, 0, 1);
+  --ease-soft: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Hairlines are far fainter than they feel like they should be. At 5.5% of
+     the brand ink a rule reads as a construction guide; at 15% it reads as a
+     border, and the drawing turns into a table. */
+  --rule: rgb(31 36 48 / .055);
+  --rule-firm: rgb(31 36 48 / .10);
+
+  /* the dark chapter's ground — the brand ink, taken most of the way down */
+  --well: #0C1014;
+}
+
+/* ---- the reveal ---------------------------------------------------------- */
+/* The single treatment that used to live here — 12px, 3px of blur, 400ms, on
+   everything — has been replaced by the four-treatment kit in §25. What stays is
+   the contract: nothing is hidden unless html.fx is set, and .in is what unhides
+   it, so a page with no script showing has nothing to unhide. */
+
+/* ---- the plate: the band's own drawing surface --------------------------- */
+.plate { position: relative; }
+
+/* Start values live here, scoped to .fx, rather than as @property initial
+   values — so the un-enhanced page keeps the `, 1` fallbacks further down and
+   renders the drawing finished, while the enhanced page starts at zero. */
+html.fx .plate { --draw: 0; --tick: 0; --tile: 0; --wire: 0; }
+html.fx .arc { --rail: 0; }
+
+/* The eight resolve into their cells left to right, top row first, each one
+   trailing the last by a twentieth of the pin. `--i` is stamped on the tile by
+   build.js, so the stagger survives the grid dropping to three or two columns. */
+html.fx .plate .tile {
+  --t: clamp(0, calc((var(--tile) - var(--i, 0) * .055) * 5), 1);
+  opacity: var(--t);
+  translate: 0 calc(10px * (1 - var(--t)));
+  filter: blur(calc(3px * (1 - var(--t))));
+}
+.plate .grid8 { position: relative; z-index: 1; }
+
+.rules, .wires {
+  position: absolute;
+  /* The rules run to the cell boundaries, which sit outside the tiles' own box
+     by half a gutter. Bleeding the SVG out by that much is what makes the grid
+     look ruled rather than boxed. */
+  inset: -34px -13px;
+  width: calc(100% + 26px);
+  height: calc(100% + 68px);
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* THE STATIC DRAWING IS ONLY TRUE AT FOUR COLUMNS. build.js emits it for the
+   4x2 grid, which is what exists above 1080px; below that the grid is three
+   columns and then two, and a schematic drawn for a layout that is not on
+   screen puts its traces through the tiles. With JS, scroll.js re-derives all
+   of it from the real cards at any width — this hides the stale version only
+   in the case where nothing can re-derive it. */
+@media (max-width: 1080px) {
+  html:not(.fx) .rules, html:not(.fx) .wires { display: none; }
+}
+
+.rules line { stroke: var(--rule); stroke-width: 1; }
+.rules .r-t line { stroke: var(--rule-firm); stroke-width: 1; stroke-linecap: round; }
+
+/* Verticals grow down, the horizontal grows out from the middle, and the
+   registration ticks come last — the order a person drawing this would use. */
+html.fx .rules .r-v { transform-origin: 50% 0; transform: scaleY(var(--draw, 1)); }
+html.fx .rules .r-h { transform-origin: 50% 50%; transform: scaleX(var(--draw, 1)); }
+html.fx .rules .r-t line { stroke-dasharray: 9; stroke-dashoffset: calc(9 - 9 * var(--tick, 1)); }
+html.fx .rules .r-t { opacity: var(--tick, 1); }
+
+/* ---- the wiring ---------------------------------------------------------- */
+/* Three paths, because `bus.served` says three. The four products that are not
+   on the engine have no path, no ghost and no dotted courtesy line: the empty
+   space is the claim, and it is the one thing on this page a diagram could most
+   easily lie about. */
+.wires .w {
+  stroke: var(--teal);
+  stroke-width: 1.25;
+  opacity: .55;
+}
+.wires .w-soon {
+  stroke: var(--amber, #C48A00);
+  stroke-dasharray: .012 .014;   /* normalised by pathLength="1" */
+  opacity: .5;
+}
+/* --len is the path's real length in pixels, measured by scroll.js after it
+   has rewritten the geometry. Dashing against the true length is the only way
+   a curve draws on evenly; dashing inside the 0-100 box produced a scatter of
+   fragments, which is what the first version of this shipped. */
+html.fx .wires .w {
+  stroke-dasharray: var(--len, 1);
+  stroke-dashoffset: calc(var(--len, 1) * (1 - var(--wire, 0)));
+}
+html.fx .wires .w-soon {
+  /* A dashed path cannot also be a drawn-on path — one dasharray, one job — so
+     the pending wire arrives by fading instead. */
+  stroke-dasharray: .012 .014;
+  stroke-dashoffset: 0;
+  opacity: calc(.5 * var(--wire, 1));
+}
+
+/* ---- the pin ------------------------------------------------------------- */
+/* The band holds still under the header while its drawing assembles, then
+   releases. `top` is the header's own height, so the nav is never covered —
+   which is the whole difference between this and something laid over the page. */
+/* 152vh — about half a screen of hold past the section's own height. Enough
+   for the drawing to be made without the pin outstaying its welcome; this is
+   the one number to change if it wants to breathe more or less. */
+html.fx .band { min-height: 152vh; padding-top: 0; padding-bottom: 0; }
+html.fx .bandpin {
+  position: sticky;
+  top: var(--hdr-h);
+  min-height: calc(100vh - var(--hdr-h));
+  display: flex;
+  align-items: center;
+}
+
+/* ---- the pipeline -------------------------------------------------------- */
+/* The engine's own four steps, from products.js, on a rail. The rail draws, then
+   each step fills as the request reaches it — and all four words are real text
+   in the markup, legible and selectable with none of this running. */
+.arc {
+  position: relative;
+  list-style: none;
+  margin: 34px auto 0;
+  padding: 0;
+  max-width: 660px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+.arc::before {
+  content: "";
+  position: absolute;
+  left: 12.5%; right: 12.5%; top: 9px;
+  height: 1px;
+  background: var(--rule-firm);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--rail, 1));
+}
+.arc li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #6B7280;
+  transition: color .3s var(--ease-out);
+}
+/* The node on the rail. Hollow until the request has reached it — the same
+   grammar the product grid uses, where hollow means "not carrying traffic". */
+.arc li::before {
+  content: "";
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--rule-firm);
+  background: var(--band);
+  transition: background-color .3s var(--ease-out), border-color .3s var(--ease-out), scale .3s var(--ease-out);
+}
+.arc li.lit { color: var(--green); }
+.arc li.lit::before { background: var(--teal); border-color: var(--teal); scale: 1.15; }
+
+@media (max-width: 560px) {
+  .arc { max-width: 100%; gap: 0 4px; }
+  .arc li { font-size: 10px; letter-spacing: .1em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.fx [data-reveal] { transition-duration: .01ms; transition-delay: 0ms; }
+  .arc::before { transform: none; }
+}
+
+/* ---- 19 · THE SURFACE ---------------------------------------------------- */
+/* A 1px line every 8px across the product band. It is `::after` and the wash in
+   §20 is `::before` SPECIFICALLY so this paints on top: the wash is made of
+   opaque colours, and drawn second it would cover the texture completely. White
+   lines over a colour field is also exactly the order attio.com uses.
+
+   A 1px line every 8px across the product band. Borrowed straight from attio.com,
+   which runs the same period over both its light and dark sections — it is most
+   of why their surfaces read as engineered rather than as flat fills.
+
+   LIGHTER THAN THE GROUND, NOT DARKER. On the grey band an ink pinstripe at any
+   visible alpha reads as dirt or a print artefact; white at 55% reads as woven
+   paper. Attio does the same thing in the other direction, laying white over a
+   saturated gradient rather than black over a pale one.
+
+   It is behind everything the band draws, including the construction rules, so
+   the two grids never compete: 8px is far below the rules' spacing, which keeps
+   it as texture rather than as a second grid to read. */
+.band { position: relative; }
+.band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgb(255 255 255 / .55) 0 1px,
+    transparent 1px 8px
+  );
+  /* Fade it out at both ends so the band does not start and stop with a hard
+     edge of texture — the pattern should feel like the surface the section is
+     printed on, and a surface does not have a seam in the middle of the page. */
+  -webkit-mask-image: linear-gradient(transparent, #000 12% 88%, transparent);
+  mask-image: linear-gradient(transparent, #000 12% 88%, transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+.band > * { position: relative; z-index: 1; }
+
+/* The drawing fades at the plate's edges rather than stopping dead. A rule that
+   ends in mid-air reads as unfinished; one that fades reads as continuing past
+   the frame, which is what a detail lifted out of a larger drawing does. */
+.rules {
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 50%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(120% 100% at 50% 50%, #000 55%, transparent 100%);
+}
+
+/* ---- 20 · THE ATMOSPHERE ------------------------------------------------- */
+/* A cool tint gathering toward the bottom of the product band. It used to run
+   all the way to a mint, because the section underneath was mint; that section
+   is now the dark chapter, so the band stays light and clean and hands the
+   dimming over at its own edge. §21 does the going-dark.
+
+   The signature is measured, from Attio's hero and six sibling gradients on
+   Stripe's homepage: an oversized ellipse, origin at or below the bottom edge so
+   the light source is off-canvas, six to eight stops widening toward the end,
+   and a terminal stop that is EXACTLY the section's own background. Terminating
+   in the page is what leaves the wash with no boundary anywhere. */
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(94% 46% at 50% 106%,
+    #BBD9D6   0%,   /* off-canvas — never rendered */
+    #CBE1DE  14%,
+    #D9E8E6  28%,
+    #E4EEEC  42%,
+    #EBF1F0  57%,
+    #EFF3F3  74%,
+    var(--band) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---- 21 · THE DARK CHAPTER ----------------------------------------------- */
+/* The page runs light from the hero down to here, goes dark for one section,
+   and comes back up. That is the eclipse — not a disc crossing the viewport,
+   but the page itself dimming for one chapter and returning.
+
+   IT HAS TO BE DARK, AND THAT IS THE WHOLE POINT. A wireframe well, five
+   falling signals and four lit steps are all low-contrast marks. On a white
+   ground a low-contrast mark is invisible, which is precisely why the first
+   attempt at this — a pale iris on the mint band — read as a smudge no matter
+   how it was tuned. The identical figure on near-black reads as an instrument.
+   Attio's own version is on a dark section; on their light page they drop it
+   entirely, because it does not transfer.
+
+   THE DIM IS IN THE SECTION'S OWN BACKGROUND, top and bottom. Going in, it
+   starts at the product band's exact grey; coming out, it resolves to the
+   page's exact ground. So there is no boundary at either end and no separate
+   element doing the fade — the chapter darkens and lifts by itself. */
+.eco {
+  position: relative;
+  overflow: clip;
+  border-top: 0;
+  border-bottom: 0;
+  color: rgb(255 255 255 / .72);
+  background:
+    linear-gradient(to bottom,
+      var(--band)   0%,
+      #C9D2D4       5%,
+      #6E7B82      11%,
+      #2B343C      17%,
+      #12171D      24%,
+      var(--well)  32%,
+      var(--well)  74%,
+      #12171D      83%,
+      #38424A      90%,
+      #A8B2B6      95%,
+      var(--ground) 100%);
+}
+
+/* THE PIN. The chapter holds under the header while its four steps advance and
+   its signals fall, then releases. Same construction as the product band: the
+   height and the stickiness only exist once scroll.js has decided to run, so no
+   JS, reduced motion or a phone pays a single extra pixel of scroll for it. */
+html.fx .eco { min-height: 188vh; padding: 0; }
+html.fx .ecopin {
+  position: sticky;
+  top: var(--hdr-h);
+  min-height: calc(100vh - var(--hdr-h));
+  display: flex;
+  align-items: center;
+}
+
+/* The claim on the left, the surface it describes on the right, a hairline
+   between them — the split Attio uses for exactly this moment, and the reason
+   it works is that the diagram is never asked to sit behind the words. */
+.ecogrid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+.ecotext { position: relative; z-index: 1; }
+@media (min-width: 900px) {
+  .ecogrid {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    gap: 0 56px;
+    align-items: center;
+  }
+  .ecotext { padding-right: 56px; border-right: 1px solid rgb(255 255 255 / .07); }
+}
+
+/* Type for a dark ground. The eyebrow lifts to a light teal because the brand
+   teal at #02A885 is too dark to read on near-black; the body drops to 72%
+   white, which is the value that reads as considered rather than as low
+   contrast. Both are checked against the chapter's darkest stop. */
+.eco .eyebrow { color: #6FD8C0; }
+.eco > .ecopin p, .eco .ecotext p { color: rgb(255 255 255 / .72); }
+
+/* ---- the well ------------------------------------------------------------ */
+.ecowell { position: relative; z-index: 0; }
+.well { display: block; width: 100%; height: auto; overflow: visible; }
+
+.well .wr { fill: none; stroke: rgb(255 255 255 / .10); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.well .wm { fill: none; stroke: rgb(255 255 255 / .065); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+/* The five falling signals: one very short dash on an enormous gap, so what is
+   drawn is a single bright segment sitting exactly on the meridian. Teal,
+   because on this page teal has always meant a live connection. */
+.well .ws {
+  fill: none;
+  stroke: var(--teal);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: .022 1;
+  stroke-dashoffset: .022;
+  filter: drop-shadow(0 0 5px rgb(2 168 133 / .85));
+}
+
+/* ---- how it assembles ----------------------------------------------------- */
+/* Rings first from the rim inward, then the meridians, then the signals begin
+   to fall — the order the surface would actually be built in. All three are
+   scrubbed to the pin rather than played on a timer, so the reader is the one
+   moving them and nothing runs off-screen. */
+html.fx .well .wr,
+html.fx .well .wm {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--wellDraw, 1));
+}
+html.fx .well .wr { transition: none; }
+html.fx .well .ws {
+  stroke-dashoffset: calc(.022 - var(--wellFall, 0) * 1.06 + var(--i) * .085);
+  opacity: var(--wellFall, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.fx .well .wr, html.fx .well .wm { stroke-dashoffset: 0; }
+  html.fx .well .ws { stroke-dashoffset: calc(.022 - .5 + var(--i) * .085); opacity: 1; }
+}
+
+/* ---- 22 · THE GROUND ----------------------------------------------------- */
+/* The body stops being pure white. Measured on the references: Stripe #F8FAFD,
+   Clerk #F7F7F8, Vercel #FAFAFA, Family #FBFAF9 — three of four light B2B pages
+   sit 1.5-2.5% off white with a real cast. #FBFCFE is 1.6% down, on the same
+   temperature as the ink, so no new hue enters the system. It leaves a 3.1% gap
+   to the grey band, which still reads as a band.
+
+   For seventy bytes, every white surface on the page — the sticky header, the
+   capability cards, the eight product tiles, the article thumbnails — is
+   genuinely lifted off the ground instead of dissolving into it. */
+:root { --ground: #FBFCFE; }
+body { background: var(--ground); }
+
+/* ---- 23 · THE CLOSING FLOOR ---------------------------------------------- */
+/* The CTA is the only large uninterrupted digital fill left on the page, and it
+   gets the same grammar as everything else: origin below the edge so the source
+   is off-canvas, terminal stop EXACTLY the section's own colour so the wash has
+   no boundary.
+
+   IT DARKENS TOWARD THE FLOOR, AND THAT DIRECTION IS AN ACCESSIBILITY
+   DECISION, not a taste one. White on #02A885 is 3.02:1, and `.cta .fine` is
+   18px — not large text, so it fails AA today. Lightening the floor, which is
+   the more obvious way to do this, would take that to 2.36:1 and make a real
+   failure materially worse. Deepening it puts the darkest tone exactly where
+   the smallest type sits: ~#029A7B, 3.55:1. Never worse than shipped, better
+   where it matters. Still short of 4.5:1 — that is a pre-existing problem with
+   white on this teal and it is not this rule's to fix. */
+.cta {
+  background: radial-gradient(110% 92% at 50% 104%,
+    #018E70   0%,   /* off-canvas: never rendered */
+    #029A7B  16%,   /* the deepest pixel actually seen */
+    #02A180  34%,
+    var(--teal) 100%);
+}
+
+/* ---- 24 · THE MARKS DRAW THEMSELVES -------------------------------------- */
+/* Four hand-drawn pen marks — a highlighter behind the hero's last clause, a
+   lasso around "Intelligence", a ruled underline under the capability heading,
+   a squiggle under the blog heading. They are the one device on this page that
+   belongs to nobody else, and until now they were drawings of pen strokes that
+   were simply THERE when the section arrived. A stroke that never gets made is
+   a stroke somebody drew in Illustrator; a stroke that gets made is a hand.
+
+   TWO TECHNIQUES, BECAUSE THERE ARE TWO KINDS OF MARK. The lasso, the underline
+   and the squiggle are stroked paths, so they draw by walking a dash offset
+   along their own length. The highlighter is a FILLED closed shape — a fill has
+   no stroke to dash — so it is wiped instead, behind a leading edge that is
+   deliberately not vertical. That slant is the whole difference between a
+   marker being dragged across a word and a rectangle growing.
+
+   EVERY MARK ARRIVES AFTER ITS WORD. The delays below all sit past the 400ms
+   text reveal: the reader should finish reading the line and then watch it get
+   marked, which is the order the two things happen on paper. */
+
+/* ---- the three stroked marks --------------------------------------------- */
+/* `pathLength="1"` is set in build.js, so a dash of 1 is exactly one path
+   whatever its real length — the 40px underline and the 300px lasso draw at the
+   same rate rather than the long one crawling. */
+html.fx .u-lasso svg path,
+html.fx .u-line  svg path,
+html.fx .u-squig svg path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+html.fx .u-lasso.drawn svg path,
+html.fx .u-line.drawn  svg path,
+html.fx .u-squig.drawn svg path {
+  stroke-dashoffset: 0;
+}
+
+/* Each one is timed to the kind of stroke it is. A lasso is a whole loop around
+   a word and takes the longest; a ruled underline is one confident pull and is
+   the fastest thing on the page. Same curve throughout — an instant departure
+   and a long settle is how a hand moves, where a linear ramp is how a progress
+   bar moves. */
+html.fx .u-lasso svg path { transition: stroke-dashoffset .78s cubic-bezier(.2,0,0,1) .22s; }
+html.fx .u-line  svg path { transition: stroke-dashoffset .44s cubic-bezier(.2,0,0,1) .26s; }
+html.fx .u-squig svg path { transition: stroke-dashoffset .58s cubic-bezier(.2,0,0,1) .24s; }
+
+/* ---- the highlighter ------------------------------------------------------ */
+/* A four-point polygon whose right edge is the marker's own leading edge. It
+   starts as a zero-width sliver at the left and opens to the full band, and
+   because the two right-hand points are 10% apart horizontally the edge stays
+   slanted the whole way across. Both states have four points, which is what
+   makes clip-path interpolate at all. */
+html.fx .mark-hl svg {
+  clip-path: polygon(0% 0%, 0% 0%, -10% 100%, -10% 100%);
+  transition: clip-path .5s cubic-bezier(.2,0,0,1) .68s;   /* after the h1's own .66s uncover */
+}
+html.fx .mark-hl.drawn svg {
+  clip-path: polygon(0% 0%, 110% 0%, 100% 100%, -10% 100%);
+}
+
+/* Reduced motion keeps every mark, finished. They carry meaning — they are what
+   tells you which clause the page thinks is the point — so they are not motion
+   to be removed, they are content that happens to arrive. */
+@media (prefers-reduced-motion: reduce) {
+  html.fx .u-lasso svg path,
+  html.fx .u-line  svg path,
+  html.fx .u-squig svg path { stroke-dashoffset: 0; transition: none; }
+  html.fx .mark-hl svg { clip-path: none; transition: none; }
+}
+
+/* ---- 25 · THE ENTRANCE KIT ------------------------------------------------ */
+/* §18 gave every element on the page the same entrance: opacity, 12px of rise,
+   3px of blur, 400ms, staggered 55ms — applied to twenty-eight things across
+   seven sections. One idea, repeated, which is what makes a page read as a
+   template no matter how good the idea is.
+
+   This replaces it with FOUR treatments chosen by what the content IS. Four, not
+   seven: a page where every section invents its own effect is not sophisticated,
+   it is noisy, and the reader stops trusting that the motion means anything.
+
+     .rv-head   display headings  — uncovered, not faded
+     .rv-text   body copy         — a short rise, and NO blur
+     .rv-card   cards and columns — rise with a little scale, staggered
+     .rv-media  images            — a wipe, with the picture moving inside it
+
+   Every curve and duration here is Attio's own, measured off the live site:
+   cubic-bezier(0,0,0,1) and cubic-bezier(0.2,0,0,1), nothing longer than 700ms. */
+
+:root { --rv: cubic-bezier(0.2, 0, 0, 1); }
+
+/* ---- 1 · DISPLAY HEADINGS: uncovered ------------------------------------- */
+/* A Didone at 40-76px is the most expensive thing on the page and it should not
+   arrive by fading, which is what a heading does when nobody decided how it
+   should arrive. Clipping instead means the letterforms are revealed at full
+   contrast from the first frame — the type is uncovered rather than switched on.
+
+   The inset is negative top and bottom so the clip never crosses a descender or
+   one of the hand-drawn marks, which sit outside the text box. */
+html.fx .rv-head {
+  clip-path: inset(-35% 0 100% 0);
+  translate: 0 22px;
+  transition: clip-path .66s var(--rv), translate .66s var(--rv);
+}
+html.fx .rv-head.in { clip-path: inset(-35% 0 -35% 0); translate: 0 0; }
+
+/* ---- 2 · BODY COPY: a short rise, no blur -------------------------------- */
+/* THE BLUR COMES OFF THE TEXT. Blurring body copy on the way in is the single
+   clearest tell of an amateur scroll animation: for 400ms the reader's own eyes
+   are told they are out of focus, and on a 15px line it reads as a rendering
+   fault rather than as motion. Blur stays, but only on cards and images, where
+   there is a shape to soften rather than a word to read. 10px, not 12 — the
+   text should settle before the eye reaches it. */
+html.fx .rv-text {
+  opacity: 0;
+  translate: 0 10px;
+  transition: opacity .42s var(--rv), translate .42s var(--rv);
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+html.fx .rv-text.in { opacity: 1; translate: 0 0; }
+
+/* ---- 3 · CARDS: rise, with a little scale -------------------------------- */
+/* A card is an object, so it may arrive like one — slightly under size and
+   slightly low, settling into place. 0.985 is deliberately almost nothing: at
+   0.95 the card visibly grows and the whole grid pulses, which is the other
+   common tell. The stagger is 70ms rather than 55: cards are large enough that
+   a faster cascade reads as a single blur of movement rather than as a sequence. */
+html.fx .rv-card {
+  opacity: 0;
+  translate: 0 18px;
+  scale: .985;
+  filter: blur(2px);
+  transition: opacity .5s var(--rv), translate .5s var(--rv),
+              scale .5s var(--rv), filter .5s var(--rv);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+html.fx .rv-card.in { opacity: 1; translate: 0 0; scale: 1; filter: blur(0); }
+
+/* The star badge lands after its card, with the only overshoot on the page.
+   One bouncy thing, on the smallest object, is a punctuation mark; two would be
+   a personality. */
+html.fx .rv-card .star {
+  opacity: 0;
+  scale: .3;
+  transition: opacity .3s var(--rv), scale .44s cubic-bezier(.2, 1.5, .4, 1);
+  transition-delay: calc(var(--i, 0) * 70ms + 200ms);
+}
+html.fx .rv-card.in .star { opacity: 1; scale: 1; }
+
+/* ---- 4 · IMAGES: a wipe, with the picture moving inside it ---------------- */
+/* The editorial image reveal, and the reason it beats a fade: the frame opens
+   while the photograph drifts from 1.07 to 1 inside it, so the two edges move at
+   different rates and the picture reads as being uncovered by something in front
+   of it rather than as an element whose opacity changed. It needs two elements —
+   on one, the clip edge scales with the image and it slides instead of wiping. */
+.post .shot { display: block; overflow: clip; border-radius: 10px; }
+html.fx .rv-card .shot {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path .72s var(--rv);
+  transition-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+html.fx .rv-card.in .shot { clip-path: inset(0 0 0 0); }
+html.fx .rv-card .shot > * {
+  scale: 1.07;
+  transition: scale 1s var(--rv);
+  transition-delay: calc(var(--i, 0) * 70ms + 80ms);
+}
+html.fx .rv-card.in .shot > * { scale: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.fx .rv-head, html.fx .rv-text, html.fx .rv-card, html.fx .rv-media,
+  html.fx .rv-card .star, html.fx .rv-media img {
+    transition-duration: .01ms; transition-delay: 0ms;
+  }
+}
+
+/* The four steps, re-set for the dark chapter. The rail and the unlit nodes are
+   white at low alpha rather than the ink hairline they were on mint, and a lit
+   node keeps the brand teal because teal is bright enough to carry on black —
+   it is only the small TEXT that had to move off it. */
+.eco .arc::before { background: rgb(255 255 255 / .14); }
+/* 0.56, not the 0.42 this started at. The step labels are 11.5px uppercase, so
+   they are small text and need 4.5:1 — and 42% white over #0C1014 computes to
+   4.15:1, which fails. 56% lands at about 6:1. An unlit step still has to be
+   readable; "not yet reached" is not the same as "not for you". */
+.eco .arc li { color: rgb(255 255 255 / .56); }
+.eco .arc li::before { background: transparent; border-color: rgb(255 255 255 / .22); }
+.eco .arc li.lit { color: #fff; }
+.eco .arc li.lit::before {
+  background: var(--teal);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px rgb(2 168 133 / .16), 0 0 12px rgb(2 168 133 / .55);
+}
+
+/* The chapter's text column. §6 centres the ecosystem copy and caps it at 74ch,
+   which was right when it was one centred column on mint and is wrong now that
+   it is the left half of a split — centred ragged text beside a hairline reads
+   as a mistake. Left-aligned, and narrower, so the measure stays readable at
+   half width. */
+@media (min-width: 900px) {
+  .eco .ecotext .eyebrow { text-align: left; }
+  .eco .ecotext p { text-align: left; max-width: 46ch; margin-left: 0; }
+  .eco .ecotext .arc { margin-left: 0; margin-right: auto; max-width: 430px; }
+  .eco .ecotext .arc::before { left: 6%; right: 6%; }
+}
+
+/* ---- 26 · THE DEMO PAGE -------------------------------------------------- */
+/* The request-a-demo form, rebuilt from the one on the old site so this site
+   owns its own most important conversion. Two columns: what the reader is
+   asking for on the left, the asking on the right. */
+.demo { padding: 80px 0 104px; }
+.demogrid { display: grid; grid-template-columns: 1fr; gap: 48px; }
+@media (min-width: 940px) {
+  .demogrid { grid-template-columns: minmax(0, .82fr) minmax(0, 1fr); gap: 0 72px; align-items: start; }
+}
+.demoside h1.hand { font-size: 46px; line-height: 1.06; margin: 10px 0 18px; }
+.demoside .sec-lede { text-align: left; margin: 0 0 34px; max-width: 40ch; }
+.demoside .eyebrow { text-align: left; }
+
+/* The three that work today, set as a definition list rather than prose so the
+   eye can find the one it wants without reading a sentence. */
+.demoreach { list-style: none; margin: 0; padding: 26px 0 0; border-top: 1px solid var(--rule-firm); }
+.demoreach li { display: flex; gap: 16px; align-items: baseline; padding: 9px 0; font-size: 15.5px; }
+.demoreach span { flex: 0 0 62px; color: var(--quiet); font-size: 12.5px; text-transform: uppercase; letter-spacing: .1em; }
+.demoreach a { color: var(--green); text-decoration: none; font-weight: 500; }
+.demoreach a:hover { text-decoration: underline; }
+
+/* THE FORM SITS ON WHITE, NOT ON A TINT. The old one is a dark translucent
+   panel floating on a saturated gradient, which is why its own labels are hard
+   to read; a form is the one place on a page where legibility beats atmosphere. */
+.dform {
+  background: #fff;
+  border: 1px solid var(--rule-firm);
+  border-radius: 16px;
+  padding: 30px 30px 26px;
+  box-shadow: 0 1px 2px rgb(31 36 48 / .04), 0 12px 32px rgb(31 36 48 / .05);
+}
+.ffgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+@media (max-width: 560px) { .ffgrid { grid-template-columns: 1fr; } }
+.ff { margin: 0; display: flex; flex-direction: column; gap: 7px; }
+.ff--wide { grid-column: 1 / -1; }
+.ff label { font-size: 13px; font-weight: 600; color: var(--ink); letter-spacing: .01em; }
+.req { color: #C0392B; }
+
+.ff input, .ff select, .ff textarea {
+  font: inherit; font-size: 15.5px; color: var(--ink);
+  padding: 11px 13px;
+  border: 1px solid #D6D9DE;
+  border-radius: 9px;
+  background: #fff;
+  width: 100%;
+  transition: border-color .18s var(--ease-out), box-shadow .18s var(--ease-out);
+}
+.ff textarea { resize: vertical; min-height: 108px; line-height: 1.55; }
+.ff input::placeholder, .ff textarea::placeholder { color: #9AA1AA; }
+.ff input:focus, .ff select:focus, .ff textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgb(2 168 133 / .16);
+}
+/* The browser's own invalid styling only after a submit has been attempted, so
+   nobody is told their email is wrong while they are still typing it. */
+.dform.tried :invalid { border-color: #C0392B; }
+
+.dsubmit { width: 100%; margin-top: 22px; text-align: center; }
+.dnote { margin: 14px 0 0; font-size: 13px; line-height: 1.55; color: var(--quiet); text-align: center; }
+.dnote code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+
+/* The honeypot. Off-screen rather than display:none, because some bots skip
+   anything that is not rendered — and hidden from assistive tech, which would
+   otherwise read out a field nobody should fill. */
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

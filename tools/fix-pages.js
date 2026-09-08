@@ -113,6 +113,19 @@ function rules(rel) {
   const ABOUT = up + 'about.html';
   const LEADERSHIP = ABOUT + '#leadership';
   const CONTACT = up + 'contact.html';
+  /* DEMO REQUESTS NOW STAY ON THIS SITE. These four buttons used to point at
+     talbotiq.com/inquiry-now/, on the grounds that the old form actually
+     submits and there was no local one. build.js now generates demo.html, which
+     carries the same form with its placeholders and product list fixed — and
+     whose own submit still falls through to the old form until an endpoint is
+     configured. So the reason for the old routing survives, without fourteen
+     pages handing the reader to the previous website. Local, so same tab. */
+  const DEMO = up + 'demo.html';
+  const SIGNIN = up + 'signin.html';
+  /* The old destination, escaped for a regex. "Sign in" pointed at the tile
+     grid while there was no login to point at; these pages were wired then, so
+     the rules below re-point them and a re-run cannot put the grid back. */
+  const GRID_RE = PRODUCTS_GRID.replace(/\./g, '\\.');
 
   /* Google Maps' documented URL schemes — no key, no embed — built from the
      address in products.js, which is the same string the contact page prints
@@ -138,7 +151,10 @@ function rules(rel) {
   add('logo -> homepage', /<a class="logo" href="#"/g, `<a class="logo" href="${HOME}"`);
   add('product switcher -> product grid', /<a class="prod" href="#"/g, `<a class="prod" href="${PRODUCTS_GRID}"`);
   add('header Pricing -> the contact page', /<a class="lnk" href="#">Pricing<\/a>/g, `<a class="lnk" href="${CONTACT}">Pricing</a>`);
-  add('header Sign in -> product grid', /<a class="si" href="#">Sign in<\/a>/g, `<a class="si" href="${PRODUCTS_GRID}">Sign in</a>`);
+  add('header Sign in -> the sign-in page', /<a class="si" href="#">Sign in<\/a>/g, `<a class="si" href="${SIGNIN}">Sign in</a>`);
+  add('header Sign in: tile grid -> the sign-in page',
+    new RegExp('<a class="si" href="' + GRID_RE + '">Sign in</a>', 'g'),
+    `<a class="si" href="${SIGNIN}">Sign in</a>`);
 
   /* ---- header + drawer, about page ----------------------------------
      `class="on"` marks the item for the page you are already on. It becomes
@@ -157,18 +173,38 @@ function rules(rel) {
   /* ---- drawer, shared ------------------------------------------------ */
   add('drawer Pricing -> the contact page', /<a href="#">Pricing<\/a>/g, `<a href="${CONTACT}">Pricing</a>`);
   add('drawer All products -> product grid', /<a href="#">All products<small>/g, `<a href="${PRODUCTS_GRID}">All products<small>`);
-  add('drawer Sign in -> product grid', /<a href="#">Sign in<\/a>/g, `<a href="${PRODUCTS_GRID}">Sign in</a>`);
+  add('drawer Sign in -> the sign-in page', /<a href="#">Sign in<\/a>/g, `<a href="${SIGNIN}">Sign in</a>`);
+  add('drawer Sign in: tile grid -> the sign-in page',
+    new RegExp('<a href="' + GRID_RE + '">Sign in</a>', 'g'),
+    `<a href="${SIGNIN}">Sign in</a>`);
 
   /* ---- calls to action ----------------------------------------------
      Matched on class AND text: the about page and the product pages reuse the
      same button classes for different labels, so class alone would cross them
      over. */
-  add('Request demo -> inquiry form',
+  /* RE-POINTING WHAT A PREVIOUS RUN ALREADY FIXED. The rules below match the
+     original `href="#"` mockup state, which is the state these pages were in
+     the first time this tool ran — so on an already-fixed page they match
+     nothing. This one matches the CURRENT state instead: every anchor left
+     pointing at the old site's inquiry form, whatever its label, becomes a
+     local link to demo.html. It is idempotent because after it runs there is
+     nothing left for it to find. */
+  /* Undoing an automated pass that invented a signin.html and pointed every
+     Sign in at it. There is still no single sign-on — eight applications on six
+     hosts — so the grid is still the only honest destination. */
+  add('any signin.html link -> back to the product grid',
+    /href="(\.\.\/)?signin\.html"/g, `href="${PRODUCTS_GRID}"`);
+
+  add('any inquiry-form link -> the local demo page',
+    new RegExp('href="' + COMPANY.inquiry.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '" target="_blank" rel="noopener"', 'g'),
+    `href="${DEMO}"`);
+
+  add('Request demo -> the demo page',
     /<a class="btn btn-primary btn-block" href="#">Request demo<\/a>/g,
-    `<a class="btn btn-primary btn-block" ${ext(COMPANY.inquiry)}>Request demo</a>`);
-  add('Send enquiry -> inquiry form',
+    `<a class="btn btn-primary btn-block" href="${DEMO}">Request demo</a>`);
+  add('Send enquiry -> the demo page',
     /<a class="btn btn-primary btn-block" href="#">Send enquiry<\/a>/g,
-    `<a class="btn btn-primary btn-block" ${ext(COMPANY.inquiry)}>Send enquiry</a>`);
+    `<a class="btn btn-primary btn-block" href="${DEMO}">Send enquiry</a>`);
   add('Talk to us -> the contact page',
     /<a class="btn btn-outline-white btn-lg" href="#">Talk to us<\/a>/g,
     `<a class="btn btn-outline-white btn-lg" href="${CONTACT}">Talk to us</a>`);
@@ -177,9 +213,9 @@ function rules(rel) {
     `<a class="btn btn-outline-white btn-lg" href="${PRODUCTS_GRID}">Explore the products</a>`);
 
   /* ---- footer's own inline-styled link ------------------------------- */
-  add('footer Book a demo -> the form on this page',
+  add('footer Book a demo -> the demo page',
     /<a href="#" style="color:#3FD4B0;font-weight:600">Book a demo/g,
-    '<a href="#form" style="color:#3FD4B0;font-weight:600">Book a demo');
+    `<a href="${DEMO}" style="color:#3FD4B0;font-weight:600">Book a demo`);
   add('footer Get in touch -> the contact page',
     /<a href="#" style="color:#3FD4B0;font-weight:600">Get in touch/g,
     `<a href="${CONTACT}" style="color:#3FD4B0;font-weight:600">Get in touch`);
@@ -254,13 +290,13 @@ function rules(rel) {
   add('Contact (current page) -> unlinked, aria-current',
     /<a class="on" href="#">Contact<\/a>/g, '<a class="on" aria-current="page">Contact</a>');
 
-  /* The form is not wired: there is no <form> element on any of these pages
-     and no endpoint to post to. Submit therefore goes to the inquiry form that
-     does work. It navigates away, so anything already typed here is lost —
-     a real trap, called out in the README rather than pretended away. */
-  add('Submit -> the working inquiry form',
+  /* The form on this page is not wired: there is no <form> element and no
+     endpoint. Submit therefore goes to demo.html, which is. It navigates away,
+     so anything already typed here is lost — a real trap, and one that only
+     goes away when this page's own form is either wired or removed. */
+  add('Submit -> the demo page',
     /<a class="btn btn-primary btn-block" href="#">Submit<\/a>/g,
-    `<a class="btn btn-primary btn-block" ${ext(COMPANY.inquiry)}>Submit</a>`);
+    `<a class="btn btn-primary btn-block" href="${DEMO}">Submit</a>`);
 
   add('Open in Google Maps -> the office address',
     /<a class="btn btn-primary" href="#">Open in Google Maps<\/a>/g,

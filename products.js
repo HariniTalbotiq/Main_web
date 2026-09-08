@@ -46,6 +46,16 @@ const COMPANY = {
   pageUrl: null,
   contact: 'https://talbotiq.com/contact-us/',
   inquiry: 'https://talbotiq.com/inquiry-now/',
+  /* WHERE THE LOCAL DEMO FORM POSTS. Null until there is somewhere real for a
+     demo request to go, and while it is null `demo.html`'s submit falls back to
+     `inquiry` above — the form on the old site, which does work. So the button
+     is never dead and a lead is never silently swallowed, which is the one
+     failure mode that actually costs money here.
+
+     Set this to an endpoint (a Formspree URL, a Vercel function, anything that
+     accepts a POST) and the page starts submitting directly instead. That is
+     the only change needed; the form is already built for it. */
+  demoAction: null,
   privacy: 'https://talbotiq.com/privacy-policy/',
   phone: '+603 20 111 320',
   base: 'Kuala Lumpur, Malaysia',

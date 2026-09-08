@@ -12,3 +12,10 @@ __MACOSX/
 .env.*
 *.pem
 *.key
+
+# agent/tool scratch state, not source
+.playwright-mcp/
+.probe2/
+
+# Vercel CLI links this checkout to a project; its own README says do not commit it
+.vercel/
