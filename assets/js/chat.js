@@ -158,13 +158,41 @@
     '.tq-c-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;',
     'clip:rect(0 0 0 0);white-space:nowrap;border:0}',
 
-    /* phones: it takes the bottom of the screen, and dragging is meaningless */
+    /* PHONES. It becomes a bottom sheet, and several things that are fine on a
+       desktop are bugs here:
+
+       - the composer must be 16px. Below that, iOS Safari zooms the entire page
+         when the field takes focus, and the visitor is left pinched into a
+         corner of the site with no obvious way back. This is the one that
+         matters most and it costs nothing.
+       - the keyboard. A fixed element anchored to bottom:0 stays at the LAYOUT
+         viewport's bottom, so the keyboard covers the composer — you type
+         blind. --tq-vh and the transform below are driven from visualViewport
+         so the sheet rides above it.
+       - the home indicator. env(safe-area-inset-bottom) keeps the last line of
+         text and the footnote off the gesture bar.
+       - touch targets. 26px header icons are a desktop size; fingers need ~44.
+       - dragging is meaningless on a sheet that spans the screen, so the bar
+         stops advertising a grab cursor. */
     '@media (max-width:520px){',
     '.tq-c-win{left:0!important;top:auto!important;right:0;bottom:0;width:100vw;',
     /* max-width has to be released too, or the base rule's calc(100vw - 24px)
        wins and the window sits 24px narrow with a hairline of page each side */
-    'max-width:none;height:86dvh;max-height:none;border-radius:13px 13px 0 0;border-bottom:0}',
-    '.tq-c-bar{cursor:default}}',
+    'max-width:none;max-height:none;border-radius:14px 14px 0 0;border-bottom:0;',
+    'height:min(86dvh,calc(var(--tq-vh,100dvh) - 14px))}',
+    '.tq-c-bar{cursor:default;padding:11px 9px 11px 12px}',
+    '.tq-c-ic{width:36px;height:36px;font-size:17px}',
+    '.tq-c-form{padding:10px 11px}',
+    '.tq-c-form textarea{font-size:16px;min-height:42px;border-radius:21px}',
+    '.tq-c-send{width:44px;height:44px}',
+    '.tq-c-foot{padding:0 14px calc(10px + env(safe-area-inset-bottom))}',
+    '.tq-c-log{padding:12px 12px 6px}',
+    '.tq-c-msg{font-size:15px}',
+    '.tq-c-chips button{padding:11px 12px;font-size:14px}',
+    '.tq-c-btn{bottom:calc(18px + env(safe-area-inset-bottom))}}',
+    /* a phone on its side has almost no height; let the sheet take nearly all */
+    '@media (max-width:900px) and (max-height:480px){',
+    '.tq-c-win{height:min(96dvh,calc(var(--tq-vh,100dvh) - 8px))}}',
     '@media (prefers-reduced-motion:reduce){',
     '.tq-c-btn,.tq-c-btn:hover{transition:none;transform:none}.tq-c-wait i{animation:none}}',
   ].join('');
@@ -422,6 +450,42 @@
 
   window.addEventListener('resize', place);
 
+  /* THE KEYBOARD, and the only reliable way to find it. There is no event for
+     "keyboard opened"; what happens is that visualViewport shrinks while the
+     layout viewport does not. The difference is the keyboard's height, and a
+     sheet pinned to the layout bottom has to be lifted by exactly that much or
+     the composer sits behind it. --tq-vh also caps the sheet's height so the
+     title bar cannot be pushed off the top of a short viewport. */
+  var vv = window.visualViewport;
+  function fitViewport() {
+    if (!vv) return;
+    document.documentElement.style.setProperty('--tq-vh', Math.round(vv.height) + 'px');
+    if (win.hidden || !phone()) { win.style.transform = ''; return; }
+    var covered = Math.round(window.innerHeight - (vv.height + vv.offsetTop));
+    win.style.transform = covered > 40 ? 'translateY(-' + covered + 'px)' : '';
+    log.scrollTop = log.scrollHeight;
+  }
+  if (vv) {
+    vv.addEventListener('resize', fitViewport);
+    vv.addEventListener('scroll', fitViewport);
+  }
+
+  /* On a phone the sheet covers the page, so the page should not scroll behind
+     it — including the page's own fixed bottom action bar, which would
+     otherwise still be reachable underneath. On a desktop the window is a
+     small floating thing and locking the page would be wrong, so this is
+     scoped to the width where it is actually a sheet. */
+  var scrollWas = '';
+  function lockPage(on) {
+    if (on && phone()) {
+      scrollWas = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    } else if (!on) {
+      document.body.style.overflow = scrollWas;
+      scrollWas = '';
+    }
+  }
+
   /* ------------------------------------------------------------- messages */
 
   var GREETING = 'Hello! Ask me anything about TALBOTIQ’s products or this website. '
@@ -542,7 +606,7 @@
       .then(function () {
         busy = false;
         send.disabled = false;
-        input.focus();
+        if (!phone()) input.focus();
       });
   }
 
@@ -553,7 +617,12 @@
     btn.hidden = true;
     btn.setAttribute('aria-expanded', 'true');
     place();
-    input.focus();
+    lockPage(true);
+    fitViewport();
+    /* Not on a phone: focusing the field opens the keyboard over the greeting
+       before the visitor has read it, and on iOS it also scrolls the page. Let
+       them tap the field when they are ready. */
+    if (!phone()) input.focus();
     log.scrollTop = log.scrollHeight;
   }
 
@@ -565,6 +634,8 @@
     win.hidden = true;
     btn.hidden = false;
     btn.setAttribute('aria-expanded', 'false');
+    win.style.transform = '';
+    lockPage(false);
     place();
     btn.focus();
   }

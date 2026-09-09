@@ -145,6 +145,87 @@ test('the whole thing is idempotent on its own output being re-escaped', () => {
   assert.strictEqual(out, '&amp;lt;script&amp;gt;');
 });
 
+/* ------------------------------------------------------- the mobile rules */
+
+/* These are asserted from the stylesheet text rather than from a browser
+   because each one is a defect that is invisible until someone opens the site
+   on a phone, and two of them were. A browser test would be better; this one
+   at least cannot silently regress. */
+
+const CSS = (function () {
+  const a = src.indexOf('var CSS = [');
+  const b = src.indexOf("].join('')", a);
+  if (a < 0 || b < 0) { console.error('could not find the CSS array'); process.exit(1); }
+  /* Strip the /* *\/ comments FIRST. They contain apostrophes — "viewport's",
+     "the page's own bar" — and an unpaired quote desynchronises the matcher
+     below, which silently swallowed the whole phone media block. */
+  const body = src.slice(a, b).replace(/\/\*[\s\S]*?\*\//g, ' ');
+  return (body.match(/'(?:[^'\\]|\\.)*'/g) || [])
+    .map((q) => q.slice(1, -1)).join('');
+}());
+
+const phoneBlock = (function () {
+  const i = CSS.indexOf('@media (max-width:520px)');
+  if (i < 0) return '';
+  /* to the end of that media block */
+  let depth = 0;
+  for (let j = i; j < CSS.length; j++) {
+    if (CSS[j] === '{') depth++;
+    else if (CSS[j] === '}') { depth--; if (depth === 0) return CSS.slice(i, j + 1); }
+  }
+  return CSS.slice(i);
+}());
+
+test('the composer is 16px on phones, so iOS does not zoom the page', () => {
+  assert.ok(phoneBlock, 'there is no phone media block at all');
+  assert.ok(/\.tq-c-form textarea\{[^}]*font-size:16px/.test(phoneBlock),
+    'the phone block does not set the textarea to 16px — iOS Safari will zoom '
+    + 'the whole page when the field takes focus:\n' + phoneBlock.slice(0, 400));
+});
+
+test('the sheet keeps clear of the home indicator', () => {
+  assert.ok(/env\(safe-area-inset-bottom\)/.test(phoneBlock),
+    'nothing accounts for the safe area, so the last line sits under the gesture bar');
+});
+
+test('the sheet height follows the visual viewport, so the keyboard cannot cover it', () => {
+  assert.ok(/var\(--tq-vh/.test(phoneBlock), 'the phone height ignores --tq-vh');
+  assert.ok(/--tq-vh/.test(src) && /visualViewport/.test(src),
+    'nothing sets --tq-vh from visualViewport');
+  assert.ok(/translateY\(-/.test(src), 'the sheet is never lifted above the keyboard');
+});
+
+test('touch targets are finger-sized on phones', () => {
+  const send = phoneBlock.match(/\.tq-c-send\{([^}]*)\}/);
+  const icon = phoneBlock.match(/\.tq-c-ic\{([^}]*)\}/);
+  assert.ok(send && /width:4[4-9]px|width:5\d px|width:5\dpx/.test(send[1]),
+    'the send button is under 44px on phones: ' + (send && send[1]));
+  assert.ok(icon && /width:3[6-9]px|width:4\dpx/.test(icon[1]),
+    'the header icons are under 36px on phones: ' + (icon && icon[1]));
+});
+
+test('the phone sheet is full width, not 24px narrow', () => {
+  assert.ok(/max-width:none/.test(phoneBlock),
+    'the base calc(100vw - 24px) will win and leave a hairline of page each side');
+  assert.ok(/width:100vw/.test(phoneBlock));
+});
+
+test('a phone on its side still gets a usable sheet', () => {
+  assert.ok(/@media \(max-width:900px\) and \(max-height:480px\)/.test(CSS),
+    'no landscape rule — 86dvh of a 400px-tall viewport is a letterbox');
+});
+
+test('the page behind is locked only where the widget is actually a sheet', () => {
+  assert.ok(/function lockPage/.test(src), 'no scroll lock at all');
+  assert.ok(/if \(on && phone\(\)\)/.test(src),
+    'the scroll lock is not scoped to phone widths, so it would freeze the desktop page too');
+});
+
+test('focus does not open the keyboard over the greeting on a phone', () => {
+  assert.ok(/if \(!phone\(\)\) input\.focus\(\)/.test(src),
+    'input.focus() is unguarded, so opening the sheet on a phone throws up the keyboard');
+});
+
 /* -------------------------------------------------------------------- run */
 
 let failed = 0;
