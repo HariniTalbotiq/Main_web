@@ -40,3 +40,11 @@ tools
 old-inquiry.png
 # a 15-byte stray from some earlier redirect test, in the tree but not the site
 -w
+
+# Added with the clean-URL migration. Same rule as build.js above: these are
+# the generator's inputs and its paperwork, not files the edge should serve.
+# site.config.json in particular is fetchable at /site.config.json without one.
+package.json
+site.config.json
+scripts
+DOMAIN-CUTOVER.md

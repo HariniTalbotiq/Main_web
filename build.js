@@ -25,6 +25,13 @@ const crypto = require('crypto');
 
 const { COMPANY, PRODUCTS } = require('./products.js');
 const H = require('./home.js');
+
+/* THE DOMAIN LIVES IN ONE FILE. site.config.json is the only place
+   https://talbotiq.com is written down for the generated pages, so moving the
+   site is an edit to one value rather than a hunt through markup. Canonical,
+   og:url, og:image and the sitemap all read from here. */
+const SITE = JSON.parse(fs.readFileSync(path.join(__dirname, 'site.config.json'), 'utf8'));
+const abs = (p) => SITE.siteUrl + (p === '/' ? '/' : p);
 /* Generated from The Edge Malaysia by tools/fetch-articles.js — never hand-edited. */
 const { PUBLISHER, ARTICLES, articleUrl } = require('./articles.js');
 
@@ -74,6 +81,16 @@ const BY_SLUG = new Map(PRODUCTS.map((p) => [p.slug, p]));
 /* The product every diagram on this page orbits. */
 const CENTER_SLUG = 'ai-engine';
 
+/* A clean URL, back to the file that serves it. The site runs on Vercel's
+   `cleanUrls`, so /products/video-interview IS products/video-interview.html on
+   disk and `/` is index.html. The integrity check below existed to fail the
+   build when a door led nowhere; without this it would instead report every
+   door as broken, which is the same thing as having no check at all. */
+const pageFile = (href) => {
+  const p = String(href).split(/[#?]/)[0].replace(/^\//, '');
+  return path.join(__dirname, p === '' ? 'index.html' : p + '.html');
+};
+
 /* ---- integrity checks: fail the build, not the page -------------------- */
 {
   const bad = [];
@@ -87,7 +104,7 @@ const CENTER_SLUG = 'ai-engine';
     for (const m of t.modes || []) {
       if (!m.name || !m.icon) bad.push(`a mode of "${t.name}" has no name or icon`);
       if (!m.local) bad.push(`mode "${m.name}" of "${t.name}" has no local page`);
-      else if (!fs.existsSync(path.join(__dirname, m.local))) {
+      else if (!fs.existsSync(pageFile(m.local))) {
         bad.push(`mode "${m.name}" points at ${m.local}, which is not in the repo`);
       }
     }
@@ -226,16 +243,16 @@ const GO = {
 
      `talk` is the LOCAL contact page: its phone, email and WhatsApp links are
      live, so it is useful even though its own form is not wired. */
-  demo: 'demo.html',
-  talk: 'contact.html',
-  signin: 'signin.html',
+  demo: '/demo',
+  talk: '/contact',
+  signin: '/signin',
   products: '#products',
   /* THE SHELF'S OWN FOOTER LINK. It pointed at the old site's /products/
      index, so the one link under a shelf listing ten local product pages left
      the site. `index.html#products` rather than the bare '#products' that the
      hero uses, because this shelf is in the header of demo.html too, where a
      bare fragment would be a dead anchor. */
-  allProducts: 'index.html#products',
+  allProducts: '/#products',
 };
 
 /* A tile's destination. The local product page under products/ wins: it is a
@@ -1125,7 +1142,7 @@ const footer = `
     <!-- The footer logo is a link here for the same reason tools/fix-pages.js
          makes it one on the other fourteen pages: two ways back, and the one at
          the bottom is the one you want after reading to the bottom. -->
-    <a class="flogo" href="index.html" aria-label="${esc(COMPANY.name)} home"><img src="${LOGO}" alt="${esc(COMPANY.name)}" width="262" height="72"></a>
+    <a class="flogo" href="/" aria-label="${esc(COMPANY.name)} home"><img src="${LOGO}" alt="${esc(COMPANY.name)}" width="262" height="72"></a>
     <div class="fgrid">
       <div class="fcol"><h4>Products</h4>
         ${H.TILES.map((t) => {
@@ -1350,7 +1367,7 @@ const jsonld = {
    takes the body as an argument. The alternative is what `products/*.html` and
    `about.html` already are: standalone copies that drift, and that tools/
    fix-pages.js exists to keep in line. Anything generated should not need that. */
-const page = ({ title, ogTitle, desc, body }) => `<!DOCTYPE html>
+const page = ({ title, ogTitle, desc, body, path: pagePath, noindex }) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1358,10 +1375,18 @@ const page = ({ title, ogTitle, desc, body }) => `<!DOCTYPE html>
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="${H.PALETTE.teal}">
-${COMPANY.pageUrl ? `<link rel="canonical" href="${esc(COMPANY.pageUrl)}">\n<meta property="og:url" content="${esc(COMPANY.pageUrl)}">` : '<!-- no canonical: COMPANY.pageUrl is null until this page has a home -->'}
+${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<link rel="canonical" href="${esc(abs(pagePath))}">
+<meta property="og:url" content="${esc(abs(pagePath))}">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="${esc(SITE.siteName)}">
 <meta property="og:title" content="${esc(ogTitle || title)}">
 <meta property="og:description" content="${esc(desc)}">
+<meta property="og:image" content="${esc(abs(SITE.defaultOgImage))}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="${esc(SITE.twitterHandle)}">
+<meta name="twitter:title" content="${esc(ogTitle || title)}">
+<meta name="twitter:description" content="${esc(desc)}">
+<meta name="twitter:image" content="${esc(abs(SITE.defaultOgImage))}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- ONE REQUEST FOR BOTH FACES. Bodoni Moda (display) and Inter (text) come
@@ -1405,7 +1430,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
          trusts to get them back took them off this site and onto the old one.
          COMPANY.site is still correct for the canonical and the JSON-LD, which
          is what it is actually for. -->
-    <a class="logo" href="index.html" aria-label="${esc(COMPANY.name)} home">
+    <a class="logo" href="/" aria-label="${esc(COMPANY.name)} home">
       <img src="${LOGO}" alt="${esc(COMPANY.name)}" width="262" height="72">
     </a>
     <nav class="mid" aria-label="Primary">
@@ -1450,6 +1475,7 @@ ${footer}
 `;
 
 const html = page({
+  path: '/',
   /* `hero.lead` + `hero.marked` until the hero copy became a {text, keys}
      heading like the others; the two old fields no longer exist, so this was
      emitting "TalbotIQ — undefined undefined" as the page title. */
@@ -1501,7 +1527,9 @@ const html = page({
    names nothing local, and app.js opens the matching shelf on arrival. */
 const navAbs = (h) => {
   if (!h || isExternal(h) || h.startsWith('/') || h.startsWith('mailto:') || h.startsWith('tel:')) return h;
-  return h.startsWith('#') ? '/index.html' + h : '/' + h;
+  /* '#products' becomes '/#products' and 'about.html' becomes '/about' —
+     the same one line, because a leading slash is all either case needs. */
+  return '/' + h;
 };
 const rootAbs = (markup) => markup.replace(/href="([^"]*)"/g, (m, h) => `href="${navAbs(h)}"`);
 
@@ -1509,8 +1537,8 @@ const rootAbs = (markup) => markup.replace(/href="([^"]*)"/g, (m, h) => `href="$
    the columns from them. Adding the shelves is not a reason to take a
    destination away, so it stays where it is, before Contact. */
 const navJsItems = rootAbs(navItems).replace(
-  /(<a href="\/contact\.html")/,
-  '<a href="/index.html#insights">Blog</a>\n      $1');
+  /(<a href="\/contact")/,
+  '<a href="/#insights">Blog</a>\n      $1');
 
 const navJs = `/* GENERATED by build.js — do not edit this file, edit build.js.
    The shelves for every page that build.js does NOT write. See the note on
@@ -1663,12 +1691,47 @@ fs.writeFileSync(path.join(__dirname, 'assets', 'js', 'nav.js'), navJs, 'utf8');
 fs.writeFileSync(path.join(__dirname, 'index.html'), html, 'utf8');
 
 const demoHtml = page({
+  path: '/demo',
   /* a <title> is plain text — the sentence, never the keyed markup */
   title: `${H.COPY.demo.heading.text} — ${COMPANY.name}`,
   desc: H.COPY.demo.lede,
   body: demoBody,
 });
 fs.writeFileSync(path.join(__dirname, 'demo.html'), demoHtml, 'utf8');
+
+/* ---- 404 ------------------------------------------------------------------
+   BUILT FROM THE SAME SHELL AS EVERY OTHER PAGE, which is the only reason it
+   is here rather than hand-written at the repo root. A 404 is the page most
+   likely to drift: nobody looks at it, so its header keeps the nav from two
+   redesigns ago and its footer the phone number nobody answers. Generated, it
+   cannot.
+
+   noindex, follow — not noindex, nofollow. The page should never rank, but the
+   links out of it are the whole point of having one, and telling a crawler to
+   ignore them wastes the only useful thing on the page.
+
+   Vercel serves this automatically for any unmatched path on a static
+   deployment; there is no route to declare. */
+const notFoundBody = `
+<div class="hero">
+  <div class="wrap">
+    <h1 class="hand">This page has <span class="k-y">moved on</span>.</h1>
+    <p class="lede">The link you followed is out of date, or the address has a typo in it. Everything the site can do is still one click away.</p>
+    <div class="cta-pair">
+      <a class="btn btn-primary btn-lg" href="/">Back to the homepage</a>
+      <a class="btn btn-ghost btn-lg" href="/#products">Browse the products</a>
+    </div>
+  </div>
+</div>`;
+
+const notFoundHtml = page({
+  path: '/404',
+  noindex: true,
+  title: `Page not found — ${COMPANY.name}`,
+  desc: 'That page is not here. Head back to the homepage or browse the ten products in the suite.',
+  body: notFoundBody,
+});
+fs.writeFileSync(path.join(__dirname, '404.html'), notFoundHtml, 'utf8');
 
 const linked = H.TILES.filter((t) => tileHref(t)).length;
 const soon = [...H.SOLUTIONS, ...H.COMPANY_LINKS, ...H.RESOURCES].filter((x) => !x.url).length;

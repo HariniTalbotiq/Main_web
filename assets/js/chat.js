@@ -237,10 +237,19 @@
       .replace(/\[([^\]\n]{1,120})\]\(([^)\s]{1,200})\)/g, function (m, label, href) {
         return link(href, label);
       })
-      /* a bare /products/foo.html sitting in a sentence */
-      .replace(/(^|[\s(])(\/[A-Za-z0-9._~/-]*\.html)(?=$|[\s),.;:!?])/g, function (m, pre, href) {
-        return pre + link(href, href);
-      })
+      /* A bare site path sitting in a sentence. The corpus is extensionless
+         now, so the model writes /products/video-interview and the old
+         `.html`-only pattern stopped matching anything it says. Both shapes are
+         accepted: answers cached from before the migration still linkify, and
+         the host 308s the .html form to the clean one anyway.
+
+         A CLOSED LIST, not a general path pattern, for the same reason
+         SAFE_PATH above is one. `\/[A-Za-z0-9-]+` would linkify "9/10" and any
+         other slash the model happens to type; naming the two directories and
+         the four root pages cannot. */
+      .replace(
+        /(^|[\s(])(\/(?:products|solutions)\/[A-Za-z0-9-]+(?:\.html)?|\/(?:about|contact|demo|signin)(?:\.html)?)(?=$|[\s),.;:!?])/g,
+        function (m, pre, href) { return pre + link(href, href); })
       .replace(/\*\*([^*\n]{1,160})\*\*/g, '<strong>$1</strong>');
 
     /* "- item" lines become a real list; every other line keeps its newline,
@@ -353,7 +362,7 @@
     + '<svg width="15" height="15" viewBox="0 0 18 18" fill="none" aria-hidden="true">'
     + '<path d="M3 15 15.5 9 3 3l2.4 6L3 15Z" fill="currentColor"/></svg></button></form>'
     + '<p class="tq-c-foot">Answers come from this website only, and your question goes to '
-    + 'Google Gemini. Anything else, <a href="/contact.html">talk to the team</a>.</p>';
+    + 'Google Gemini. Anything else, <a href="/contact">talk to the team</a>.</p>';
 
   document.body.appendChild(btn);
   document.body.appendChild(win);

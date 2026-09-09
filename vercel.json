@@ -1,7 +1,125 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "functions": {
     "api/chat.js": {
       "maxDuration": 30
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/products/ats",
+      "destination": "/products/recruitment-software",
+      "permanent": true
+    },
+    {
+      "source": "/products/erp",
+      "destination": "/products/business-management-system",
+      "permanent": true
+    },
+    {
+      "source": "/products/nouscrm",
+      "destination": "/products/sales-crm",
+      "permanent": true
+    },
+    {
+      "source": "/products/tasca",
+      "destination": "/products/task-manager",
+      "permanent": true
+    },
+    {
+      "source": "/products/lexer",
+      "destination": "/products/document-management",
+      "permanent": true
+    },
+    {
+      "source": "/products/lexerai",
+      "destination": "/products/document-management",
+      "permanent": true
+    },
+    {
+      "source": "/products/recapr",
+      "destination": "/products/note-taker",
+      "permanent": true
+    },
+    {
+      "source": "/products/video-interviewer",
+      "destination": "/products/video-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/voice-interviewer",
+      "destination": "/products/voice-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/chat-interviewer",
+      "destination": "/products/chat-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/recorded-interviewer",
+      "destination": "/products/recorded-video-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/two-way-interviewer",
+      "destination": "/products/two-way-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/avatar-interviewer",
+      "destination": "/products/ai-avatar-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/conversational-interview",
+      "destination": "/products/conversational-chat-interview",
+      "permanent": true
+    },
+    {
+      "source": "/products/mcqs",
+      "destination": "/products/mcq-rounds",
+      "permanent": true
+    },
+    {
+      "source": "/Products/:slug*",
+      "destination": "/products/:slug*",
+      "permanent": true
+    },
+    {
+      "source": "/Solutions/:slug*",
+      "destination": "/solutions/:slug*",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
 }

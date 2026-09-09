@@ -128,7 +128,7 @@ const MODES = {
   video: [
     {
       name: 'Conversational AI Avatar Interview',
-      local: 'products/avatar-interviewer.html',
+      local: '/products/ai-avatar-interview',
       icon: `<rect x="4" y="4" width="32" height="24" rx="5" fill="#0E1A20"/>
         <circle cx="20" cy="14" r="4.8" fill="#02A885"/>
         <path d="M12 25c1.8-5 14.2-5 16 0z" fill="#02A885"/>
@@ -137,7 +137,7 @@ const MODES = {
     },
     {
       name: 'Recorded Video Interview',
-      local: 'products/recorded-interviewer.html',
+      local: '/products/recorded-video-interview',
       icon: `<rect x="2" y="11" width="25" height="19" rx="4" fill="#02A885"/>
         <path d="M29 19l9-5v17l-9-5z" fill="#027A5C"/>
         <circle cx="10" cy="19" r="3.2" fill="#fff"/>
@@ -146,7 +146,7 @@ const MODES = {
     },
     {
       name: '2-Way Interview',
-      local: 'products/two-way-interviewer.html',
+      local: '/products/two-way-interview',
       icon: `<rect x="2" y="5" width="19" height="14" rx="3.4" fill="#02A885"/>
         <circle cx="11.5" cy="11" r="3" fill="#fff"/>
         <rect x="19" y="21" width="19" height="14" rx="3.4" fill="#027A5C"/>
@@ -158,7 +158,7 @@ const MODES = {
   chat: [
     {
       name: 'MCQs',
-      local: 'products/mcqs.html',
+      local: '/products/mcq-rounds',
       icon: `<rect x="3" y="3" width="34" height="34" rx="5" fill="#fff" stroke="#1F2430" stroke-width="2"/>
         <circle cx="12" cy="12" r="3.8" fill="#02A885"/>
         <path d="M10.2 12l1.6 1.6 3.2-3.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -171,7 +171,7 @@ const MODES = {
     },
     {
       name: 'Timed Q&A',
-      local: 'products/timed-qa.html',
+      local: '/products/timed-qa',
       icon: `<rect x="2" y="6" width="22" height="19" rx="4" fill="#02A885"/>
         <rect x="7" y="12" width="12" height="2.4" rx="1.2" fill="#fff"/>
         <rect x="7" y="17" width="8" height="2.4" rx="1.2" fill="#fff"/>
@@ -181,7 +181,7 @@ const MODES = {
     },
     {
       name: 'Conversational Chat Interview',
-      local: 'products/conversational-interview.html',
+      local: '/products/conversational-chat-interview',
       icon: `<path d="M3 5h21a3.4 3.4 0 0 1 3.4 3.4v9A3.4 3.4 0 0 1 24 20.8H12l-5.6 4.6v-4.6H3A3.4 3.4 0 0 1-.4 17.4v-9A3.4 3.4 0 0 1 3 5z" transform="translate(2 0)" fill="#02A885"/>
         <rect x="9" y="10" width="13" height="2.2" rx="1.1" fill="#fff"/>
         <path d="M37 18H21a3.4 3.4 0 0 0-3.4 3.4v8A3.4 3.4 0 0 0 21 32.8h9l5.6 4.4v-4.4H37a3.4 3.4 0 0 0 3.4-3.4v-8A3.4 3.4 0 0 0 37 18z" fill="#027A5C"/>
@@ -195,7 +195,7 @@ const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
-    local: 'products/video-interviewer.html',
+    local: '/products/video-interview',
     name: 'Video Interview',
     tagline: 'Multi-way, one-way and AI avatar interview',
     modes: MODES.video,
@@ -210,7 +210,7 @@ const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
-    local: 'products/voice-interviewer.html',
+    local: '/products/voice-interview',
     name: 'Voice Interview',
     tagline: 'A spoken round, transcribed live',
     kin: 'Live',
@@ -225,7 +225,7 @@ const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
-    local: 'products/chat-interviewer.html',
+    local: '/products/chat-interview',
     name: 'Chat Interview',
     tagline: 'Blind text assessment, AI answers flagged',
     modes: MODES.chat,
@@ -239,7 +239,7 @@ const TILES = [
   {
     slug: 'ats',
     group: 'hiring',
-    local: 'products/ats.html',
+    local: '/products/recruitment-software',
     name: 'Intelligent Recruitment Software',
     was: 'ATS',
     tagline: 'End-to-end recruitment system for your hiring needs',
@@ -252,7 +252,7 @@ const TILES = [
   {
     slug: 'erp',
     group: 'business',
-    local: 'products/erp.html',
+    local: '/products/business-management-system',
     name: 'Business Management System',
     was: 'ERP',
     /* NOT SETTLED. The meeting named the modules — purchase, procurement,
@@ -271,7 +271,7 @@ const TILES = [
   {
     slug: 'nouscrm',
     group: 'business',
-    local: 'products/nouscrm.html',
+    local: '/products/sales-crm',
     name: 'Sales CRM',
     was: 'NousCRM',
     tagline: 'Intelligent platform for leads and sales',
@@ -286,7 +286,7 @@ const TILES = [
   {
     slug: 'task-manager',
     group: 'business',
-    local: 'products/tasca.html',
+    local: '/products/task-manager',
     name: 'Task & Productivity Manager',
     was: 'tasca',
     tagline: 'Smart management for tasks and productivity',
@@ -302,7 +302,7 @@ const TILES = [
   {
     slug: 'lexerai',
     group: 'business',
-    local: 'products/lexer.html',
+    local: '/products/document-management',
     /* NOT "Parser". The meeting is explicit that the product scans as well as
        parses, so calling it a parser understates it — "Intelligent Document
        Management" was the name settled on. */
@@ -319,7 +319,7 @@ const TILES = [
   {
     slug: 'recapr',
     group: 'business',
-    local: 'products/recapr.html',
+    local: '/products/note-taker',
     name: 'Intelligent Note Taker',
     was: 'Recapr',
     tagline: 'The intelligent note taker for all your meetings',
@@ -333,7 +333,7 @@ const TILES = [
   {
     slug: 'ai-engine',
     group: 'engine',
-    local: 'products/vawlt.html',
+    local: '/products/vawlt',
     name: 'Private AI Engine',
     was: 'TalbotIQ AI Engine',
     tagline: 'Your AI, inside your perimeter',
@@ -763,25 +763,25 @@ const SOLUTIONS = [
     /* A page we ship, so it wins over the live one — the same rule the product
        tiles follow. The other four keep their talbotiq.com URL until a local
        page for each arrives. */
-    local: 'solutions/ai-strategy-consulting.html',
+    local: '/solutions/ai-strategy-consulting',
   },
   {
     name: 'AI Agent & Bot Development',
     summary: 'Agents that carry the repetitive operations, so the team keeps the judgement.',
     url: 'https://talbotiq.com/services/ai-agent-bot-development/',
-    local: 'solutions/ai-agent-bot-development.html',
+    local: '/solutions/ai-agent-bot-development',
   },
   {
     name: 'Embedded Edge AI',
     summary: 'Vision and sensor intelligence where the work physically happens.',
     url: 'https://talbotiq.com/services/embedded-systems-edge-intelligence/',
-    local: 'solutions/embedded-edge-ai.html',
+    local: '/solutions/embedded-edge-ai',
   },
   {
     name: 'Full Stack Dev & AI Integration',
     summary: 'Cloud-native foundations built to have intelligence added to them.',
     url: 'https://talbotiq.com/services/full-stack-development-ai-integration/',
-    local: 'solutions/full-stack-ai-integration.html',
+    local: '/solutions/full-stack-ai-integration',
   },
   {
     name: 'AI Governance & Security',
@@ -797,11 +797,11 @@ const COMPANY_LINKS = [
      repo and carries a #leadership section, which is what turned Leadership
      from a "soon" into a real destination. A page we ship beats a page we do
      not control, the same rule the product tiles follow. */
-  { name: 'About us', url: 'about.html' },
-  { name: 'Leadership', url: 'about.html#leadership' },
+  { name: 'About us', url: '/about' },
+  { name: 'Leadership', url: '/about#leadership' },
   { name: 'Memberships', url: null },
   { name: 'Careers', url: null },
-  { name: 'Contact us', url: 'contact.html' },
+  { name: 'Contact us', url: '/contact' },
 ];
 
 const RESOURCES = [

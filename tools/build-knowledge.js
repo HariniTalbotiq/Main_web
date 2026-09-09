@@ -60,12 +60,29 @@ function discover() {
     if (!fs.existsSync(file)) continue;
     const html = fs.readFileSync(file, 'utf8');
     const from = path.dirname(rel);
-    for (const m of html.matchAll(/href="([^"#?][^"]*?\.html)(?:[#?][^"]*)?"/g)) {
+    /* THE LINKS LOST THEIR EXTENSION, so this stopped matching them. The site
+       runs on `cleanUrls`: every href is now `/products/video-interview`, and a
+       pattern that insists on `.html` crawls index.html, finds nothing, and
+       hands the assistant a three-page corpus while reporting the other
+       twenty-three as orphans — which reads like a content problem and is
+       actually this regex.
+
+       So the extension is optional in the match and re-attached below. `/`
+       resolves to index.html; anything with a real extension that is not .html
+       (an image, a PDF) is not a page and is skipped. */
+    for (const m of html.matchAll(/href="(\/|[^"#?:][^"#?]*?)(?:[#?][^"]*)?"/g)) {
       /* off-site, and the schemes that are not files */
       if (/^(?:https?:|mailto:|tel:|\/\/)/.test(m[1])) continue;
-      const next = path
-        .normalize(path.join(m[1].charAt(0) === '/' ? '.' : from, m[1].replace(/^\//, '')))
-        .split(path.sep).join('/');
+      const href = m[1].replace(/\.html$/, '');
+      if (/\.[A-Za-z0-9]+$/.test(href)) continue;   /* asset, not a page */
+      /* `/` is the root index, and it is resolved BEFORE the join — not by
+         renaming it to "index" first, which makes it look relative and lands
+         it in whatever directory the linking page happens to sit in. */
+      const next = href === '/'
+        ? ENTRY
+        : path
+            .normalize(path.join(href.charAt(0) === '/' ? '.' : from, href.replace(/^\//, '')))
+            .split(path.sep).join('/') + '.html';
       /* nothing outside the served tree, and none of the reference material */
       if (next.startsWith('..') || /^(?:design|archive|\.archive|research)\//.test(next)) continue;
       if (!seen.has(next)) { seen.add(next); queue.push(next); }
