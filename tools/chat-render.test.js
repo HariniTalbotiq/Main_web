@@ -226,6 +226,47 @@ test('focus does not open the keyboard over the greeting on a phone', () => {
     'input.focus() is unguarded, so opening the sheet on a phone throws up the keyboard');
 });
 
+/* ---------------------------------------- keeping clear of the mobile CTA bar */
+
+/* 24 of the 26 pages pin a fixed CTA bar to the bottom edge below 880px. The
+   bubble's default corner is 20px up, which put it INSIDE that bar on every one
+   of them: 56x38px of the right-hand button sat under a widget with a z-index
+   of 2147483000 and could not be tapped. Both halves are asserted, because
+   either alone silently does nothing. */
+
+test('the widget reads the page-declared bottom bar and keeps above it', () => {
+  assert.ok(/--tq-bottom-bar/.test(src), 'chat.js never reads --tq-bottom-bar');
+  assert.ok(/var floor = window\.innerHeight - barPx/.test(src),
+    'clamp() does not subtract the bar, so a dragged bubble can still land on it');
+  assert.ok(/y: window\.innerHeight - barPx - h - 20/.test(src),
+    'the default corner does not subtract the bar, which is where it landed on it');
+});
+
+test('every page with a bottom bar declares its height', () => {
+  const root = path.join(__dirname, '..');
+  const files = [];
+  for (const f of fs.readdirSync(root)) if (/\.html$/.test(f)) files.push(f);
+  for (const d of ['products', 'solutions']) {
+    const p = path.join(root, d);
+    if (!fs.existsSync(p)) continue;
+    for (const f of fs.readdirSync(p)) if (/\.html$/.test(f)) files.push(d + '/' + f);
+  }
+  const missing = [];
+  let withBar = 0;
+  for (const f of files) {
+    const html = fs.readFileSync(path.join(root, f), 'utf8');
+    if (!/<div class="mobar"/.test(html)) continue;
+    withBar++;
+    if (!/--tq-bottom-bar:\s*72px/.test(html)) missing.push(f);
+  }
+  assert.ok(withBar > 0, 'no page has a .mobar any more — has the bar been removed?');
+  assert.strictEqual(missing.length, 0,
+    withBar + ' pages pin a bottom CTA bar but ' + missing.length + ' do not declare its\n'
+    + '         height, so the chat bubble will sit on the bar and block a button:\n'
+    + '         ' + missing.join('\n         ') + '\n'
+    + '         fix: node tools/fix-pages.js');
+});
+
 /* -------------------------------------------------------------------- run */
 
 let failed = 0;

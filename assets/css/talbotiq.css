@@ -11,10 +11,10 @@
    arc. That is now a STRAIGHT edge — see the note on `.band` in §4. The cut
    corner on `.caps` is a different device and is still there.
 
-   THE DISPLAY FACE IS MESHED DISPLAY, a high-contrast serif, self-hosted in
-   §0. The mockup used Caveat Brush, a brush script. The swap is why §0 carries
-   a derivation note; the marks that also had to be re-derived against this face
-   no longer exist.
+   THE DISPLAY FACE IS BODONI MODA, a Didone, from Google Fonts. The mockup
+   used Caveat Brush, a brush script; MESHED Display sat in between and was
+   self-hosted in §0. Nothing now depends on the face's metrics — the marks that
+   had to be re-derived for each swap no longer exist.
 
    Everything from §1 to §12 is the mockup's own CSS, kept at its own values so
    the page renders as designed. §13 onward is what a real page needs and a
@@ -23,21 +23,19 @@
    ========================================================================== */
 
 /* ---- 0 · THE DISPLAY FACE ----------------------------------------------
-   MESHED Display by Rajesh Rajput, self-hosted. Free for commercial use; the
-   licence forbids MODIFYING the files, so this is the vendor's own .woff2
-   copied verbatim out of the package — never subset or re-compressed. See
-   assets/fonts/README.md.
+   Bodoni Moda by Owen Earl (SIL OFL), served from Google Fonts in the same
+   request as Inter, so there is one stylesheet round trip rather than two and
+   no @font-face here.
 
-   Only Bold is shipped because only Bold is used, and the @font-face declares
-   700 so the browser matches the real file instead of synthesising a bold from
-   something lighter. */
-@font-face {
-  font-family: "Meshed Display";
-  src: url("../fonts/MeshedDisplay-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
+   ONLY 700 IS REQUESTED, because only 700 is used — asking for the whole
+   400..900 range would ship weights nothing references. The `opsz` axis IS
+   requested across its full 6..96 range: Bodoni Moda is a Didone, its hairlines
+   thin out as the size grows, and `font-optical-sizing: auto` (the browser
+   default) is what keeps a 76px hero from going wispy and a 21px SVG label
+   from going muddy. Dropping opsz would silently lose that.
+
+   assets/fonts/MeshedDisplay-Bold.woff2 is the previous face and is now
+   unreferenced — see assets/fonts/README.md before deleting it. */
 
 :root {
   --teal: #02A885;
@@ -55,10 +53,10 @@
   --dim: #6E6C6C;
   --quiet: #8B8989;
 
-  /* The fallbacks are SERIFS now, not handwriting scripts: MESHED Display is a
-     high-contrast display serif, so if it fails to load a Didone-ish serif is
-     the near miss and Comic Sans would be a disaster. */
-  --f-hand: "Meshed Display", "Playfair Display", "Didot", "Bodoni MT", Georgia, serif;
+  /* The fallbacks are Didones before general serifs: Bodoni Moda is a Didone,
+     so "Bodoni MT" and Didot are the near misses if the webfont fails, Georgia
+     is the safe floor, and a handwriting script would be a disaster. */
+  --f-hand: "Bodoni Moda", "Bodoni MT", Didot, "Playfair Display", Georgia, serif;
   --f-text: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* ---- THE KEYWORD PAIR --------------------------------------------------
@@ -97,7 +95,7 @@ img { max-width: 100%; }
 
 .hand {
   font-family: var(--f-hand);
-  /* matches the one @font-face weight shipped, so nothing is synthesised */
+  /* the one weight requested from Google Fonts, so nothing is synthesised */
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.08;
@@ -551,6 +549,14 @@ h2.hand.left { text-align: left; }
   /* the triangle is drawn slightly right of centre in its own box, which is
      what makes an optically centred play mark rather than a mathematical one */
   display: block; margin-left: 4px;
+  /* ONE TRIANGLE SIZE FOR BOTH BADGES, SET HERE RATHER THAN IN THE MARKUP. The
+     two SVGs carry different width/height attributes — 26×30 on the episode,
+     20×24 on the press still — because the episode's badge used to be 76px and
+     needed the bigger glyph to fill it. Both badges are 66px now, so the same
+     attributes would leave the episode's mark at 45% of its circle against the
+     other's 36%: same button, visibly chunkier. Stating it once in CSS keeps
+     them identical and overrides both attributes. */
+  width: 20px; height: 24px;
   /* the badge below is absolutely positioned, so it would otherwise paint OVER
      this non-positioned sibling and swallow the triangle */
   position: relative; z-index: 1;
@@ -558,7 +564,7 @@ h2.hand.left { text-align: left; }
 }
 /* the badge itself, drawn on the span rather than a second element */
 .ytplay::before {
-  content: ""; position: absolute; width: 76px; height: 76px; border-radius: 50%;
+  content: ""; position: absolute; width: 66px; height: 66px; border-radius: 50%;
   background: var(--teal); box-shadow: 0 6px 20px rgb(14 22 32 / .28);
   transition: transform .2s var(--ease), background .2s var(--ease);
 }
@@ -595,9 +601,21 @@ h2.hand.left { text-align: left; }
    asked to stop implying playback. */
 .tlfeat--press { margin-top: 40px; }
 .tlfeat--press .tlfeat-show { font-size: 27px; }
-.tlfeat-media--photo { aspect-ratio: auto; display: block; }
+.tlfeat-media--photo { aspect-ratio: auto; display: block; position: relative; }
 .tlfeat-media--photo img { display: block; width: 100%; height: auto; }
 .tlfeat-media--photo:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+/* NO SIZE OVERRIDE HERE ANY MORE, and the deletion is the point. This carried
+   `width: max(44px, 10.5%)` back when the episode's badge was a fixed 76px: a
+   percentage kept this one proportional to a column that changes width, and it
+   landed near 66px on a desktop. Both badges are 66px flat now, so the
+   percentage stopped holding them in proportion and started pulling them apart
+   — 88px against 66 once the block stacks at 900, 44 against 66 on a phone.
+   One fixed size in the base rule is what actually makes them the same button.
+
+   If this still ever wants its own size again, it is one rule here, not a
+   percentage: the two frames are different shapes and only a number stays put
+   across the stacked layout. */
+
 .tlfeat-out { margin: 16px 0 0; font-size: 15.5px; }
 .tlfeat-out a {
   color: var(--green); font-weight: 600; text-decoration: none;
@@ -974,7 +992,12 @@ a.pitem:hover { background: var(--band); }
   h2.hand { font-size: 36px; }
   .cta h2 { font-size: 36px; }
   .phead h2.hand { font-size: 33px; }
-  .prow-4, .prow-5 { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  /* minmax(0,…), not 1fr. A bare `1fr` is `minmax(auto, 1fr)`, so the track
+     cannot go below its content's min-content width — "Intelligent Recruitment
+     Software" held a 124px floor and two of them plus the gap pushed the page
+     to 381px wide, which is why the homepage scrolled sideways on a 360px
+     phone. Same idiom as .pgrid--products above. */
+  .prow-4, .prow-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
   .tile .card { width: 104px; height: 104px; border-radius: 22px; margin-bottom: 16px; }
   .tile .nm { font-size: 17px; }
   .tile .ds { font-size: 13.5px; }
@@ -996,7 +1019,9 @@ a.pitem:hover { background: var(--band); }
   .whygrid { grid-template-columns: 1fr; gap: 34px; margin-top: 38px; }
   .why { padding: 68px 0; }
   .cap.wide { grid-column: span 1; }
-  .fgrid { grid-template-columns: repeat(2, 1fr); }
+  /* same reason as .prow above: "AI Strategy & Consulting" set a 148px floor on
+     a track that had 120px to give, and the footer overhung the page */
+  .fgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .caps { border-radius: 0 50px 0 0; }
   section { padding: 68px 0; }
   .band { padding: 56px 0 68px; }
@@ -1019,6 +1044,18 @@ a.pitem:hover { background: var(--band); }
   h1.hand { font-size: 36px; }
   .hdr-right .btn { padding: 10px 15px; font-size: 14.5px; }
   .prow-4, .prow-5 { gap: 16px; }
+  /* THE BAND LABEL IS THREE THINGS THAT CANNOT SHRINK. A nowrap name, a rule
+     that gives back at most its own flex, and a nowrap count — so below about
+     380px "5 products" hung 21px off the right edge and took the whole
+     homepage sideways with it on a 360px phone. The name is the only part with
+     somewhere to go, so it is the part allowed to wrap; the count stays on one
+     line because "5 / products" would read as two facts. */
+  .glabel { gap: 12px; }
+  .glabel .t { white-space: normal; }
+  /* 36px of gutter between two 120px columns is 11% of a 320px screen, and it
+     was the last 6px of sideways scroll on the narrowest phones — the tracks
+     are already minmax(0,…), so the gap is the part with room to give. */
+  .fgrid { gap: 24px; }
 }
 
 

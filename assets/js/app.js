@@ -1,11 +1,12 @@
 /* =============================================================================
    TALBOTIQ — homepage behaviour
    -----------------------------------------------------------------------------
-   Three things, and nothing else:
+   Four things, and nothing else:
 
      1. the header takes a hairline once the page has scrolled
      2. the three nav panels open and close
      3. the drawer, for viewports with no room for a nav
+     4. the thought-leadership grid collapses to three and opens to eight
 
    The mockup drew a caret on Products, Solutions and Company but had nowhere
    for them to go. This is where they go.
@@ -116,6 +117,33 @@
     hide();
   });
 
+  /* ---- 2b · a shelf opened from the URL --------------------------------
+     THE STANDALONE PAGES HAVE NO PANELS OF THEIR OWN. about, contact, signin
+     and the four solution pages each carry their own stylesheet and no app.js,
+     so a "Solutions" item on those pages cannot open a shelf where it stands.
+     It links here instead — `index.html#solutions` — and this opens the shelf
+     on arrival, so the reader lands on the same menu the bar would have given
+     them. That is the local answer to "show me every solution"; it used to be
+     a link to the old site's /services/ index.
+
+     A HASH THAT NAMES A REAL SECTION IS LEFT ALONE. `#products` and
+     `#insights` are sections in the page and belong to the browser, which
+     scrolls to them — and `#products` is also a panel name, so opening a shelf
+     on that hash would hijack a link that has always just scrolled. Only a
+     hash with no element of its own is read as asking for a shelf.
+
+     The hash is untrusted input on its way into a selector, so it has to look
+     like a panel name before it gets there. */
+  function shelfFromHash() {
+    var name = location.hash.slice(1);
+    if (!/^[a-z][a-z-]{0,30}$/.test(name)) return;
+    if (document.getElementById(name)) return;
+    var btn = document.querySelector('.navbtn[data-panel="' + name + '"]');
+    if (btn) show(btn);
+  }
+  shelfFromHash();
+  addEventListener('hashchange', shelfFromHash);
+
   /* ---- 3 · the drawer -------------------------------------------------- */
   var burger = $('#burger');
   var drawer = $('#drawer');
@@ -143,6 +171,68 @@
     addEventListener('resize', function () {
       if (innerWidth > 820 && drawer.dataset.open === 'true') setDrawer(false);
     });
+  }
+
+  /* ---- 4 · thought leadership: the rest of the columns ------------------ */
+  /* The grid ships with all eight articles in it. This collapses it to the
+     first three and hands the reader a control to open it again — so the five
+     it hides are hidden by a script that is definitely running, and a build
+     that loses this file shows everything rather than nothing.
+
+     The anchor beside the button is the no-script route to the publisher's
+     author index. It is swapped out here, not removed: with the grid now able
+     to show every column this page has, the button is the better answer, but
+     only once we know we can offer it. */
+  var tlGrid = $('#tl-grid');
+  var tlMore = $('.blogmore');
+  var tlAll = $('a.blogall');
+
+  if (tlGrid && tlMore && tlGrid.querySelector('.post--rest')) {
+    var setTL = function (open) {
+      tlGrid.classList.toggle('blog--collapsed', !open);
+      tlMore.setAttribute('aria-expanded', String(open));
+      /* innerHTML, because the labels carry an arrow entity from build.js */
+      tlMore.innerHTML = open ? tlMore.dataset.less : tlMore.dataset.more;
+    };
+
+    setTL(false);
+    if (tlAll) tlAll.hidden = true;
+    tlMore.hidden = false;
+
+    tlMore.addEventListener('click', function () {
+      var open = tlMore.getAttribute('aria-expanded') === 'true';
+      setTL(!open);
+      /* COLLAPSING CAN PULL THE PAGE OUT FROM UNDER THE READER. Five cards
+         disappearing above the fold leaves them somewhere further down the
+         page than where they clicked. If the control has ended up above the
+         viewport, put it back where it was. */
+      if (open) {
+        var top = tlMore.getBoundingClientRect().top;
+        if (top < 0) tlMore.scrollIntoView({ block: 'center' });
+      }
+    });
+  }
+
+  /* ---- the featured episode: poster now, player on demand -------------- */
+  /* The markup ships a button over a still; the iframe does not exist until
+     somebody asks for it. `autoplay=1` because the click that built the frame
+     was already a request to play, and `{once:true}` because the button is
+     gone the moment it fires. */
+  var ytb = document.querySelector('.ytlite');
+  if (ytb) {
+    ytb.addEventListener('click', function () {
+      var f = document.createElement('iframe');
+      f.src = 'https://www.youtube.com/embed/' + encodeURIComponent(ytb.dataset.yt)
+        + '?autoplay=1&rel=0';
+      f.title = ytb.dataset.title || '';
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      f.referrerPolicy = 'strict-origin-when-cross-origin';
+      f.allowFullscreen = true;
+      ytb.replaceWith(f);
+      /* the frame is new, so it has never had focus — hand it over, or a
+         keyboard reader is left on an element that no longer exists */
+      f.focus();
+    }, { once: true });
   }
 
   /* ---- Escape closes whichever is open --------------------------------- */

@@ -33,6 +33,42 @@ const esc = (s) => String(s == null ? '' : s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;');
 
+/* KEYED HEADINGS. One or two words of a heading carry a colour and the rest is
+   ink — §26 of the stylesheet owns the two roles. The words are NAMED in
+   home.js rather than marked up there, so the copy stays a readable sentence
+   that a non-developer can edit without touching a tag.
+
+   ONE PASS, LEFT TO RIGHT. Every keyword's position is found on the escaped
+   heading FIRST and the output is then assembled in order. Wrapping them one
+   after another instead would let a later keyword match inside a `<span
+   class="k-g">` that an earlier one had just inserted. */
+function keyed(h) {
+  const src = esc(h.text);
+  const hits = [];
+  for (const [word, tone] of h.keys || []) {
+    const i = src.indexOf(esc(word));
+    if (i >= 0) hits.push({ i, len: esc(word).length, tone });
+  }
+  hits.sort((a, b) => a.i - b.i);
+  let out = '', at = 0;
+  for (const k of hits) {
+    if (k.i < at) continue;                 /* two keys overlapping: first wins */
+    out += src.slice(at, k.i) + `<span class="k-${k.tone}">` + src.slice(k.i, k.i + k.len) + '</span>';
+    at = k.i + k.len;
+  }
+  return out + src.slice(at);
+}
+
+/* Every {text, keys} pair anywhere in the copy, found by walking it rather than
+   by keeping a list here — a list is a thing to forget to add to, and the whole
+   point of the check below is that a bad keyword cannot reach a reader. */
+function keyedHeadings(o, out = []) {
+  if (!o || typeof o !== 'object') return out;
+  if (typeof o.text === 'string' && Array.isArray(o.keys)) out.push(o);
+  for (const v of Object.values(o)) keyedHeadings(v, out);
+  return out;
+}
+
 const BY_SLUG = new Map(PRODUCTS.map((p) => [p.slug, p]));
 
 /* The product every diagram on this page orbits. */
@@ -45,8 +81,18 @@ const CENTER_SLUG = 'ai-engine';
     if (!BY_SLUG.has(t.slug)) bad.push(`tile "${t.name}" points at unknown slug "${t.slug}"`);
     if (!t.tagline) bad.push(`tile "${t.name}" has no tagline`);
     if (!t.icon) bad.push(`tile "${t.name}" has no icon`);
+    /* A SUB-MODE IS A DOOR. Its pill promises three of them, so a missing name,
+       icon or page — or a page that is not in the repo — fails the build rather
+       than shipping a branch that 404s on the one reader who opens it. */
+    for (const m of t.modes || []) {
+      if (!m.name || !m.icon) bad.push(`a mode of "${t.name}" has no name or icon`);
+      if (!m.local) bad.push(`mode "${m.name}" of "${t.name}" has no local page`);
+      else if (!fs.existsSync(path.join(__dirname, m.local))) {
+        bad.push(`mode "${m.name}" points at ${m.local}, which is not in the repo`);
+      }
+    }
   }
-  /* UNIQUENESS IS ON THE NAME, NOT THE SLUG. Video, Voice and Chat Interviewer
+  /* UNIQUENESS IS ON THE NAME, NOT THE SLUG. Video, Voice and Chat Interview
      are three tiles on one product (Mimic) — three questions a reader arrives
      with, one thing that answers them — so a shared slug is now legal and a
      shared name is still the copy-paste mistake worth failing the build for. */
@@ -59,6 +105,17 @@ const CENTER_SLUG = 'ai-engine';
   for (const g of H.GROUPS) {
     if (!g.label || !g.tone) bad.push(`group "${g.id}" is missing a label or a tone`);
     if (!H.TILES.some((t) => t.group === g.id)) bad.push(`group "${g.label}" has no tiles`);
+  }
+  /* A KEYWORD THAT IS NOT IN ITS OWN HEADING WOULD SIMPLY NOT APPEAR, silently,
+     and the heading would ship with no emphasis at all. The cap of two is the
+     device itself: three coloured words in one line is decoration. */
+  for (const h of keyedHeadings(H)) {
+    for (const [word, tone] of h.keys) {
+      if (!h.text.includes(word)) bad.push(`keyword "${word}" does not occur in heading "${h.text}"`);
+      if (tone !== 'g' && tone !== 'y') bad.push(`keyword "${word}" has unknown tone "${tone}" — it is 'g' or 'y'`);
+    }
+    if (!h.keys.length) bad.push(`heading "${h.text}" has no keywords`);
+    if (h.keys.length > 2) bad.push(`heading "${h.text}" has ${h.keys.length} keywords — the device is one or two`);
   }
   for (const c of H.CAPABILITIES) if (!c.title || !c.body) bad.push('a capability card is missing text');
   for (const s of H.SOLUTIONS) if (!s.name || !s.summary) bad.push('a solution is missing text');
@@ -73,6 +130,25 @@ const CENTER_SLUG = 'ai-engine';
     if (!a.summary) bad.push(`article ${a.nid} has no summary`);
   }
   if (ARTICLES.length !== new Set(ARTICLES.map((a) => a.nid)).size) bad.push('two articles share an nid');
+  /* The featured episode's id is interpolated straight into an embed URL, so it
+     is checked for the shape of one rather than trusted. A typo here would
+     otherwise ship a player that loads nothing, silently. */
+  if (H.FEATURE) {
+    if (!/^[\w-]{11}$/.test(H.FEATURE.youtube || '')) bad.push(`FEATURE.youtube is not a video id: ${H.FEATURE.youtube}`);
+    for (const k of ['show', 'title', 'desc']) if (!H.FEATURE[k]) bad.push(`FEATURE.${k} is missing`);
+  }
+  /* The broadcast item is a still we host and a link off-site. A missing string
+     would render a bald block; a missing FILE would render a broken frame on a
+     page that has no other broken thing on it. Both fail here. */
+  if (H.BROADCAST) {
+    for (const k of ['show', 'title', 'desc', 'link', 'linkLabel', 'image', 'imageAlt']) {
+      if (!H.BROADCAST[k]) bad.push(`BROADCAST.${k} is missing`);
+    }
+    if (H.BROADCAST.image && !fs.existsSync(path.join(__dirname, H.BROADCAST.image))) {
+      bad.push(`BROADCAST.image points at ${H.BROADCAST.image}, which is not in the repo`);
+    }
+    if (!/^https:\/\//.test(H.BROADCAST.link || '')) bad.push('BROADCAST.link is not an https URL');
+  }
   /* THE STAGE DRAWS A DIAGRAM OF THE SUITE, AND A DIAGRAM IS A CLAIM. It needs
      a centre to orbit and a `bus` on every product to know which of them are
      genuinely on the engine. A missing one would draw a blank node or, worse,
@@ -124,6 +200,13 @@ const CENTER_SLUG = 'ai-engine';
    earlier pass removed the page twice and left a note here calling it a
    fabrication; that note was wrong about the intent and is gone.
 
+   THE HEADER NO LONGER OFFERS SIGN IN, by request — the page stays, the way in
+   from the nav does not. That is why this route is still here with nothing
+   reading it: putting the link back is one line in the header, and deleting
+   the constant would only make that harder while doing nothing for the reader.
+   The page also drops out of api/knowledge.json on its own, because the
+   crawler follows links from index.html and there is no longer one.
+
    What IS true, and what the page says in its own copy rather than papering
    over: there is no single sign-on. Eight applications on six hosts, several
    holding their own login, so the page keeps a link to the tile grid for those
@@ -137,8 +220,9 @@ const GO = {
      — kept there on the grounds that the old form actually submits and the
      local one did not — but that meant the site's single most important button
      handed the reader to the old site. demo.html carries the same form, fixed,
-     and its submit still falls through to the working one until an endpoint is
-     set, so the reason for the old routing is preserved without the cost.
+     and its submit stays on this site until an endpoint is set. No button
+     here links to the old website any more, and tools/fix-pages.js enforces
+     that on every run.
 
      `talk` is the LOCAL contact page: its phone, email and WhatsApp links are
      live, so it is useful even though its own form is not wired. */
@@ -146,7 +230,12 @@ const GO = {
   talk: 'contact.html',
   signin: 'signin.html',
   products: '#products',
-  allProducts: COMPANY.site + '/products/',
+  /* THE SHELF'S OWN FOOTER LINK. It pointed at the old site's /products/
+     index, so the one link under a shelf listing ten local product pages left
+     the site. `index.html#products` rather than the bare '#products' that the
+     hero uses, because this shelf is in the header of demo.html too, where a
+     bare fragment would be a dead anchor. */
+  allProducts: 'index.html#products',
 };
 
 /* A tile's destination. The local product page under products/ wins: it is a
@@ -208,10 +297,8 @@ const LOGO = 'assets/brand/talbotiq-logo.png';
    invisible behind a stale cache, which is otherwise a very convincing way to
    waste an afternoon debugging a rule that was right all along.
 
-   The font is deliberately NOT stamped: its URL lives inside the stylesheet,
-   and a hash here that the CSS did not also carry would make the <link
-   rel=preload> point at a different URL than the @font-face — two downloads
-   of the same file instead of one. */
+   Fonts are not stamped because they are no longer ours to stamp: both faces
+   come from Google Fonts, whose URLs already carry their own version. */
 function stamp(rel) {
   try {
     const h = crypto.createHash('sha1')
@@ -247,24 +334,12 @@ function stamp(rel) {
    CSS had to guess its way around it. `0 22 300 36` makes the box exactly the
    painted band, which is what lets talbotiq.css position the mark in real
    units against the font's x-height instead of by trial and error. */
-const HIGHLIGHT = `<svg viewBox="0 22 300 36" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M6 40 C 60 26, 130 46, 210 30 C 250 22, 275 34, 294 24 L 296 52 C 250 44, 190 58, 120 50 C 70 44, 34 56, 8 50 Z" fill="${H.PALETTE.yellow}" opacity=".92"/>
-    </svg>`;
-
-/* the lasso around one word of the mission */
-const LASSO = `<svg viewBox="0 0 260 80" preserveAspectRatio="none" aria-hidden="true">
-      <path pathLength="1" d="M132 8 C 66 2, 8 20, 12 42 C 16 66, 104 76, 170 72 C 232 68, 254 50, 246 32 C 239 16, 196 6, 150 7" fill="none" stroke="${H.PALETTE.teal}" stroke-width="4.2" stroke-linecap="round"/>
-    </svg>`;
-
-/* the ruled underline under the capability heading */
-const UNDERLINE = `<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
-      <path pathLength="1" d="M3 9 C 50 3, 130 12, 197 5" fill="none" stroke="${H.PALETTE.blue}" stroke-width="4.4" stroke-linecap="round"/>
-    </svg>`;
-
-/* the squiggle under the blog heading */
-const SQUIGGLE = `<svg viewBox="0 0 150 14" preserveAspectRatio="none" aria-hidden="true">
-      <path pathLength="1" d="M3 8 q 12 -7 24 0 t 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="${H.PALETTE.teal}" stroke-width="3.6" stroke-linecap="round"/>
-    </svg>`;
+/* REMOVED, by request: HIGHLIGHT, LASSO, UNDERLINE and SQUIGGLE — the four
+   hand-drawn marks. A highlighter swept behind the hero's last clause, a lasso
+   looped "Intelligence", a ruled underline sat under the capability heading and
+   a squiggle under the blog heading. Emphasis is `keyed()` above now: the words
+   themselves take a colour, so there is no shape to position, none to animate,
+   and a heading occupies exactly its own type. */
 
 /* the star on every capability card */
 const STAR = `<div class="star"><div class="glow"></div>
@@ -326,8 +401,14 @@ const PANELS = {
         : `<span class="pitem" aria-disabled="true">${body.replace('<span class="pn">', '<span class="pn soon">')}</span>`;
     }).join('\n      '),
     cols: 'company',
+    /* THE PHONE NUMBER IS NOT ON THIS BAR ANY MORE, by request — and this bar
+       is now on EVERY page, because assets/js/nav.js gives the standalone pages
+       the same shelves, so one number here was one number site-wide. It takes
+       the shape the Solutions shelf already uses: a line about who we are, and
+       one link out. `Contact us` is in the shelf above; this is the same
+       destination as an action. */
     foot: `<span>${esc(COMPANY.legal)} &middot; ${esc(COMPANY.base)}</span>
-        <a href="tel:${esc(COMPANY.phone.replace(/\s/g, ''))}">${esc(COMPANY.phone)}</a>`,
+        <a ${link(GO.talk)}>Talk to us &rarr;</a>`,
   },
 };
 
@@ -416,7 +497,7 @@ const STAGE = {
   center: stageNode(H.TILES.find((t) => t.slug === CENTER_SLUG)),
   /* ONE NODE PER PRODUCT, NOT PER TILE. Several tiles may present the same
      product under different names — Mimic ships as Video, Voice and Chat
-     Interviewer — and the grid is right to show all three. The diagram is not:
+     Interview — and the grid is right to show all three. The diagram is not:
      it claims what is wired to the engine, so drawing Mimic three times would
      turn three products on the engine into five. First tile with a given slug
      wins; the rest are the same record seen again. */
@@ -438,13 +519,7 @@ const STAGE = {
 const hero = `
 <div class="hero">
   <div class="wrap">
-    <h1 class="hand">
-      ${esc(H.COPY.hero.lead)}
-      <span class="mark-hl">
-        ${HIGHLIGHT}
-        <span>${esc(H.COPY.hero.marked)}</span>
-      </span>
-    </h1>
+    <h1 class="hand">${keyed(H.COPY.hero.heading)}</h1>
 
     <p class="lede"><b>${esc(H.COPY.hero.lede.strong)}</b> ${esc(H.COPY.hero.lede.rest)}</p>
 
@@ -471,10 +546,12 @@ const hero = `
    is on screen, it costs no extra scroll, and it renders identically with or
    without JavaScript. Nothing in scroll.js looks for it any more.
 
-   The connectors are the one drawing left, and they are static — decoration
-   that says "these things are joined", not a mechanism. They are hidden below
-   1080px, where the rows reflow and a trace drawn for a four-column layout
-   would run through the tiles rather than between them.
+   THE CONNECTORS ARE GONE TOO. Nine traces used to run between the tiles and
+   down toward the engine, saying "these things are joined". They read as a
+   flowchart rather than as a product grid, and the rows had to carry 64px of
+   empty runway underneath them for the traces to travel through. Removed by
+   request, and the runway with them — the three labelled bands are what
+   separate the groups now, which is what they were for.
    ========================================================================== */
 
 /* The engine is not a fourth row, it is the floor — so its group renders as one
@@ -486,18 +563,69 @@ const ENGINE_GROUP = (H.GROUPS.find((g) =>
 
 const groupTiles = (g) => H.TILES.filter((t) => t.group === g.id);
 
-/* One tile. `kin` is the hover badge — Async, Live, 2 modes — and its tone
-   class is the label itself, slugified, so a new badge needs one CSS rule and
-   no build change. */
-function productTile(t, big) {
+/* THE BRANCH UNDER A TILE THAT HAS MODES. Video and Chat rounds each come in
+   three shapes and each shape ships its own page, so the tile wears a "3 modes"
+   pill and opens three real links — not a tooltip. The minis are SIBLINGS of
+   the tile anchor inside `.cell`, because an anchor inside an anchor is not
+   markup a browser will honour.
+
+   THE DRAWING IS BUILT AROUND A RAIL, NOT AROUND THE TILE. The rail spans the
+   panel and drops onto the centres of three equal columns, which the panel's
+   own 352px width fixes; the stem comes down from the tile and simply MEETS the
+   rail wherever it lands. That is why one drawing serves both positions — only
+   the stem's x differs, and it has nothing it must hit. */
+const modeTree = (stem) => `<svg class="tree" viewBox="0 0 352 44" aria-hidden="true" focusable="false">
+          <g stroke="#B6DFD2" stroke-width="1.8" fill="none" stroke-linecap="round">
+            <path d="M${stem} 0v16"/>
+            <path d="M62 30V22Q62 16 68 16h216q6 0 6 6v8"/>
+            <path d="M176 16v14"/>
+          </g>
+          <circle cx="${stem}" cy="2" r="3" fill="${H.PALETTE.teal}"/>
+          <g fill="${H.PALETTE.teal}"><circle cx="62" cy="32" r="2.6"/><circle cx="176" cy="32" r="2.6"/><circle cx="290" cy="32" r="2.6"/></g>
+        </svg>`;
+
+/* The first column anchors its panel to its own left edge and every other
+   column centres one, which is what keeps a panel off the page's left margin
+   without any of them being measured.
+
+   THE CHIPS ARE SPANS, NOT LINKS, by request. The panel exists to show what
+   the three modes ARE; the tile above it is what opens anything. `m.local`
+   still records the page behind each mode - the build's own link count and the
+   knowledge crawler both read it - it is simply not spent on an href here.
+   A span also keeps them out of the tab order, and off the pile of duplicate
+   destinations a screen reader would otherwise announce twice. */
+const modeBranch = (t, first) => `<div class="branch ${first ? 'b-left' : 'b-mid'}">
+        ${modeTree(first ? 155 : 176)}
+        <div class="minis">
+          ${t.modes.map((m) => `<span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false">${m.icon}</svg>
+            <b>${esc(m.name)}</b>
+          </span>`).join('\n          ')}
+        </div>
+      </div>`;
+
+/* One tile, in its cell. `kin` is the hover badge — Live, 2 modes — and its
+   tone class is the label itself, slugified, so a new badge needs one CSS rule
+   and no build change. `modes` is the pill, and it is always visible: it is a
+   count of doors, not a detail.
+
+   EVERY TILE GETS A `.cell`, not only the two with branches, so the grid's
+   children are all the same kind of box and the two that open something are not
+   a different shape from the rest. */
+function productTile(t, big, first) {
   const href = tileHref(t);
   const kin = t.kin
     ? `\n        <span class="kin kin-${esc(String(t.kin).toLowerCase().replace(/\s+/g, '-'))}">${esc(t.kin)}</span>`
     : '';
+  const modes = t.modes
+    ? `\n        <span class="modes">${t.modes.length} modes
+          <svg width="9" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        </span>`
+    : '';
   const inner = `<span class="card">${icon(t, big ? 70 : 58)}</span>
         <span class="nm">${esc(t.name)}</span>
-        <span class="ds">${esc(t.tagline)}</span>${kin}`;
-  return href
+        <span class="ds">${esc(t.tagline)}</span>${kin}${modes}`;
+  const tile = href
     ? `<a class="tile" href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>
         ${inner}
       </a>`
@@ -506,13 +634,16 @@ function productTile(t, big) {
     : `<div class="tile" aria-disabled="true">
         ${inner}
       </div>`;
+  return `<div class="cell">
+      ${tile}${t.modes ? '\n      ' + modeBranch(t, first) : ''}
+    </div>`;
 }
 
-/* The label over each band: the name, a rule that fades, and the count. The
-   count is read off the group rather than typed, so it cannot disagree with the
-   number of tiles sitting under it. */
-function groupLabel(g) {
-  const n = groupTiles(g).length;
+/* The label over each band: the name, a rule that fades out, and the count of
+   what is in the band. The count is DERIVED from the band, like every other
+   number on this page, so a tile added to a group cannot leave the label
+   lying. */
+function groupLabel(g, n) {
   return `<div class="glabel ${esc(g.tone)}">
         <span class="t">${esc(g.label)}</span><span class="r"></span><span class="c">${n} product${n === 1 ? '' : 's'}</span>
       </div>`;
@@ -521,56 +652,31 @@ function groupLabel(g) {
 const productGroups = H.GROUPS.map((g) => {
   const ts = groupTiles(g);
   if (g.id === ENGINE_GROUP) {
-    return `${groupLabel(g)}
+    return `${groupLabel(g, ts.length)}
 
       <div class="pengine">
         ${ts.map((t) => productTile(t, true)).join('\n        ')}
-        <p class="enote"><b>${esc(H.COPY.products.enote.strong)}</b> ${esc(H.COPY.products.enote.rest)}</p>
       </div>`;
   }
   /* The column count is the number of tiles in the band — four then five —
      which is why the class carries it rather than the stylesheet assuming it. */
-  return `${groupLabel(g)}
+  return `${groupLabel(g, ts.length)}
 
       <div class="prow prow-${ts.length}">
-        ${ts.map((t) => productTile(t, false)).join('\n        ')}
+        ${ts.map((t, i) => productTile(t, false, i === 0)).join('\n        ')}
       </div>`;
 }).join('\n\n      ');
-
-/* THE CONNECTORS. Drawn for the 4 + 5 + 1 layout in a 1116x830 box and
-   stretched to whatever the block actually is — decoration, `aria-hidden`, and
-   the first thing to go at 1080px where the rows reflow. */
-const CONNECTORS = `<svg class="conn" viewBox="0 0 1116 830" preserveAspectRatio="none" aria-hidden="true">
-        <g fill="none" stroke-linecap="round">
-          <path d="M206 82 H265 Q279 82 279 96 V264 Q279 278 293 278 H1046 Q1060 278 1060 292 V596 Q1060 610 1046 610 H572 Q558 610 558 624 V694" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M910 82 H851 Q837 82 837 96 V278" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M418 148 V264 Q418 278 432 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M698 148 V264 Q698 278 684 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M401 414 H432 Q446 414 446 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M715 414 H684 Q670 414 670 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M112 480 V596 Q112 610 126 610 H446" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M1004 480 V596 Q1004 610 990 610 H670" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M335 480 V610" stroke="#A8DCC9" stroke-width="2.2"/>
-        </g>
-      </svg>`;
 
 const productBand = `
 <div class="band" id="products">
   <div class="wrap">
 
     <div class="phead">
-      <h2 class="hand">${esc(H.COPY.products.lead)}
-        <span class="mark-hl">
-        ${HIGHLIGHT}
-          <span>${esc(H.COPY.products.marked)}</span>
-        </span>
-      </h2>
+      <h2 class="hand">${keyed(H.COPY.products.heading)}</h2>
       <p class="lede"><b>${esc(H.COPY.products.lede.strong)}</b> ${esc(H.COPY.products.lede.rest)}</p>
     </div>
 
     <div class="pblock">
-      ${CONNECTORS}
-
       ${productGroups}
     </div>
 
@@ -629,74 +735,6 @@ const arcRow = `
         </div>
       </div>`;
 
-/* =============================================================================
-   THE WELL
-   -----------------------------------------------------------------------------
-   A wireframe funnel: eight rings, one per product, falling into a throat that
-   is the AI Engine. It is the ecosystem band's own sentence — "data flows
-   natively between modules" — drawn as the surface that flow happens on.
-
-   THE GEOMETRY IS COMPUTED, NOT DRAWN. A gravity well is a surface of
-   revolution seen in perspective, so the whole thing falls out of two functions
-   and a projection. Generating it here rather than hand-drawing an SVG means it
-   stays correct if the ring count or the tilt changes, and it means the eight
-   rings are eight because there are eight products rather than because eight
-   looked right.
-
-     R(u) = radius at parameter u, u=1 at the rim and u=0 at the throat
-     d(u) = how far the surface has fallen at u — steep near the throat
-     project: x = cx + R cos t
-              y = cy + R k sin t + d      (k squashes the circle into perspective)
-
-   Everything is a <path>, everything is stroked, and nothing is filled — so the
-   whole figure can draw itself with one stroke-dashoffset rule. */
-const WELL = (() => {
-  const W = 1000, H = 720, cx = 500, cy = 286;
-  const RMIN = 38, RMAX = 476, K = 0.335, DMAX = 226;
-  const R = (u) => RMIN + (RMAX - RMIN) * u;
-  const d = (u) => DMAX * Math.pow(1 - u, 1.85);
-  const px = (u, t) => [cx + R(u) * Math.cos(t), cy + R(u) * K * Math.sin(t) + d(u)];
-  const fmt = (pt) => `${pt[0].toFixed(1)} ${pt[1].toFixed(1)}`;
-
-  /* eight rings, one per product, bunched toward the throat because that is
-     where a real well's curvature actually is */
-  const rings = [1, .845, .70, .565, .44, .325, .222, .13].map((u, i) => {
-    const pts = [];
-    for (let a = 0; a <= 360; a += 4) pts.push(px(u, a * Math.PI / 180));
-    return `<path class="wr" style="--i:${i}" d="M${fmt(pts[0])}L${pts.slice(1).map(fmt).join('L')}Z"/>`;
-  }).join('\n        ');
-
-  /* meridians run from rim to throat. Twelve is enough to read as a surface and
-     few enough that the throat does not turn into a solid blob. */
-  const mer = [];
-  const merPaths = [];
-  for (let m = 0; m < 12; m++) {
-    const t = m * 30 * Math.PI / 180;
-    const pts = [];
-    for (let u = 1; u >= 0.09; u -= 0.035) pts.push(px(u, t));
-    const dstr = `M${fmt(pts[0])}L${pts.slice(1).map(fmt).join('L')}`;
-    merPaths.push(dstr);
-    mer.push(`<path class="wm" style="--i:${m}" d="${dstr}"/>`);
-  }
-
-  /* THE SIGNALS. Five points falling down five different meridians toward the
-     throat.
-
-     Each one is a COPY OF ITS MERIDIAN, stroked with a dash pattern of one very
-     short mark and an enormous gap, so what renders is a single bright segment
-     sitting on the path. Sliding the dash offset walks that segment down the
-     curve. The alternative — a circle moved along the line with CSS
-     `offset-path` — puts the coordinates in CSS pixels while the path is in
-     viewBox units, so the two only agree at one window width. A dash cannot
-     drift off its own path at any size, by construction.
-
-     `pathLength="1"` normalises every meridian, so one rule drives all five and
-     a long path does not travel slower than a short one. */
-  const sig = [0, 3, 5, 8, 10].map((m, i) =>
-    `<path class="ws" style="--i:${i}" pathLength="1" d="${merPaths[m]}"/>`).join('\n        ');
-
-  return { W, H, rings, mer: mer.join('\n        '), sig, cx, cy, DMAX };
-})();
 
 /* THE DARK CHAPTER. The page runs light from the hero to here, goes dark for one
    section, and comes back. It stays dark for the same reason it always did: the
@@ -726,20 +764,91 @@ const ecoVisual = ecoVideo
                ${ecoVideo.poster ? `poster="${esc(ecoVideo.poster)}"` : ''} aria-hidden="true" tabindex="-1">
           <source src="${esc(ecoVideo.src)}" type="video/mp4">
         </video>`
-  /* THE PLACEHOLDER, and it is labelled as one. Until a video exists this slot
-     keeps the wireframe well — but drawn in full and standing still, because
-     the mechanism that used to draw it is gone. */
-  : `<svg class="well" viewBox="0 0 ${WELL.W} ${WELL.H}" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-          <g class="wrings">
-        ${WELL.rings}
-          </g>
-          <g class="wmers">
-        ${WELL.mer}
-          </g>
-          <g class="wsigs">
-        ${WELL.sig}
-          </g>
-        </svg>`;
+  /* THE NEURAL LOOP. Three columns — the applications that feed the engine,
+     the engine, and the agents it dispatches to — with the signal travelling
+     the whole way through on a 9s cycle that closes on itself. Inline rather
+     than a video: it is asked to be READ at around 9px, where vector text
+     stays sharp and a 1080p frame upscaled into this column does not, and a
+     CSS animation cannot be paused by an autoplay policy or a battery saver.
+     Every class, id and keyframe in it is nl- prefixed — .node, .flow,
+     .eyebrow and .cap all already mean something else on this page. */
+  : `<svg class="nloop" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Enterprise applications feeding a private AI engine that dispatches to intelligent agents">
+    <defs>
+        <radialGradient id="nl-lift" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#0FA07C" stop-opacity=".16"/>
+        <stop offset="55%" stop-color="#0FA07C" stop-opacity=".05"/>
+        <stop offset="100%" stop-color="#0FA07C" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="nl-halo">
+        <stop offset="0%" stop-color="#5CE4B0" stop-opacity=".55"/>
+        <stop offset="45%" stop-color="#5CE4B0" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#5CE4B0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="nl-hub">
+        <stop offset="0%" stop-color="#D6FFF4" stop-opacity=".90"/>
+        <stop offset="13%" stop-color="#5CE4B0" stop-opacity=".38"/>
+        <stop offset="42%" stop-color="#2FB88E" stop-opacity=".11"/>
+        <stop offset="100%" stop-color="#2FB88E" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="911" cy="568" rx="540" ry="450" fill="url(#nl-lift)"/>
+    
+    <!-- engine panel -->
+    <rect x="566" y="180" width="690" height="776" rx="22"
+          fill="#2A3137" stroke="#3A434B" stroke-width="1.4"/>
+    <rect x="573" y="187" width="676" height="762" rx="17"
+          fill="none" stroke="#303A40" stroke-width="1"/>
+    
+    <!-- header -->
+    <text x="56" y="46" class="nl-eyebrow">EXHIBIT 01  &#183;  PLATFORM ARCHITECTURE</text>
+    <g>
+      <circle cx="74" cy="122" r="17" fill="#234F42" stroke="#34AE80" stroke-width="1.4"/>
+      <text x="74" y="123" class="nl-colnum">1</text>
+      <text x="104" y="122" class="nl-colhead">ENTERPRISE APPLICATIONS</text>
+      <circle cx="584" cy="122" r="17" fill="#234F42" stroke="#34AE80" stroke-width="1.4"/>
+      <text x="584" y="123" class="nl-colnum">2</text>
+      <text x="614" y="122" class="nl-colhead">PRIVATE AI ENGINE</text>
+      <circle cx="1318" cy="122" r="17" fill="#234F42" stroke="#34AE80" stroke-width="1.4"/>
+      <text x="1318" y="123" class="nl-colnum">3</text>
+      <text x="1348" y="122" class="nl-colhead">INTELLIGENT AGENTS</text>
+    </g>
+    
+    <!-- static neural wiring -->
+    <g class="nl-wires" fill="none" stroke-linecap="round">
+      <g class="nl-wl" stroke="#34BA8C" stroke-width="1.3" opacity="0.46"><path d="M506 235L670 344"/><path d="M506 235L670 456"/><path d="M506 235L670 568"/><path d="M506 369L670 344"/><path d="M506 503L670 456"/><path d="M506 503L670 568"/><path d="M506 637L670 344"/><path d="M506 637L670 568"/><path d="M506 637L670 680"/><path d="M506 771L670 792"/><path d="M506 905L670 456"/><path d="M506 905L670 680"/><path d="M506 905L670 792"/></g>
+      <g class="nl-wc" stroke="#2FAD86" stroke-width="1.15" opacity="0.42"><path d="M670 344C795.3 344 785.7 568 911 568"/><path d="M670 344C814.6 344 766.4 400 911 400"/><path d="M670 456C795.3 456 785.7 568 911 568"/><path d="M670 456C814.6 456 766.4 490 911 490"/><path d="M670 568C795.3 568 785.7 568 911 568"/><path d="M670 568C814.6 568 766.4 490 911 490"/><path d="M670 680C795.3 680 785.7 568 911 568"/><path d="M670 680C814.6 680 766.4 646 911 646"/><path d="M670 792C795.3 792 785.7 568 911 568"/><path d="M670 792C814.6 792 766.4 736 911 736"/><path d="M911 400C911 400 911 568 911 568"/><path d="M911 400C1055.6 400 1007.4 344 1152 344"/><path d="M911 490C911 490 911 568 911 568"/><path d="M911 490C1055.6 490 1007.4 456 1152 456"/><path d="M911 646C911 646 911 568 911 568"/><path d="M911 646C1055.6 646 1007.4 680 1152 680"/><path d="M911 736C911 736 911 568 911 568"/><path d="M911 736C1055.6 736 1007.4 680 1152 680"/><path d="M911 568C1036.3 568 1026.7 344 1152 344"/><path d="M911 568C1036.3 568 1026.7 456 1152 456"/><path d="M911 568C1036.3 568 1026.7 568 1152 568"/><path d="M911 568C1036.3 568 1026.7 680 1152 680"/><path d="M911 568C1036.3 568 1026.7 792 1152 792"/></g>
+      <g class="nl-wh" stroke="#4FDCB0" stroke-width="2.0" opacity="0.8"><path d="M670 344C795.3 344 785.7 568 911 568"/><path d="M911 568C1036.3 568 1026.7 792 1152 792"/><path d="M670 792C795.3 792 785.7 568 911 568"/><path d="M911 568C1036.3 568 1026.7 456 1152 456"/><path d="M670 568C795.3 568 785.7 568 911 568"/><path d="M911 568C1036.3 568 1026.7 568 1152 568"/></g>
+      <g class="nl-wr" stroke="#34BA8C" stroke-width="1.3" opacity="0.46"><path d="M1152 344L1300 194"/><path d="M1152 344L1300 287.5"/><path d="M1152 456L1300 287.5"/><path d="M1152 344L1300 381"/><path d="M1152 456L1300 474.5"/><path d="M1152 568L1300 474.5"/><path d="M1152 456L1300 568"/><path d="M1152 568L1300 568"/><path d="M1152 680L1300 661.5"/><path d="M1152 792L1300 661.5"/><path d="M1152 680L1300 755"/><path d="M1152 792L1300 755"/><path d="M1152 792L1300 848.5"/><path d="M1152 680L1300 942"/><path d="M1152 792L1300 942"/></g>
+    </g>
+    
+    <!-- engine core -->
+    <g transform="translate(911 568)">
+      <circle class="nl-hubhalo" r="120" fill="url(#nl-hub)"/>
+      <circle class="nl-ring" r="60"/>
+      <circle class="nl-ring" r="60" style="animation-delay:-1.125s"/>
+      <circle r="4.6" fill="#EAFFF9"/>
+    </g>
+    
+    <!-- nodes -->
+    <g><g class="nl-node" transform="translate(670 344)" style="animation-delay:-0.00s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 456)" style="animation-delay:-0.90s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 568)" style="animation-delay:-1.80s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 680)" style="animation-delay:-2.70s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 792)" style="animation-delay:-3.60s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 344)" style="animation-delay:-1.40s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 456)" style="animation-delay:-2.30s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 568)" style="animation-delay:-3.20s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 680)" style="animation-delay:-4.10s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 792)" style="animation-delay:-5.00s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 400)" style="animation-delay:-0.50s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 490)" style="animation-delay:-1.80s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 646)" style="animation-delay:-3.10s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 736)" style="animation-delay:-4.40s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 235)" style="animation-delay:-0.00s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 369)" style="animation-delay:-0.70s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 503)" style="animation-delay:-1.40s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 637)" style="animation-delay:-2.10s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 771)" style="animation-delay:-2.80s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 905)" style="animation-delay:-3.50s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 194)" style="animation-delay:-2.10s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 287.5)" style="animation-delay:-2.80s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 381)" style="animation-delay:-3.50s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 474.5)" style="animation-delay:-4.20s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 568)" style="animation-delay:-4.90s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 661.5)" style="animation-delay:-5.60s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 755)" style="animation-delay:-6.30s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 848.5)" style="animation-delay:-7.00s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 942)" style="animation-delay:-7.70s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g></g>
+    
+    <!-- flowing data -->
+    <g><g class="nl-flow" style="animation-delay:-0.00s"><path class="nl-fg" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 194" pathLength="1000"/><path class="nl-fm" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 194" pathLength="1000"/><path class="nl-fh" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 194" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-2.78s"><path class="nl-fg" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 287.5" pathLength="1000"/><path class="nl-fm" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 287.5" pathLength="1000"/><path class="nl-fh" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 287.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-1.06s"><path class="nl-fg" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fm" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fh" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-3.84s"><path class="nl-fg" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 456 1152 456L1300 474.5" pathLength="1000"/><path class="nl-fm" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 456 1152 456L1300 474.5" pathLength="1000"/><path class="nl-fh" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 456 1152 456L1300 474.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-2.12s"><path class="nl-fg" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fm" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fh" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-0.41s"><path class="nl-fg" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fm" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fh" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-3.19s"><path class="nl-fg" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 755" pathLength="1000"/><path class="nl-fm" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 755" pathLength="1000"/><path class="nl-fh" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 755" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-1.47s"><path class="nl-fg" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 848.5" pathLength="1000"/><path class="nl-fm" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 848.5" pathLength="1000"/><path class="nl-fh" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 848.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-4.25s"><path class="nl-fg" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 942" pathLength="1000"/><path class="nl-fm" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 942" pathLength="1000"/><path class="nl-fh" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 942" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-2.53s"><path class="nl-fg" d="M506 235L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fm" d="M506 235L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fh" d="M506 235L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-0.81s"><path class="nl-fg" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fm" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fh" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-3.59s"><path class="nl-fg" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fm" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fh" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-1.87s"><path class="nl-fg" d="M506 905L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fm" d="M506 905L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fh" d="M506 905L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/></g></g>
+    
+    <!-- left: enterprise applications -->
+    <g><g><rect x="56" y="196" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="235" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 235)"><circle cx="0" cy="-5.3" r="4.2"/><path d="M-8.5 9.4a8.5 8.5 0 0 1 17 0"/></g><text x="134" y="235" class="nl-pill" font-size="19">Conversational AI Avatar Interview</text></g><g><rect x="56" y="330" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="369" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 369)"><rect x="-3" y="-9.5" width="6" height="11.5" rx="3"/><path d="M-7 -1.5a7 7 0 0 0 14 0M0 5.6v3.8M-4.2 9.4h8.4"/></g><text x="134" y="369" class="nl-pill" font-size="19">Conversational AI Voice Interview</text></g><g><rect x="56" y="464" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="503" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 503)"><path d="M-9 -5l3 3 5-5M2 -4h7M-9 2l3 3 5-5M2 3h7"/></g><text x="134" y="503" class="nl-pill" font-size="22">Task &amp; Productivity Manager</text></g><g><rect x="56" y="598" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="637" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 637)"><rect x="-7" y="-9" width="14" height="18" rx="2.5"/><path d="M-4 -5h8M-4 -1h8M-4 3h5"/></g><text x="134" y="637" class="nl-pill" font-size="22">Intelligent Note Taker</text></g><g><rect x="56" y="732" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="771" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 771)"><path d="M-8 -4v-4h4M8 -4v-4h-4M-8 4v4h4M8 4v4h-4M-7 0h14"/></g><text x="134" y="771" class="nl-pill" font-size="22">Intelligent Document Parser</text></g><g><rect x="56" y="866" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="905" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 905)"><path d="M-8 5l5-6 4 3 6.5-8"/><path d="M9 -7l-5.5 1 4.5 4.5z" stroke="none" fill="currentColor"/></g><text x="134" y="905" class="nl-pill" font-size="22">Sales CRM</text></g></g>
+    
+    <!-- engine labels -->
+    <text x="911" y="236" class="nl-coretitle">N E U R A L &#160;&#160; C O R E</text>
+    <text x="670" y="900" class="nl-layer">ENCODE</text>
+    <text x="911" y="900" class="nl-layer">REASON</text>
+    <text x="1152" y="900" class="nl-layer">ROUTE</text>
+    <text x="911" y="1000" class="nl-cap">Zero Trust &#183; Local Models &#183; Smart Routing &#183; Learning</text>
+    
+    <!-- right: intelligent agents -->
+    <g><text x="1338" y="194" class="nl-rn">I</text><text x="1362" y="194" class="nl-agent" font-size="21">Conversational AI Avatar Agent</text><text x="1338" y="287.5" class="nl-rn">II</text><text x="1362" y="287.5" class="nl-agent" font-size="21">Conversational AI Voice Agent</text><text x="1338" y="381" class="nl-rn">III</text><text x="1362" y="381" class="nl-agent" font-size="21">Conversational Chat Assistant</text><text x="1338" y="474.5" class="nl-rn">IV</text><text x="1362" y="474.5" class="nl-agent" font-size="21">Document Extraction Agent</text><text x="1338" y="568" class="nl-rn">V</text><text x="1362" y="568" class="nl-agent" font-size="21">Field Validation Agent</text><text x="1338" y="661.5" class="nl-rn">VI</text><text x="1362" y="661.5" class="nl-agent" font-size="21">Language Translation Agent</text><text x="1338" y="755" class="nl-rn">VII</text><text x="1362" y="755" class="nl-agent" font-size="21">Live In-Meeting Copilot</text><text x="1338" y="848.5" class="nl-rn">VIII</text><text x="1362" y="848.5" class="nl-agent" font-size="21">Conversational Recall Agent</text><text x="1338" y="942" class="nl-rn">IX</text><text x="1362" y="942" class="nl-agent" font-size="21">CRM Conversational Assistant</text></g>
+    </svg>`;
 
 const ecosystem = `
 <div class="eco" id="ecosystem">
@@ -759,14 +868,7 @@ const ecosystem = `
 const mission = `
 <section>
   <div class="wrap">
-    <h2 class="hand">
-      ${esc(H.COPY.mission.lead)}
-      <span class="u-lasso">
-        ${LASSO}
-        <span>${esc(H.COPY.mission.lassoed)}</span>
-      </span>
-      ${esc(H.COPY.mission.tail)}
-    </h2>
+    <h2 class="hand">${keyed(H.COPY.mission.heading)}</h2>
     <p class="sec-lede">${esc(H.COPY.mission.body)}</p>
   </div>
 </section>`;
@@ -774,13 +876,7 @@ const mission = `
 const caps = `
 <div class="caps">
   <div class="wrap">
-    <h2 class="hand left">
-      ${esc(H.COPY.capsHeading.lead)}
-      <span class="u-line">
-        ${UNDERLINE}
-        <span>${esc(H.COPY.capsHeading.underlined)}</span>
-      </span>
-    </h2>
+    <h2 class="hand left">${keyed(H.COPY.capsHeading)}</h2>
 
     <div class="capgrid">
       ${H.CAPABILITIES.map((c) => `<div class="cap${c.wide ? ' wide' : ''}">
@@ -804,7 +900,7 @@ const caps = `
 const why = `
 <section class="why" id="why">
   <div class="wrap">
-    <h2 class="hand">${esc(H.WHY.heading)}</h2>
+    <h2 class="hand">${keyed(H.WHY.heading)}</h2>
     <p class="sec-lede">${esc(H.WHY.lede)}</p>
     <div class="whygrid">
       ${H.WHY.points.map((pt) => `<div class="whyitem">
@@ -829,59 +925,192 @@ const why = `
 
    Every card links out to the original article. */
 
-/* "2026-08-28" -> "28 Aug 2026". A fixed month table rather than toLocaleString,
-   so the build cannot produce different output on a differently-configured
-   machine. */
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-function showDate(iso) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
-  if (!m) return { text: iso || '', attr: iso || '' };
-  return { text: `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}`, attr: iso };
-}
+/* THE DATE IS NO LONGER SHOWN, so the formatter that turned "2026-08-28" into
+   "28 Aug 2026" is gone with it. The date is still in articles.js, still
+   ordering the collection, and still what decides which three are the newest —
+   it is only the printed line under the cover that went. */
 
-const SHOWN = H.BLOG.show ? ARTICLES.slice(0, H.BLOG.show) : ARTICLES;
+/* EVERY ARTICLE IS IN THE MARKUP, and `BLOG.show` no longer decides which ones
+   exist — it decides how many are visible before the reader asks for the rest.
+   All eight ship in the HTML and app.js collapses the tail on load.
+
+   THAT DIRECTION IS THE WHOLE POINT. Slicing here and linking the remainder to
+   the publisher meant the other five were not on this page at all; hiding them
+   in CSS means a script that fails to load leaves the reader with MORE, not
+   less, which is the same bargain the nav panels and the drawer make. It is
+   also why the control is rendered twice — see the note on it below. */
+const SHOWN = ARTICLES;
+const OPEN_COUNT = H.BLOG.show && H.BLOG.show < ARTICLES.length ? H.BLOG.show : ARTICLES.length;
+const REST_COUNT = ARTICLES.length - OPEN_COUNT;
+
+/* THE COVER. Each column has a branded editorial card — The Edge's masthead,
+   the Digital Intelligence lockup, the headline and the byline, all set into
+   one 16:9 graphic. Those are not on theedgemalaysia.com: the article pages
+   and the author index both carry a stock photograph instead, which is what
+   articles.js records in `img` and what this grid used to show.
+
+   So the cover is looked for locally first, by node id, and the publisher's
+   photograph is the fallback. Drop `815608.jpg` into assets/articles/ and that
+   card starts using it on the next build with no code change. Until then the
+   card is correct and complete, just not wearing the branded artwork.
+
+   `fs.existsSync` at build time rather than a list typed here: a file that is
+   present is used, a file that is not cannot 404 on a reader. */
+const COVER_DIR = 'assets/articles';
+function cover(a) {
+  const local = `${COVER_DIR}/${a.nid}.jpg`;
+  return fs.existsSync(path.join(__dirname, local))
+    ? { src: local, branded: true }
+    : { src: a.img, branded: false };
+}
+const COVERS_FOUND = ARTICLES.filter((a) => cover(a).branded).length;
+
+/* The featured episode. Not one of the cards — see the note on FEATURE in
+   home.js for why it is set apart rather than appended.
+
+   IT IS A PICTURE UNTIL SOMEBODY WANTS THE PLAYER. `loading="lazy"` on an
+   iframe was the whole of the performance story, and it was not enough: lazy
+   only defers the fetch to the moment the frame nears the viewport, so a reader
+   who scrolls here watches a black rectangle while YouTube's bundle — a
+   megabyte or so of script across a dozen requests — negotiates. What lands
+   instead is one JPEG and a play control, and the iframe is created on the
+   click that asks for it, with `autoplay=1` so that click is not paid twice.
+
+   THE POSTER IS LOOKED FOR LOCALLY FIRST, keyed by video id, exactly as an
+   article cover is: a file that is present is served from our own origin and
+   paints immediately, and if it is absent YouTube's own thumbnail host is the
+   fallback rather than a hole. Change FEATURE.youtube and the build looks for
+   the new id; drop `assets/feature-<id>.jpg` in and it starts using it with no
+   code change.
+
+   The BUTTON carries the accessible name now, and the iframe is given the same
+   title when it is built — an iframe with no title is announced as "frame",
+   which is the least useful thing a screen reader can say about the one piece
+   of media on the page. */
+const featurePoster = () => {
+  const local = `assets/feature-${H.FEATURE.youtube}.jpg`;
+  return fs.existsSync(path.join(__dirname, local))
+    ? { src: local, local: true }
+    : { src: `https://i.ytimg.com/vi/${H.FEATURE.youtube}/maxresdefault.jpg`, local: false };
+};
+const FEATURE_POSTER = H.FEATURE ? featurePoster() : null;
+
+const feature = !H.FEATURE ? '' : `
+    <div class="tlfeat">
+      <div class="tlfeat-media">
+        <button class="ytlite" type="button"
+                data-yt="${esc(H.FEATURE.youtube)}"
+                data-title="${esc(H.FEATURE.title)}"
+                aria-label="Play: ${esc(H.FEATURE.title)}">
+          <img src="${esc(FEATURE_POSTER.src)}" alt="" width="1280" height="720" loading="lazy" decoding="async">
+          <span class="ytplay" aria-hidden="true"><svg width="26" height="30" viewBox="0 0 22 26"><path d="M3 2.5v21l17-10.5z" fill="#fff"/></svg></span>
+        </button>
+      </div>
+      <div class="tlfeat-body">
+        <h3 class="tlfeat-show">${esc(H.FEATURE.show)}</h3>
+        <p class="tlfeat-ep">${esc(H.FEATURE.title)}</p>
+        <p class="tlfeat-desc">${esc(H.FEATURE.desc)}</p>
+      </div>
+    </div>`;
+
+/* THE BROADCAST APPEARANCE, under the episode. Same two-column block, and the
+   media is a LINK rather than a player: there is no embeddable source for the
+   CGTN segment, so the still goes out to the LinkedIn post that holds the clip.
+   See the note on BROADCAST in home.js.
+
+   THE STILL KEEPS ITS OWN RATIO. `.tlfeat-media` is 16/9 with `object-fit:
+   cover` because that is a player's shape; this is a 3:2 screenshot whose
+   bottom edge carries the ticker, and cropping it to 16/9 would cut exactly the
+   part that says which programme this is.
+
+   Both the media and the episode line point at the same place, and the third
+   line says where that is — a play glyph that leaves the site should say so
+   before it is clicked, not after.
+
+   THE STILL ARRIVED WITH A PLAY GLYPH ALREADY IN IT — a black disc about 75px
+   across, welded into the pixels — and the two items then wore two different
+   play marks side by side. The disc is REMOVED from the file (ffmpeg's delogo,
+   which interpolates the striped facade back over it and reads as a shallow
+   depth of field) and this is the episode's own mark in its place: the same
+   span, the same triangle, sized down in the stylesheet. */
+const broadcast = !H.BROADCAST ? '' : `
+    <div class="tlfeat tlfeat--press">
+      <a class="tlfeat-media tlfeat-media--photo" href="${esc(H.BROADCAST.link)}" target="_blank" rel="noopener">
+        <img src="${esc(H.BROADCAST.image)}" alt="${esc(H.BROADCAST.imageAlt)}"
+             width="${H.BROADCAST.imageW}" height="${H.BROADCAST.imageH}" loading="lazy" decoding="async">
+        <span class="ytplay" aria-hidden="true"><svg width="20" height="24" viewBox="0 0 22 26"><path d="M3 2.5v21l17-10.5z" fill="#fff"/></svg></span>
+      </a>
+      <div class="tlfeat-body">
+        <h3 class="tlfeat-show">${esc(H.BROADCAST.show)}</h3>
+        <p class="tlfeat-ep">${esc(H.BROADCAST.title)}</p>
+        <p class="tlfeat-desc">${esc(H.BROADCAST.desc)}</p>
+        <p class="tlfeat-out"><a href="${esc(H.BROADCAST.link)}" target="_blank" rel="noopener">${esc(H.BROADCAST.linkLabel)} &rarr;</a></p>
+      </div>
+    </div>`;
 
 const blog = `
 <section style="padding-top:0" id="insights">
   <div class="wrap">
-    <h2 class="hand left">
-      ${esc(H.COPY.blogHeading.lead)}
-      <span class="u-squig">
-        ${SQUIGGLE}
-        <span>${esc(H.COPY.blogHeading.squiggled)}</span>
-      </span>
-    </h2>
+    <h2 class="hand left">${keyed(H.COPY.blogHeading)}</h2>
     <p class="sec-lede blog-lede">${esc(H.COPY.blogLede)}</p>
-    <div class="blog">
-      ${SHOWN.map((a) => {
-        const d = showDate(a.date);
+${feature}
+${broadcast}
+    <div class="blogsel">${esc(H.BLOG.sectionLabel)}</div>
+    <div class="blog" id="tl-grid">
+      ${SHOWN.map((a, i) => {
         const href = articleUrl(a);
-        /* alt="" — the headline sits right beside the image and repeating it
-           would make a screen reader say the same sentence twice. The image
-           carries no information the card does not already state. */
+        /* Past the fold of the collapsed grid. The class is a marker only — the
+           hiding is done by `.blog--collapsed` on the grid, which app.js adds,
+           so the cards are visible in plain HTML. */
+        const rest = i >= OPEN_COUNT ? ' post--rest' : '';
+        const c = cover(a);
+        /* THE ALT CARRIES THE HEADLINE, and that is a requirement rather than a
+           nicety. The branded cover has the headline set INTO the artwork, and
+           the card deliberately does not print it again underneath — so for
+           anyone who cannot see the image the alt text is the only place the
+           title exists at all. Empty alt here would leave the card announcing
+           a byline and a summary for an article with no name. */
         /* The image is wrapped so the frame and the picture can move
            independently: §25 opens `.shot` as a clip while the <img> inside it
            drifts from 1.07 to 1. On one element the clip edge would scale with
            the picture and the reveal would slide instead of wipe. */
-        const thumb = a.img
-          ? `<span class="shot"><img class="thumb" src="${esc(a.img)}" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>`
-          : '<span class="shot"><span class="thumb thumb--none" aria-hidden="true"></span></span>';
-        return `<a class="post" ${link(href)}>
+        const thumb = c.src
+          ? `<span class="shot"><img class="thumb" src="${esc(c.src)}" alt="${esc(a.title)}" width="1200" height="675" loading="lazy" decoding="async"></span>`
+          : `<span class="shot"><span class="thumb thumb--none" aria-hidden="true"></span></span>`;
+        /* One <a> around the whole card, so the cover, the byline, the summary
+           and the link all go to the same one place — the article. "Read more"
+           is a span, not a second link: a link inside a link is invalid, and it
+           would give the card two tab stops to the same URL. */
+        return `<a class="post${rest}" ${link(href)}>
         ${thumb}
-        <p class="pmeta"><time datetime="${esc(d.attr)}">${esc(d.text)}</time> &middot; ${esc(H.BLOG.attribution)}</p>
-        <h3>${esc(a.title)}</h3>
-        <p>${esc(a.summary)}</p>
+        <p class="pby">${esc(H.BLOG.byline)}</p>
+        <p class="psum">${esc(a.summary)}</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>`;
       }).join('\n      ')}
     </div>
-    <div class="allp allp--blog"><a ${link(PUBLISHER.authorIndex)}>${esc(H.BLOG.moreLabel)} &rarr;</a></div>
+    <div class="allp allp--blog">
+      <!-- TWO CONTROLS, ONE VISIBLE. The anchor is what the page ships with and
+           what a reader without JavaScript gets: every card is already on the
+           page, and this is the route to the columns published since this build.
+           app.js hides it and reveals the button, which expands the five cards
+           already sitting in this grid rather than leaving the page.
+
+           A button and not a restyled link, because after the swap it no longer
+           goes anywhere — it discloses. That is what aria-expanded says, and a
+           link cannot say it. -->
+      <a class="blogall" ${link(PUBLISHER.authorIndex)}>${esc(H.BLOG.moreLabel)} &rarr;</a>${REST_COUNT ? `
+      <button class="blogall blogmore" type="button" hidden
+              aria-expanded="false" aria-controls="tl-grid"
+              data-more="${esc(H.BLOG.moreLabel)} &darr;" data-less="Show less &uarr;"></button>` : ''}
+    </div>
   </div>
 </section>`;
 
 const close = `
 <div class="cta">
   <div class="wrap">
-    <h2 class="hand" style="color:#fff">${esc(H.COPY.close.heading)}</h2>
+    <h2 class="hand" style="color:#fff">${keyed(H.COPY.close.heading)}</h2>
     <div class="cta-pair">
       <a class="btn btn-white btn-lg" ${link(GO.demo)}>${esc(H.COPY.close.primary)}</a>
       <a class="btn btn-outline-white btn-lg" ${link(GO.talk)}>${esc(H.COPY.close.secondary)}</a>
@@ -915,9 +1144,14 @@ const footer = `
       <div class="fcol"><h4>Resources</h4>
         ${H.RESOURCES.map((r) => maybeLink(r.name, r.url)).join('\n        ')}
       </div>
+      <!-- THE PHONE NUMBERS ARE NOT IN THE FOOTER, by request. Both of
+           CONTACTS held both numbers and both sat under the address here, on
+           all 27 pages.
+           They are still on the contact page and in the demo aside, which is
+           where somebody looking for a number goes — the footer offered them to
+           everybody scrolling past instead. -->
       <div class="fcol"><h4>Get in touch</h4>
         <a href="mailto:${esc(H.CONTACTS.email)}">${esc(H.CONTACTS.email)}</a>
-        ${H.CONTACTS.phones.map((n) => `<a href="tel:${esc(n.replace(/[\s-]/g, ''))}">${esc(n)}</a>`).join('\n        ')}
         <a class="book" ${link(GO.demo)}>${esc(H.COPY.hero.primary)} &rarr;</a>
       </div>
     </div>
@@ -936,9 +1170,13 @@ const footer = `
       </div>`}
     </div>
 
+    <!-- PRIVACY POLICY · TERMS · SECURITY ARE GONE, by request. All three were
+         unlinked text: there is no privacy page, no terms page and no security
+         page on this site, so the row named three documents a reader could not
+         open. Removed rather than re-pointed — the old site's policy is not
+         this site's policy. Write the pages, then put the row back. -->
     <div class="legal">
       <span>Copyright &copy; ${new Date().getFullYear()}, ${esc(COMPANY.legal)}. All rights reserved.</span>
-      <span>${H.LEGAL.map((l) => maybeLink(l.name, l.url)).join(' &middot; ')}</span>
     </div>
   </div>
 </footer>`;
@@ -988,7 +1226,7 @@ const demoBody = `
 
     <div class="demoside">
       <p class="eyebrow">Contact us today</p>
-      <h1 class="hand">${esc(H.COPY.demo.heading)}</h1>
+      <h1 class="hand">${keyed(H.COPY.demo.heading)}</h1>
       <p class="sec-lede">${esc(H.COPY.demo.lede)}</p>
 
       <!-- The photograph and the gradient behind this whole page are the two
@@ -1000,9 +1238,17 @@ const demoBody = `
       <!-- THESE THREE WORK TODAY, which is why they are on this page and not
            buried on another one. Whatever happens to the form, a reader who
            wants a demo can always reach somebody from here. -->
+      <!-- THE NUMBERS ARE NOT PRINTED, THE PHONE STILL RINGS. Both of
+           CONTACTS held both numbers and both were listed here, as two rows
+           of digits. No
+           number is displayed anywhere on this site any more, by request — so
+           this is one row that DIALS the office without reading it out, which
+           is the same trade the contact page's own chip row already made
+           ("Call the office"). A reader on a phone taps it; a reader on a
+           desktop is not being asked to copy fourteen digits by hand. -->
       <ul class="demoreach">
         <li><span>Email</span><a href="mailto:${esc(H.CONTACTS.email)}">${esc(H.CONTACTS.email)}</a></li>
-        ${H.CONTACTS.phones.map((n) => `<li><span>Phone</span><a href="tel:${esc(n.replace(/[\s-]/g, ''))}">${esc(n)}</a></li>`).join('\n        ')}
+        <li><span>Phone</span><a href="tel:${esc(H.CONTACTS.office.replace(/[\s-]/g, ''))}">Call the office</a></li>
         <li><span>Office</span>${esc(COMPANY.base)}</li>
       </ul>
     </div>
@@ -1022,7 +1268,7 @@ const demoBody = `
               <option value="">Select a product</option>
               ${(() => { const used = new Set(); return H.TILES.map((t) => {
                 /* Tiles that share a product still need to submit distinctly,
-                   or a Voice Interviewer enquiry arrives looking like Video. */
+                   or a Voice Interview enquiry arrives looking like Video. */
                 let v = t.slug;
                 if (used.has(v)) v = `${t.slug}-${t.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
                 used.add(v);
@@ -1044,14 +1290,23 @@ const demoBody = `
 
         ${DEMO_ACTION
           ? `<button class="btn btn-primary btn-lg dsubmit" type="submit">${esc(H.COPY.demo.cta)}</button>`
-          : `<a class="btn btn-primary btn-lg dsubmit" ${link(COMPANY.inquiry)}>${esc(H.COPY.demo.cta)} &rarr;</a>
+          : `<a class="btn btn-primary btn-lg dsubmit" ${link(GO.talk)}>${esc(H.COPY.demo.cta)} &rarr;</a>
         <!-- NOT WIRED YET. COMPANY.demoAction in products.js is null, so this
-             button is a link to the form on the old site, which does submit.
-             Set demoAction to an endpoint and the same markup above becomes a
-             real POST with no other change. The note below is deliberately
-             written for a customer, not for whoever maintains this: nobody
-             buying software should be told the name of a config field. -->
-        <p class="dnote">Prefer to talk to a person? ${esc(H.CONTACTS.email)} or ${esc(H.CONTACTS.phones[0])}.</p>`}
+             button cannot POST anywhere. It used to link to the form on the old
+             site, which does submit — and that was the last button on this site
+             that carried a reader off it, so it now goes to our own contact
+             page instead. Set demoAction to an endpoint and the same markup
+             above becomes a real POST with no other change.
+
+             NOTHING IS STRANDED BY THIS. The email and phone above are live and
+             the note below repeats them, so a reader who wants a demo still has
+             two routes that work today without leaving the site. The phone is
+             a LINK rather than printed digits, for the reason given on the
+             list above. The note is
+             deliberately written for a customer, not for whoever maintains
+             this: nobody buying software should be told the name of a config
+             field. -->
+        <p class="dnote">Prefer to talk to a person? ${esc(H.CONTACTS.email)} or <a href="tel:${esc(H.CONTACTS.office.replace(/[\s-]/g, ''))}">call the office</a>.</p>`}
       </form>
     </div>
 
@@ -1109,10 +1364,18 @@ ${COMPANY.pageUrl ? `<link rel="canonical" href="${esc(COMPANY.pageUrl)}">\n<met
 <meta property="og:description" content="${esc(desc)}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-<!-- the display face is self-hosted and used by the very first line of the
-     page, so it is preloaded rather than discovered late in the stylesheet -->
-<link rel="preload" href="assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<!-- ONE REQUEST FOR BOTH FACES. Bodoni Moda (display) and Inter (text) come
+     from the same stylesheet, so the browser makes one round trip instead of
+     two. opsz is requested across its full range because Bodoni Moda is a
+     Didone whose hairlines thin as the size grows, and font-optical-sizing
+     (auto by default) is what keeps the 76px hero from going wispy. Only
+     weight 700 of the display face is used, so only 700 is asked for.
+
+     The display face used to be self-hosted and preloaded here; it is served
+     by Google now, so the preload is gone with it — a preload pointing at a
+     versioned fonts.gstatic.com URL the stylesheet does not also carry would
+     just download the file twice. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,700&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="${stamp('assets/css/talbotiq.css')}">
 <!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
      that hides or moves anything is scoped to html.fx, so the class decides
@@ -1149,8 +1412,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       ${navItems}
     </nav>
     <div class="hdr-right">
-      <a class="si" href="${esc(GO.signin)}">Sign in</a>
-      <a class="btn btn-primary" ${link(GO.demo)}>${esc(H.COPY.hero.primary)}</a>
+      <a class="btn btn-primary" ${link(GO.talk)}>${esc(H.COPY.headerCta)}</a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu"><i></i></button>
     </div>
   </div>
@@ -1172,39 +1434,269 @@ ${footer}
      resolve instantly instead of moving. -->
 <script type="application/json" id="stage-data">${JSON.stringify(STAGE).replace(/</g, '\\u003c')}</script>
 <script defer src="${stamp('assets/js/scroll.js')}"></script>
+
+<!-- THE WEBSITE ASSISTANT. One line, and the same line on all twenty pages,
+     including the eighteen standalone ones — which is why the src is
+     root-absolute rather than depth-relative like everything else here. The
+     widget posts to /api/chat, so it already requires the site to be served
+     from the domain root; making the script path match adds no new constraint
+     and removes the need for a ../ that differs by directory. It carries its
+     own stylesheet, so there is no second <link> to place. Unstamped, so the
+     eighteen pages that have no stamp() can use the identical line. -->
+<script defer src="/assets/js/demoform.js"></script>
+<script defer src="/assets/js/chat.js"></script>
 </body>
 </html>
 `;
 
 const html = page({
-  title: `${COMPANY.name} — ${H.COPY.hero.lead} ${H.COPY.hero.marked}`,
+  /* `hero.lead` + `hero.marked` until the hero copy became a {text, keys}
+     heading like the others; the two old fields no longer exist, so this was
+     emitting "TalbotIQ — undefined undefined" as the page title. */
+  title: `${COMPANY.name} — ${H.COPY.hero.heading.text}`,
   /* The share card has always led with the promise rather than the headline,
      and that is a deliberate difference from <title>, not an oversight. */
-  ogTitle: `${COMPANY.name} — ${H.COPY.hero.lede.strong}`,
+  ogTitle: `${COMPANY.name} — ${H.COPY.hero.lede.strong} ${H.COPY.hero.lede.rest}`,
   desc: DESC,
   body: [hero, productBand, ecosystem, mission, caps, why, blog, close].join('\n'),
 });
 
+
+/* =============================================================================
+   THE SHELVES, FOR THE PAGES THAT ARE NOT GENERATED
+   -----------------------------------------------------------------------------
+   THE PROBLEM THIS SOLVES. index.html and demo.html are built here and carry
+   the three panels in their markup. Every other page in the repo — about,
+   contact, signin, the four solution pages, the seventeen product pages — is a
+   standalone document with its own stylesheet and its own script, and none of
+   them had shelves. So the menu worked exactly once: follow any link out of a
+   panel and the header you landed on could not open one, and the only way back
+   to the menu was the homepage. Reported as "even after clicking something in
+   Solutions or Company, I should still get that dropdown", which is right.
+
+   ONE GENERATED FILE, NOT TWENTY-FOUR INJECTIONS. The alternative was to have
+   tools/fix-pages.js paste the markup, the CSS and the wiring into every page,
+   which is twenty-four copies of the product list to keep in step with
+   products.js. This writes assets/js/nav.js instead — the same panel markup
+   this file already renders for index.html, from the same data — and each page
+   gets one <script> line. A rebuild updates all of them at once.
+
+   IT UPGRADES, IT DOES NOT REPLACE. The nav each page ships is a real nav with
+   real links; with this script blocked, every page is exactly what it is today.
+   Nothing is hidden behind it.
+
+   TWO FAMILIES, TWO TREATMENTS.
+     · The SITE nav — about, contact, signin, solutions/* — carries the same
+       five links index.html's bar has, so its items become the three buttons
+       plus Blog and Contact, and the shelves are the homepage's shelves.
+     · A PRODUCT page's nav is the PRODUCT's nav: its own name, then Overview /
+       Features / Trust anchors within the page. Replacing that would be taking
+       away navigation to add navigation. Its name chip already draws a caret
+       and links to #products, so the chip lends itself to the Products shelf
+       and everything else about the bar is left alone.
+
+   ROOT-ABSOLUTE HREFS, for the same reason the chat.js include is: one string
+   has to be correct at the top level, inside products/ and inside solutions/.
+   A hash on its own becomes /index.html#hash — on these pages `#products`
+   names nothing local, and app.js opens the matching shelf on arrival. */
+const navAbs = (h) => {
+  if (!h || isExternal(h) || h.startsWith('/') || h.startsWith('mailto:') || h.startsWith('tel:')) return h;
+  return h.startsWith('#') ? '/index.html' + h : '/' + h;
+};
+const rootAbs = (markup) => markup.replace(/href="([^"]*)"/g, (m, h) => `href="${navAbs(h)}"`);
+
+/* Index's own bar has no Blog item; these pages do, and it is the only way to
+   the columns from them. Adding the shelves is not a reason to take a
+   destination away, so it stays where it is, before Contact. */
+const navJsItems = rootAbs(navItems).replace(
+  /(<a href="\/contact\.html")/,
+  '<a href="/index.html#insights">Blog</a>\n      $1');
+
+const navJs = `/* GENERATED by build.js — do not edit this file, edit build.js.
+   The shelves for every page that build.js does NOT write. See the note on
+   THE SHELVES, FOR THE PAGES THAT ARE NOT GENERATED. */
+(function () {
+  'use strict';
+
+  /* a page that already has its own panels in markup: index.html, demo.html */
+  if (document.querySelector('.navbtn')) return;
+
+  var hdr = document.querySelector('header');
+  var nav = hdr && hdr.querySelector('nav.mid');
+  if (!nav) return;
+
+  var PANELS = ${JSON.stringify(rootAbs(panelMarkup))};
+  var ITEMS = ${JSON.stringify(navJsItems)};
+
+  var href = '/assets/css/navpanels.css';
+  if (!document.querySelector('link[href="' + href + '"]')) {
+    var l = document.createElement('link');
+    l.rel = 'stylesheet'; l.href = href;
+    document.head.appendChild(l);
+  }
+
+  var host = document.createElement('div');
+  host.id = 'tqnav';
+  host.innerHTML = PANELS;
+  hdr.insertAdjacentElement('afterend', host);
+
+  /* the shelf hangs off the header's real height, which is 70px here and 72 on
+     the generated pages — measured rather than assumed */
+  var top = function () {
+    document.documentElement.style.setProperty('--tqnav-top', hdr.offsetHeight + 'px');
+  };
+  top();
+  addEventListener('resize', top, { passive: true });
+
+  /* ---- what opens what ------------------------------------------------- */
+  var triggers = [];
+  var chip = nav.querySelector('a.prod');
+
+  if (chip) {
+    /* a product page: its bar is its own, and only the name chip is borrowed */
+    chip.setAttribute('aria-controls', 'panel-products');
+    chip.setAttribute('aria-expanded', 'false');
+    triggers.push({ btn: chip, hover: chip });
+  } else {
+    nav.innerHTML = ITEMS;
+    /* which shelf this page lives under, so the bar says where you are — the
+       page it replaced marked itself with .on and that should not be lost */
+    var p = location.pathname;
+    var mine = /\\/products\\//.test(p) ? 'products'
+      : /\\/solutions\\//.test(p) ? 'solutions'
+      : /(about|contact|signin)(\\.html)?$/.test(p) ? 'company' : '';
+    nav.querySelectorAll('.navbtn').forEach(function (b) {
+      if (b.dataset.panel === mine) b.classList.add('on');
+      triggers.push({ btn: b, hover: b.parentNode });
+    });
+  }
+
+  /* ---- open and close -------------------------------------------------- */
+  /* One at a time, hover on a fine pointer, click everywhere else, a grace
+     period across the gap, Escape closes. The same behaviour app.js gives the
+     generated pages.
+
+     ponytail: that logic now exists twice — there and here. It is not shared
+     because app.js also owns the hairline, the drawer and the article grid,
+     and these pages have their own versions of all three. If a third page
+     family ever needs shelves, lift this block into its own file and have both
+     load it. */
+  var open = null, hideT;
+
+  function panelOf(b) { return document.getElementById(b.getAttribute('aria-controls')); }
+  function set(b, on) {
+    var p = panelOf(b);
+    if (!p) return;
+    p.hidden = !on;
+    b.setAttribute('aria-expanded', String(on));
+  }
+  function show(b) {
+    clearTimeout(hideT);
+    if (open === b) return;
+    if (open) set(open, false);
+    set(b, true);
+    open = b;
+  }
+  function hide() {
+    clearTimeout(hideT);
+    if (!open) return;
+    set(open, false);
+    open = null;
+  }
+
+  var fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  triggers.forEach(function (t) {
+    var p = panelOf(t.btn);
+    if (!p) return;
+
+    if (fine) {
+      t.hover.addEventListener('mouseenter', function () { show(t.btn); });
+      t.hover.addEventListener('mouseleave', function () { hideT = setTimeout(hide, 160); });
+      p.addEventListener('mouseenter', function () { clearTimeout(hideT); });
+      p.addEventListener('mouseleave', function () { hideT = setTimeout(hide, 160); });
+
+      /* A MOUSE CLICK MUST NOT TOGGLE: the pointer is already hovering, so the
+         shelf is already open and a toggle would shut what was just aimed at.
+         detail === 0 is the tell that the click came from the keyboard, and
+         that one does toggle, because nothing hovered to open it.
+
+         The product chip is a LINK, so its mouse click is left to the browser
+         — it goes to the product grid, which is what the chip has always
+         promised. Only its keyboard click opens the shelf in place. */
+      t.btn.addEventListener('click', function (e) {
+        if (e.detail !== 0) { if (t.btn.tagName !== 'A') e.preventDefault(); return; }
+        e.preventDefault();
+        if (open === t.btn) hide(); else show(t.btn);
+      });
+    } else {
+      /* no hover: the first tap opens the shelf, and on the chip that means
+         the tap must not also follow the link */
+      t.btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (open === t.btn) hide(); else show(t.btn);
+      });
+    }
+
+    /* following a link inside a shelf closes it */
+    p.addEventListener('click', function (e) {
+      if (e.target.closest('a')) hide();
+    });
+  });
+
+  function outside(el) {
+    return !el.closest('.navitem') && !el.closest('.panel') && !el.closest('a.prod');
+  }
+  addEventListener('click', function (e) { if (open && outside(e.target)) hide(); });
+  addEventListener('focusin', function (e) { if (open && outside(e.target)) hide(); });
+  addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !open) return;
+    var b = open;
+    hide();
+    b.focus();
+  });
+}());
+`;
+
+fs.writeFileSync(path.join(__dirname, 'assets', 'js', 'nav.js'), navJs, 'utf8');
+
 fs.writeFileSync(path.join(__dirname, 'index.html'), html, 'utf8');
 
 const demoHtml = page({
-  title: `${H.COPY.demo.heading} — ${COMPANY.name}`,
+  /* a <title> is plain text — the sentence, never the keyed markup */
+  title: `${H.COPY.demo.heading.text} — ${COMPANY.name}`,
   desc: H.COPY.demo.lede,
   body: demoBody,
 });
 fs.writeFileSync(path.join(__dirname, 'demo.html'), demoHtml, 'utf8');
 
 const linked = H.TILES.filter((t) => tileHref(t)).length;
-const soon = [...H.SOLUTIONS, ...H.COMPANY_LINKS, ...H.RESOURCES, ...H.LEGAL].filter((x) => !x.url).length;
+const soon = [...H.SOLUTIONS, ...H.COMPANY_LINKS, ...H.RESOURCES].filter((x) => !x.url).length;
 console.log(
   `demo.html  — ${(Buffer.byteLength(demoHtml) / 1024).toFixed(1)}kB · `
   + `${H.TILES.length + 1} products to choose from · `
-  + `${DEMO_ACTION ? 'posts to ' + DEMO_ACTION : 'NOT WIRED — submit falls through to ' + COMPANY.inquiry}`
+  + `${DEMO_ACTION ? 'posts to ' + DEMO_ACTION : 'NOT WIRED — the submit is a local link, so a filled-in form is lost'}`
 );
 console.log(
   `index.html — ${(Buffer.byteLength(html) / 1024).toFixed(1)}kB · `
   + `${H.TILES.length} products (${linked} linked, ${H.TILES.length - linked} awaiting a destination) · `
-  + `${H.CAPABILITIES.length} capability cards · ${SHOWN.length} of ${ARTICLES.length} articles · `
+  + `${H.CAPABILITIES.length} capability cards · ${SHOWN.length} of ${ARTICLES.length} articles`
+  /* Says out loud whether the branded covers have been dropped into
+     assets/articles/ yet, so a build that is quietly still showing the
+     publisher's stock photographs cannot look like a finished one. */
+  + ` (${COVERS_FOUND} of ${ARTICLES.length} branded covers${COVERS_FOUND < ARTICLES.length ? ` — rest fall back to the publisher's photo, see ${COVER_DIR}/README.md` : ''})`
+  /* And whether that episode's poster is being served from our own origin or
+     still being fetched from YouTube's thumbnail host on every load. */
+  + `${H.FEATURE ? ` + 1 featured episode (poster: ${FEATURE_POSTER.local ? FEATURE_POSTER.src : "YouTube's thumbnail host — drop assets/feature-" + H.FEATURE.youtube + '.jpg in to serve it locally'})` : ''} · `
   + `${soon} footer/nav entries marked "soon"`
   + ` · ${H.WHY.points.length} reasons to lead with TALBOTIQ`
 );
+
+/* THE ASSISTANT'S KNOWLEDGE IS PART OF THE BUILD, not a thing to remember.
+   It drifted three times while it was being written: pages were renamed and
+   three more appeared, and a corpus built by hand an hour earlier would have
+   had the assistant confidently describing copy nobody could see any more.
+   Run last, because it crawls from the index.html written above. It prints its
+   own line and exits non-zero if a page yields no readable text, so a broken
+   extraction fails the build rather than shipping a stale answer. */
+require('./tools/build-knowledge.js');

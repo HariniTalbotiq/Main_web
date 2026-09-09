@@ -19,3 +19,5 @@ __MACOSX/
 
 # Vercel CLI links this checkout to a project; its own README says do not commit it
 .vercel/
+.vercel
+.env*

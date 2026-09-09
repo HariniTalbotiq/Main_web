@@ -47,15 +47,19 @@ const COMPANY = {
   contact: 'https://talbotiq.com/contact-us/',
   inquiry: 'https://talbotiq.com/inquiry-now/',
   /* WHERE THE LOCAL DEMO FORM POSTS. Null until there is somewhere real for a
-     demo request to go, and while it is null `demo.html`'s submit falls back to
-     `inquiry` above — the form on the old site, which does work. So the button
-     is never dead and a lead is never silently swallowed, which is the one
-     failure mode that actually costs money here.
+     demo request to go.
+
+     IT DOES NOT FALL BACK TO `inquiry` ANY MORE, and this comment used to say
+     that it did. NOTHING ON THIS SITE MAY LINK TO THE OLD WEBSITE — see the
+     GO.demo note in build.js and the rule in tools/fix-pages.js that strips
+     any such href it finds. While this is null the submit is a link to a local
+     page, not a POST, which means a lead typed into the form IS lost: the fix
+     for that is an endpoint here, not a button that leaves the site.
 
      Set this to an endpoint (a Formspree URL, a Vercel function, anything that
      accepts a POST) and the page starts submitting directly instead. That is
      the only change needed; the form is already built for it. */
-  demoAction: null,
+  demoAction: '/api/demo',
   privacy: 'https://talbotiq.com/privacy-policy/',
   phone: '+603 20 111 320',
   base: 'Kuala Lumpur, Malaysia',
@@ -200,21 +204,25 @@ const PRODUCTS = [
     slug: 'recapr',
     chapter: 2,
     story: { kind: 'recapr', arc: ['Capture', 'Understand', 'Decipher', 'Act'] },
-    name: 'Recapr',
+    name: 'Intelligent Note Taker',
     alias: 'Minute Taker',
-    short: 'Recapr',
+    short: 'Intelligent Note Taker',
     category: 'knowledge',
     status: 'live',
     access: 'site',
     url: 'https://recapr-web-qxytyckrma-uc.a.run.app/',
     accent: '#3559C7',
+    /* `served` is the product KEY the admin console actually shows, not the
+       marketing name — the console still says Recapr, so this still says
+       Recapr. Same for the `evidence` string on the engine. Renaming either
+       would make this file describe a console that does not exist. */
     bus: { served: 'Recapr', headroom: 61, state: 'ok' },
     position: 'The meeting, on the record',
     statement: 'The meeting,\non the record.',
     description:
-      'Recapr transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides.',
+      'The Intelligent Note Taker transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides.',
     features: ['Live transcription', 'Decisions & action items', 'Commitment tracker', 'Contradiction detection', 'Ask the record', 'No bot to invite'],
-    cta: 'Explore Recapr',
+    cta: 'Explore the Intelligent Note Taker',
     evidence: 'Public marketing site: Capture→Understand→Decipher→Act; live transcription with speaker attribution and timestamps; Vibe Check out of 100; Commitment Tracker KEPT/OPEN/SLIPPED; cross-meeting memory with contradiction detection quoting both sides; "Ask the record"; mark-the-moment ⌘⇧K; "No bot to invite."',
     illustrative: 'Sample quotes from two meetings.',
     stages: [
@@ -230,7 +238,7 @@ const PRODUCTS = [
     contra: {
       a: { q: 'We hold the September date and ship the Windows build first.', stamp: 'Product weekly · 12 Aug · 23:30' },
       b: { q: 'September was never firm — we said we would revisit once the signing landed.', stamp: 'Product weekly · 2 Sep · 08:14' },
-      note: 'Recapr does not tell you a contradiction exists. It quotes both sides and links each one back to its timestamp.',
+      note: 'The Intelligent Note Taker does not tell you a contradiction exists. It quotes both sides and links each one back to its timestamp.',
     },
     peek: {
       chrome: 'Product weekly',
@@ -245,9 +253,9 @@ const PRODUCTS = [
     slug: 'nouscrm',
     chapter: 3,
     story: { kind: 'crm', arc: ['Opportunity', 'Customer', 'Invoice', 'Approval'] },
-    name: 'NousCRM',
+    name: 'Sales CRM',
     alias: 'Sales CRM',
-    short: 'NousCRM',
+    short: 'Sales CRM',
     category: 'revenue',
     status: 'live',
     access: 'app',
@@ -259,7 +267,7 @@ const PRODUCTS = [
     description:
       'The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard.',
     features: ['Opportunities by stage', 'Source attribution', 'Customers & contacts', 'Invoices', 'Approvals', 'Rep targets'],
-    cta: 'Open NousCRM',
+    cta: 'Open Sales CRM',
     evidence: 'Route probe (200): /dashboard /opportunities /customers /contacts /invoices /approvals /settings. Dashboard APIs in the shipped bundle: stats, approvals, approvals-count, opportunity-by-stage, opportunity-source, rep-target, sales-team-performance, salesrep-performance-chart, salesreps.',
     illustrative: 'Sample stage names and counts.',
     // modules: verified present, and the ones deliberately not claimed
@@ -285,7 +293,7 @@ const PRODUCTS = [
     slug: 'lexerai',
     chapter: 5,
     story: { kind: 'lexerai', arc: ['Capture', 'Extract', 'Convert', 'Reconcile'] },
-    name: 'lexerai',
+    name: 'Intelligent Document Management',
     alias: 'Document Parser',
     short: 'lexerai',
     category: 'knowledge',
@@ -356,7 +364,7 @@ const PRODUCTS = [
     slug: 'task-manager',
     chapter: 4,
     story: { kind: 'task', arc: ['Triage', 'Plan', 'Execute', 'Close'] },
-    name: 'Task & Project Management',
+    name: 'Task & Productivity Manager',
     alias: 'Task Manager',
     short: 'Task Manager',
     category: 'knowledge',

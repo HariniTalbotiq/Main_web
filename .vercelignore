@@ -4,8 +4,10 @@
 # archive/ ended up publicly served on the first deploy. Keep comments on
 # their own lines.
 
-# Internal. Must never be published.
+# Internal. Must never be published. Note BOTH spellings: the v1 site lives in
+# .archive/ (dotted), and a bare `archive` pattern does not match it.
 archive
+.archive
 research
 .impeccable
 .DS_Store
@@ -15,6 +17,26 @@ research
 assets/shots
 
 # Source. The site is pre-built, so the generator is not needed at the edge.
+# home.js and articles.js belong here for the same reason build.js does — they
+# are the generator's input, and without a rule they upload as static files and
+# are fetchable at /home.js. design/ holds the mockup references.
 build.js
 products.js
+home.js
+articles.js
 README.md
+design
+
+# The transform and build scripts, likewise. Without this they are uploaded as
+# static files and become publicly fetchable — /tools/chat.test.js and friends.
+# NOTE the exception that must NOT be added here: api/. That directory is the
+# serverless function plus the knowledge base it requires, and excluding it
+# would take the assistant offline.
+tools
+
+# Agent/tool scratch captures. Gitignored, but .vercelignore's existence means
+# .gitignore is not consulted at deploy time, so they must be listed here too.
+.playwright-mcp
+old-inquiry.png
+# a 15-byte stray from some earlier redirect test, in the tree but not the site
+-w

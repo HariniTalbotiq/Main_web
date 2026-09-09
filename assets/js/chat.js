@@ -372,10 +372,28 @@
   var GAP = 12;
   var phone = function () { return window.matchMedia('(max-width:520px)').matches; };
 
+  /* PAGE FURNITURE ALONG THE BOTTOM EDGE. 24 of the 26 pages pin a fixed CTA
+     bar to the bottom edge below 880px, and the bubble's default corner landed
+     squarely inside it: 56x38px of "WhatsApp" / "Leadership" / "See how
+     scoring works" sat under a widget with a z-index of 2147483000, so that
+     part of the button could not be tapped at all. A page that owns such a bar
+     declares its height as --tq-bottom-bar and the bubble keeps clear; a page
+     without one (index.html, demo.html) reads 0 and nothing moves.
+
+     Cached rather than read per pointermove, because clamp() runs on every
+     frame of a drag and this is a forced style read — the value can only
+     change when the viewport does, which is where it is refreshed. */
+  var barPx = 0;
+  function readBottomBar() {
+    var v = getComputedStyle(document.body).getPropertyValue('--tq-bottom-bar');
+    barPx = Math.max(0, parseFloat(v) || 0);
+  }
+
   function clamp(x, y, w, h) {
+    var floor = window.innerHeight - barPx;
     return {
       x: Math.max(GAP, Math.min(x, Math.max(GAP, window.innerWidth - w - GAP))),
-      y: Math.max(GAP, Math.min(y, Math.max(GAP, window.innerHeight - h - GAP))),
+      y: Math.max(GAP, Math.min(y, Math.max(GAP, floor - h - GAP))),
     };
   }
 
@@ -385,6 +403,7 @@
      on resize, because a position saved on a wide monitor must not put the
      window off-screen on a laptop. */
   function place() {
+    readBottomBar();
     var live = win.hidden ? btn : win;
     var w = win.hidden ? BUBBLE : Math.min(W, window.innerWidth - 2 * GAP);
     var h = win.hidden ? BUBBLE : Math.min(H, window.innerHeight - 2 * GAP);
@@ -393,7 +412,7 @@
     if (!win.hidden && phone()) return;          /* the stylesheet owns it there */
     var at = pos
       ? clamp(pos.x, pos.y, w, h)
-      : { x: window.innerWidth - w - 20, y: window.innerHeight - h - 20 };
+      : { x: window.innerWidth - w - 20, y: window.innerHeight - barPx - h - 20 };
     live.style.left = at.x + 'px';
     live.style.top = at.y + 'px';
   }

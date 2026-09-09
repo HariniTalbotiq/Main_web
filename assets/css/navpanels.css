@@ -1,0 +1,118 @@
+/* =============================================================================
+   NAV PANELS — for the STANDALONE pages only
+   -----------------------------------------------------------------------------
+   about, contact, signin, the four solution pages and the seventeen product
+   pages each carry their own complete stylesheet and no talbotiq.css. They used
+   to have no shelves at all: a reader who followed a link out of a panel landed
+   on a page whose header could not open one, and the way back to the menu was
+   the homepage. `assets/js/nav.js` gives them the shelves; this is what those
+   shelves are wearing.
+
+   ponytail: this is §13 of talbotiq.css a second time, because those pages do
+   not share a stylesheet with index.html and giving them one is a bigger change
+   than this problem is worth. The day they do, delete this file and scope §13
+   instead — the class names are identical, which is what makes that a delete
+   rather than a rewrite.
+
+   EVERY PANEL RULE IS SCOPED TO #tqnav, the wrapper nav.js injects. Not for
+   tidiness: the four solution pages already have a `.pgrid` of their own, and
+   at 1040px it flattens every grid on the page to one column. An id in the
+   selector wins that argument without renaming anything the generator emits.
+
+   THE VAR FALLBACKS ARE NOT DECORATION. These pages declare --teal, --green,
+   --ink, --band, --border, --grey and --mute; they do NOT declare --dim,
+   --quiet or --ease, which §13 uses freely. Each of those is given the value
+   talbotiq.css assigns it, so the shelf looks the same on both families.
+   ========================================================================== */
+
+/* ---- the three buttons in the header ------------------------------------ */
+/* Sized to the standalone family's own nav links — 15px/500, grey going green
+   — rather than to index.html's, which runs half a point larger. A button that
+   does not match the anchors beside it is the tell that something was bolted
+   on. */
+header nav.mid > .navitem { position: relative; display: flex; align-items: center; }
+header nav.mid > .navitem > button {
+  font-family: inherit; font-size: 15px; font-weight: 500;
+  color: var(--grey); background: none; border: 0; padding: 0;
+  cursor: pointer; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+header nav.mid > .navitem > button:hover,
+header nav.mid > .navitem > button[aria-expanded="true"] { color: var(--green); }
+header nav.mid > .navitem > button.on { color: var(--green); font-weight: 600; }
+header nav.mid .car {
+  font-size: 10px; opacity: .55; display: inline-block; vertical-align: 2px;
+  transition: transform .18s var(--ease, cubic-bezier(.22, .61, .36, 1));
+}
+header nav.mid > .navitem > button[aria-expanded="true"] .car { transform: rotate(180deg); }
+
+/* ---- the shelf ---------------------------------------------------------- */
+/* Anchored under the whole header rather than under the button, so all three
+   open on the same line and the bar reads as one surface. `--tqnav-top` is the
+   header's measured height, set by nav.js — these pages have no --hdr-h and
+   their header is 70px rather than index's 72px, so it is measured rather than
+   assumed. z-index sits one under the header's 200: the shelf hangs from the
+   bar, it does not cover it. */
+#tqnav .panel {
+  position: fixed; left: 0; right: 0; top: var(--tqnav-top, 70px);
+  background: #fff; border-bottom: 1px solid var(--border);
+  box-shadow: 0 22px 44px -26px rgb(31 36 48 / .26);
+  z-index: 199;
+}
+#tqnav .panel[hidden] { display: none; }
+/* the page's own .wrap, so the shelf's content lines up with its header */
+#tqnav .panel > .wrap { padding-block: 30px 26px; }
+
+#tqnav .pgrid { display: grid; gap: 8px 26px; }
+#tqnav .pgrid--products { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#tqnav .pgrid--solutions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#tqnav .pgrid--company { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+#tqnav .pitem {
+  display: flex; gap: 13px; align-items: flex-start;
+  padding: 11px 12px; border-radius: 9px; text-decoration: none;
+  transition: background .14s var(--ease, cubic-bezier(.22, .61, .36, 1));
+}
+#tqnav a.pitem:hover { background: var(--band); }
+#tqnav .pitem .pico {
+  flex: 0 0 38px; height: 38px; border-radius: 10px; background: var(--band);
+  display: flex; align-items: center; justify-content: center;
+}
+#tqnav .pitem .ptx { min-width: 0; }
+#tqnav .pitem .pn {
+  display: block; font-size: 15.5px; font-weight: 600;
+  color: var(--ink); line-height: 1.3;
+}
+#tqnav .pitem .pd {
+  display: block; font-size: 13.5px; line-height: 1.45;
+  color: var(--dim, #6E6C6C); margin-top: 3px;
+}
+
+#tqnav .pfoot { border-top: 1px solid var(--border); background: var(--band); }
+#tqnav .pfoot > .wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-block: 13px; font-size: 14px; color: var(--dim, #6E6C6C); flex-wrap: wrap;
+}
+#tqnav .pfoot a { color: var(--green); font-weight: 600; text-decoration: none; }
+#tqnav .pfoot a:hover { text-decoration: underline; }
+
+/* a destination that does not exist yet: text with a quiet marker, never a
+   link that 404s */
+#tqnav .soon { color: inherit; display: block; }
+#tqnav .soon::after {
+  content: "soon"; margin-left: 7px;
+  font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--quiet, #8B8989); vertical-align: 1.5px;
+}
+/* live, but with no public front door of its own — reads as ordinary text */
+#tqnav .nolink { color: var(--ink); }
+
+@media (max-width: 1120px) {
+  #tqnav .pgrid--products { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* 880px is where THESE pages hide nav.mid and hand over to the burger — the
+   number is theirs, not index's 1000px, and a shelf with no button to open it
+   is a shelf that can only be opened by accident. */
+@media (max-width: 880px) {
+  #tqnav .panel { display: none !important; }
+}

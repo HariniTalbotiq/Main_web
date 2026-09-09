@@ -4,19 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TalbotIQ — Every workflow, running on intelligence.</title>
-<meta name="description" content="One connected suite. Ten products, one data layer. Video Interviewer, Voice Interviewer, Chat Interviewer, ATS, ERP, CRM, tasca, Lexer, Recapr, Private AI Engine.">
+<meta name="description" content="All products Powered by or Connected to an AI Engine. Video Interview, Voice Interview, Chat Interview, Intelligent Recruitment Software, Business Management System, Sales CRM, Task &amp; Productivity Manager, Intelligent Document Management, Intelligent Note Taker, Private AI Engine.">
 <meta name="theme-color" content="#02A885">
 <!-- no canonical: COMPANY.pageUrl is null until this page has a home -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="TalbotIQ — One connected suite.">
-<meta property="og:description" content="One connected suite. Ten products, one data layer. Video Interviewer, Voice Interviewer, Chat Interviewer, ATS, ERP, CRM, tasca, Lexer, Recapr, Private AI Engine.">
+<meta property="og:title" content="TalbotIQ — All products Powered by or Connected to an AI Engine.">
+<meta property="og:description" content="All products Powered by or Connected to an AI Engine. Video Interview, Voice Interview, Chat Interview, Intelligent Recruitment Software, Business Management System, Sales CRM, Task &amp; Productivity Manager, Intelligent Document Management, Intelligent Note Taker, Private AI Engine.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-<!-- the display face is self-hosted and used by the very first line of the
-     page, so it is preloaded rather than discovered late in the stylesheet -->
-<link rel="preload" href="assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/talbotiq.css?v=cd0095b3">
+<!-- ONE REQUEST FOR BOTH FACES. Bodoni Moda (display) and Inter (text) come
+     from the same stylesheet, so the browser makes one round trip instead of
+     two. opsz is requested across its full range because Bodoni Moda is a
+     Didone whose hairlines thin as the size grows, and font-optical-sizing
+     (auto by default) is what keeps the 76px hero from going wispy. Only
+     weight 700 of the display face is used, so only 700 is asked for.
+
+     The display face used to be self-hosted and preloaded here; it is served
+     by Google now, so the preload is gone with it — a preload pointing at a
+     versioned fonts.gstatic.com URL the stylesheet does not also carry would
+     just download the file twice. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/talbotiq.css?v=f1ca9d73">
 <!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
      that hides or moves anything is scoped to html.fx, so the class decides
      whether the page animates at all. A deferred script sets it too late: the
@@ -33,7 +41,7 @@
    that it is alive by adding fx-on, and if that has not happened within two
    seconds .fx comes off and the whole page resolves to its finished state. */
 setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx');}},2000);}}catch(e){}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"TalbotIQ","legalName":"Talbotiq Technologies Sdn Bhd [1313215-V]","url":"https://talbotiq.com","slogan":"Technology is a tool. Intelligence is the edge.","description":"Architecting the Intelligence Layer of Modern Businesses","telephone":"+603 20 111 320","email":"hello@talbotiq.com","address":{"@type":"PostalAddress","addressLocality":"Kuala Lumpur","addressCountry":"MY"},"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Video Interviewer","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Voice Interviewer","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Chat Interviewer","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"ATS","applicationCategory":"BusinessApplication","description":"Seven modules and one administration area, on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms who bill clients — the same product, with one module swapped."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"ERP","applicationCategory":"BusinessApplication","description":"Five lanes, one chain of records. A quotation becomes an order, an order becomes a delivery, a delivery becomes an invoice — and the money questions read off that same chain rather than a spreadsheet kept beside it."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"CRM","applicationCategory":"BusinessApplication","description":"The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"tasca","applicationCategory":"BusinessApplication","description":"Tasks created, prioritised and assigned across boards, calendars and Gantt views, with shared workspaces, in-task comments and file sharing. AI User Triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Lexer","applicationCategory":"BusinessApplication","description":"Reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local OCR as an automatic offline fallback. Bring in bank statements and reconcile what it extracted against them."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Recapr","applicationCategory":"BusinessApplication","description":"Recapr transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Private AI Engine","applicationCategory":"BusinessApplication","description":"One engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs PII before anything reaches a model, and answers from a knowledge base you load. Every product is metered through it."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"TalbotIQ","legalName":"Talbotiq Technologies Sdn Bhd [1313215-V]","url":"https://talbotiq.com","slogan":"Technology is a tool. Intelligence is the edge.","description":"Architecting the Intelligence Layer of Modern Businesses","telephone":"+603 20 111 320","email":"hello@talbotiq.com","address":{"@type":"PostalAddress","addressLocality":"Kuala Lumpur","addressCountry":"MY"},"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Video Interview","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Voice Interview","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Chat Interview","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Intelligent Recruitment Software","applicationCategory":"BusinessApplication","description":"Seven modules and one administration area, on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms who bill clients — the same product, with one module swapped."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Business Management System","applicationCategory":"BusinessApplication","description":"Five lanes, one chain of records. A quotation becomes an order, an order becomes a delivery, a delivery becomes an invoice — and the money questions read off that same chain rather than a spreadsheet kept beside it."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Sales CRM","applicationCategory":"BusinessApplication","description":"The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Task & Productivity Manager","applicationCategory":"BusinessApplication","description":"Tasks created, prioritised and assigned across boards, calendars and Gantt views, with shared workspaces, in-task comments and file sharing. AI User Triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Intelligent Document Management","applicationCategory":"BusinessApplication","description":"Reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local OCR as an automatic offline fallback. Bring in bank statements and reconcile what it extracted against them."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Intelligent Note Taker","applicationCategory":"BusinessApplication","description":"The Intelligent Note Taker transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Private AI Engine","applicationCategory":"BusinessApplication","description":"One engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs PII before anything reaches a model, and answers from a knowledge base you load. Every product is metered through it."}}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -58,12 +66,10 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       <div class="navitem">
         <button type="button" class="navbtn" aria-expanded="false" aria-controls="panel-company" data-panel="company">Company<span class="car" aria-hidden="true">&#9660;</span></button>
       </div>
-      <a href="contact.html">Pricing</a>
-      <a href="contact.html">Support</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="hdr-right">
-      <a class="si" href="signin.html">Sign in</a>
-      <a class="btn btn-primary" href="demo.html">Book a demo</a>
+      <a class="btn btn-primary" href="contact.html">Get in touch</a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu"><i></i></button>
     </div>
   </div>
@@ -72,61 +78,61 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 <div class="panel" id="panel-products" hidden>
   <div class="wrap">
     <div class="pgrid pgrid--products">
-      <a class="pitem" href="products/mimic.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
+      <a class="pitem" href="products/video-interviewer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
       <path d="M42 22l14-8v26l-14-8z" fill="#027A5C"/>
       <circle cx="21" cy="24" r="5.4" fill="#fff"/>
       <path d="M11 37c2.4-6 17.6-6 20 0z" fill="#fff"/>
       <rect x="45" y="43" width="12" height="12" rx="3" fill="#F3E202"/>
       <path d="M48 49l2 2 4-4.4" stroke="#1F2430" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span class="ptx"><span class="pn">Video Interviewer</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
-      <a class="pitem" href="products/mimic.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
+      <span class="ptx"><span class="pn">Video Interview</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
+      <a class="pitem" href="products/voice-interviewer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
       <path d="M13 26a16 16 0 0 0 32 0" fill="none" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <path d="M29 42v8" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <g stroke="#F3E202" stroke-width="3.4" stroke-linecap="round"><path d="M6 50v-8"/><path d="M52 50v-8"/></g>
       <g stroke="#02A885" stroke-width="3.4" stroke-linecap="round"><path d="M14 52v-4"/><path d="M44 52v-4"/></g>
       <path d="M21 54h16" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/></svg></span>
-      <span class="ptx"><span class="pn">Voice Interviewer</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
-      <a class="pitem" href="products/mimic.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
+      <span class="ptx"><span class="pn">Voice Interview</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
+      <a class="pitem" href="products/chat-interviewer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
       <rect x="16" y="19" width="22" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="27" width="15" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="42" y="40" width="15" height="15" rx="4" fill="#F3E202"/>
       <path d="M46 47.5h7M49.5 44v7" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/></svg></span>
-      <span class="ptx"><span class="pn">Chat Interviewer</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
+      <span class="ptx"><span class="pn">Chat Interview</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
       <a class="pitem" href="products/ats.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
       <circle cx="45" cy="44" r="11" fill="#F3E202"/>
       <path d="M40 44l3.6 3.6 6.6-7.4" stroke="#1F2430" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span class="ptx"><span class="pn">ATS</span><span class="pd">Requisition to signed offer</span></span></a>
+      <span class="ptx"><span class="pn">Intelligent Recruitment Software</span><span class="pd">Requisition to signed offer</span></span></a>
       <a class="pitem" href="products/erp.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
       <path d="M3 26h52" stroke="#fff" stroke-width="2.6" opacity=".55"/>
       <rect x="10" y="34" width="15" height="4.4" rx="2.2" fill="#fff"/>
       <circle cx="45" cy="37" r="5.4" fill="#F3E202"/>
       <path d="M19 16v-5a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v5" fill="none" stroke="#027A5C" stroke-width="3.4"/></svg></span>
-      <span class="ptx"><span class="pn">ERP</span><span class="pd">Order to cash, purchase to pay</span></span></a>
+      <span class="ptx"><span class="pn">Business Management System</span><span class="pd">Order to cash, purchase to pay</span></span></a>
       <a class="pitem" href="products/nouscrm.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
       <rect x="20" y="24" width="10" height="28" rx="2.6" fill="#027A5C"/>
       <rect x="35" y="14" width="10" height="38" rx="2.6" fill="#02A885"/>
       <path d="M8 24L21 15l11 4L52 5" fill="none" stroke="#C48A00" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="52" cy="5" r="4.2" fill="#F3E202" stroke="#C48A00" stroke-width="2"/></svg></span>
-      <span class="ptx"><span class="pn">CRM</span><span class="pd">Opportunities, customers and what they owe</span></span></a>
+      <span class="ptx"><span class="pn">Sales CRM</span><span class="pd">Opportunities, customers and what they owe</span></span></a>
       <a class="pitem" href="products/tasca.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
       <rect x="32" y="5" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="5" y="32" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="32" y="32" width="21" height="21" rx="5" fill="#F3E202"/>
       <path d="M10 15.5l4 4 7-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M37 42.5l4 4 7-8" stroke="#1F2430" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span class="ptx"><span class="pn">tasca</span><span class="pd">Plan, track and execute</span></span></a>
+      <span class="ptx"><span class="pn">Task &amp; Productivity Manager</span><span class="pd">Plan, track and execute</span></span></a>
       <a class="pitem" href="products/lexer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
       <path d="M33 3l16 16H33z" fill="#027A5C"/>
       <rect x="16" y="26" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="34" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="42" width="14" height="3.6" rx="1.8" fill="#F3E202"/></svg></span>
-      <span class="ptx"><span class="pn">Lexer</span><span class="pd">Turn documents into structured data</span></span></a>
+      <span class="ptx"><span class="pn">Intelligent Document Management</span><span class="pd">Turn documents into structured data</span></span></a>
       <a class="pitem" href="products/recapr.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
       <rect x="15" y="19" width="21" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="15" y="27" width="14" height="3.6" rx="1.8" fill="#fff"/>
       <circle cx="45" cy="43" r="11" fill="#C48A00"/>
       <path d="M45 37v6.4l4 2.8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></span>
-      <span class="ptx"><span class="pn">Recapr</span><span class="pd">The meeting, on the record</span></span></a>
+      <span class="ptx"><span class="pn">Intelligent Note Taker</span><span class="pd">The meeting, on the record</span></span></a>
       <a class="pitem" href="products/vawlt.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 70 70" aria-hidden="true" focusable="false"><path d="M35 4l25 10v20c0 16-10 24-25 31C20 58 10 50 10 34V14z" fill="#027A5C"/>
       <rect x="24" y="30" width="22" height="17" rx="3.6" fill="#F3E202"/>
       <path d="M28.5 30v-5a6.5 6.5 0 0 1 13 0v5" fill="none" stroke="#F3E202" stroke-width="3.4"/>
@@ -136,7 +142,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
   </div>
   <div class="pfoot"><div class="wrap">
         <span>10 products, one engine underneath.</span>
-        <a href="https://talbotiq.com/products/" target="_blank" rel="noopener">View all products &rarr;</a>
+        <a href="index.html#products">View all products &rarr;</a>
   </div></div>
 </div>
 <div class="panel" id="panel-solutions" hidden>
@@ -166,22 +172,22 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
   </div>
   <div class="pfoot"><div class="wrap">
         <span>Talbotiq Technologies Sdn Bhd [1313215-V] &middot; Kuala Lumpur, Malaysia</span>
-        <a href="tel:+60320111320">+603 20 111 320</a>
+        <a href="contact.html">Talk to us &rarr;</a>
   </div></div>
 </div>
 
 <div class="drawer" id="drawer" data-open="false">
   <div class="dgrp">
     <h4>Products</h4>
-    <a href="products/mimic.html">Video Interviewer</a>
-    <a href="products/mimic.html">Voice Interviewer</a>
-    <a href="products/mimic.html">Chat Interviewer</a>
-    <a href="products/ats.html">ATS</a>
-    <a href="products/erp.html">ERP</a>
-    <a href="products/nouscrm.html">CRM</a>
-    <a href="products/tasca.html">tasca</a>
-    <a href="products/lexer.html">Lexer</a>
-    <a href="products/recapr.html">Recapr</a>
+    <a href="products/video-interviewer.html">Video Interview</a>
+    <a href="products/voice-interviewer.html">Voice Interview</a>
+    <a href="products/chat-interviewer.html">Chat Interview</a>
+    <a href="products/ats.html">Intelligent Recruitment Software</a>
+    <a href="products/erp.html">Business Management System</a>
+    <a href="products/nouscrm.html">Sales CRM</a>
+    <a href="products/tasca.html">Task &amp; Productivity Manager</a>
+    <a href="products/lexer.html">Intelligent Document Management</a>
+    <a href="products/recapr.html">Intelligent Note Taker</a>
     <a href="products/vawlt.html">Private AI Engine</a>
   </div>
   <div class="dgrp">
@@ -210,17 +216,9 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 
 <div class="hero">
   <div class="wrap">
-    <h1 class="hand">
-      Every workflow, running
-      <span class="mark-hl">
-        <svg viewBox="0 22 300 36" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M6 40 C 60 26, 130 46, 210 30 C 250 22, 275 34, 294 24 L 296 52 C 250 44, 190 58, 120 50 C 70 44, 34 56, 8 50 Z" fill="#F3E202" opacity=".92"/>
-    </svg>
-        <span>on intelligence.</span>
-      </span>
-    </h1>
+    <h1 class="hand">Every <span class="k-y">workflow</span>, running on <span class="k-g">intelligence</span>.</h1>
 
-    <p class="lede"><b>One connected suite.</b> Ten products, one data layer.</p>
+    <p class="lede"><b>All products</b> Powered by or Connected to an AI Engine.</p>
 
     <div class="cta-pair">
       <a class="btn btn-primary btn-lg" href="demo.html">Book a demo</a>
@@ -233,77 +231,148 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
   <div class="wrap">
 
     <div class="phead">
-      <h2 class="hand">Ten products.
-        <span class="mark-hl">
-        <svg viewBox="0 22 300 36" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M6 40 C 60 26, 130 46, 210 30 C 250 22, 275 34, 294 24 L 296 52 C 250 44, 190 58, 120 50 C 70 44, 34 56, 8 50 Z" fill="#F3E202" opacity=".92"/>
-    </svg>
-          <span>One data layer.</span>
-        </span>
-      </h2>
+      <h2 class="hand">All products <span class="k-g">Powered by</span> or Connected to an <span class="k-y">AI Engine</span>.</h2>
       <p class="lede"><b>Buy one, or buy the suite.</b> Work moves between them without an export, a hand-off, or a second version of the truth.</p>
     </div>
 
     <div class="pblock">
-      <svg class="conn" viewBox="0 0 1116 830" preserveAspectRatio="none" aria-hidden="true">
-        <g fill="none" stroke-linecap="round">
-          <path d="M206 82 H265 Q279 82 279 96 V264 Q279 278 293 278 H1046 Q1060 278 1060 292 V596 Q1060 610 1046 610 H572 Q558 610 558 624 V694" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M910 82 H851 Q837 82 837 96 V278" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M418 148 V264 Q418 278 432 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M698 148 V264 Q698 278 684 278" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M401 414 H432 Q446 414 446 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M715 414 H684 Q670 414 670 428 V610" stroke="#A8DCC9" stroke-width="2.2"/>
-          <path d="M112 480 V596 Q112 610 126 610 H446" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M1004 480 V596 Q1004 610 990 610 H670" stroke="#E5D9A6" stroke-width="2" opacity=".9"/>
-          <path d="M335 480 V610" stroke="#A8DCC9" stroke-width="2.2"/>
-        </g>
-      </svg>
-
       <div class="glabel g1">
         <span class="t">Hiring &amp; interviewing</span><span class="r"></span><span class="c">4 products</span>
       </div>
 
       <div class="prow prow-4">
-        <a class="tile" href="products/mimic.html">
+        <div class="cell">
+      <a class="tile" href="products/video-interviewer.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
       <path d="M42 22l14-8v26l-14-8z" fill="#027A5C"/>
       <circle cx="21" cy="24" r="5.4" fill="#fff"/>
       <path d="M11 37c2.4-6 17.6-6 20 0z" fill="#fff"/>
       <rect x="45" y="43" width="12" height="12" rx="3" fill="#F3E202"/>
       <path d="M48 49l2 2 4-4.4" stroke="#1F2430" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="nm">Video Interviewer</span>
-        <span class="ds">Structured video screening at volume</span>
-        <span class="kin kin-async">Async</span>
+        <span class="nm">Video Interview</span>
+        <span class="ds">Multi-way, one-way and AI avatar interview</span>
+        <span class="modes">3 modes
+          <svg width="9" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        </span>
       </a>
-        <a class="tile" href="products/mimic.html">
+      <div class="branch b-left">
+        <svg class="tree" viewBox="0 0 352 44" aria-hidden="true" focusable="false">
+          <g stroke="#B6DFD2" stroke-width="1.8" fill="none" stroke-linecap="round">
+            <path d="M155 0v16"/>
+            <path d="M62 30V22Q62 16 68 16h216q6 0 6 6v8"/>
+            <path d="M176 16v14"/>
+          </g>
+          <circle cx="155" cy="2" r="3" fill="#02A885"/>
+          <g fill="#02A885"><circle cx="62" cy="32" r="2.6"/><circle cx="176" cy="32" r="2.6"/><circle cx="290" cy="32" r="2.6"/></g>
+        </svg>
+        <div class="minis">
+          <span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="4" y="4" width="32" height="24" rx="5" fill="#0E1A20"/>
+        <circle cx="20" cy="14" r="4.8" fill="#02A885"/>
+        <path d="M12 25c1.8-5 14.2-5 16 0z" fill="#02A885"/>
+        <g stroke="#F3E202" stroke-width="2" stroke-linecap="round"><path d="M20 4V1"/><path d="M8 7L6 5"/><path d="M32 7l2-2"/></g>
+        <path d="M14 36h12M20 28v8" stroke="#1F2430" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <b>Conversational AI Avatar Interview</b>
+          </span>
+          <span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="11" width="25" height="19" rx="4" fill="#02A885"/>
+        <path d="M29 19l9-5v17l-9-5z" fill="#027A5C"/>
+        <circle cx="10" cy="19" r="3.2" fill="#fff"/>
+        <rect x="16" y="17" width="8" height="2.4" rx="1.2" fill="#fff"/>
+        <circle cx="32" cy="33" r="5.6" fill="#E0655F" stroke="#fff" stroke-width="1.6"/></svg>
+            <b>Recorded Video Interview</b>
+          </span>
+          <span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="5" width="19" height="14" rx="3.4" fill="#02A885"/>
+        <circle cx="11.5" cy="11" r="3" fill="#fff"/>
+        <rect x="19" y="21" width="19" height="14" rx="3.4" fill="#027A5C"/>
+        <circle cx="28.5" cy="27" r="3" fill="#fff"/>
+        <g stroke="#C48A00" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 11h9"/><path d="M28 7l4 4-4 4"/><path d="M17 29H8"/><path d="M12 25l-4 4 4 4"/></g></svg>
+            <b>2-Way Interview</b>
+          </span>
+        </div>
+      </div>
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/voice-interviewer.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
       <path d="M13 26a16 16 0 0 0 32 0" fill="none" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <path d="M29 42v8" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <g stroke="#F3E202" stroke-width="3.4" stroke-linecap="round"><path d="M6 50v-8"/><path d="M52 50v-8"/></g>
       <g stroke="#02A885" stroke-width="3.4" stroke-linecap="round"><path d="M14 52v-4"/><path d="M44 52v-4"/></g>
       <path d="M21 54h16" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/></svg></span>
-        <span class="nm">Voice Interviewer</span>
+        <span class="nm">Voice Interview</span>
         <span class="ds">A spoken round, transcribed live</span>
         <span class="kin kin-live">Live</span>
       </a>
-        <a class="tile" href="products/mimic.html">
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/chat-interviewer.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
       <rect x="16" y="19" width="22" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="27" width="15" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="42" y="40" width="15" height="15" rx="4" fill="#F3E202"/>
       <path d="M46 47.5h7M49.5 44v7" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/></svg></span>
-        <span class="nm">Chat Interviewer</span>
+        <span class="nm">Chat Interview</span>
         <span class="ds">Blind text assessment, AI answers flagged</span>
-        <span class="kin kin-async">Async</span>
+        <span class="modes">3 modes
+          <svg width="9" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        </span>
       </a>
-        <a class="tile" href="products/ats.html">
+      <div class="branch b-mid">
+        <svg class="tree" viewBox="0 0 352 44" aria-hidden="true" focusable="false">
+          <g stroke="#B6DFD2" stroke-width="1.8" fill="none" stroke-linecap="round">
+            <path d="M176 0v16"/>
+            <path d="M62 30V22Q62 16 68 16h216q6 0 6 6v8"/>
+            <path d="M176 16v14"/>
+          </g>
+          <circle cx="176" cy="2" r="3" fill="#02A885"/>
+          <g fill="#02A885"><circle cx="62" cy="32" r="2.6"/><circle cx="176" cy="32" r="2.6"/><circle cx="290" cy="32" r="2.6"/></g>
+        </svg>
+        <div class="minis">
+          <span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="3" y="3" width="34" height="34" rx="5" fill="#fff" stroke="#1F2430" stroke-width="2"/>
+        <circle cx="12" cy="12" r="3.8" fill="#02A885"/>
+        <path d="M10.2 12l1.6 1.6 3.2-3.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="19" y="10.4" width="14" height="2.6" rx="1.3" fill="#C4C2C2"/>
+        <circle cx="12" cy="21" r="3.8" fill="none" stroke="#C4C2C2" stroke-width="1.8"/>
+        <rect x="19" y="19.4" width="11" height="2.6" rx="1.3" fill="#C4C2C2"/>
+        <circle cx="12" cy="30" r="3.8" fill="#02A885"/>
+        <path d="M10.2 30l1.6 1.6 3.2-3.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="19" y="28.4" width="14" height="2.6" rx="1.3" fill="#C4C2C2"/></svg>
+            <b>MCQs</b>
+          </span>
+          <span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><rect x="2" y="6" width="22" height="19" rx="4" fill="#02A885"/>
+        <rect x="7" y="12" width="12" height="2.4" rx="1.2" fill="#fff"/>
+        <rect x="7" y="17" width="8" height="2.4" rx="1.2" fill="#fff"/>
+        <circle cx="28" cy="27" r="11" fill="#fff" stroke="#1F2430" stroke-width="2"/>
+        <path d="M28 27v-7" stroke="#E0655F" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M28 27l5 3" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/></svg>
+            <b>Timed Q&amp;A</b>
+          </span>
+          <span class="mini">
+            <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d="M3 5h21a3.4 3.4 0 0 1 3.4 3.4v9A3.4 3.4 0 0 1 24 20.8H12l-5.6 4.6v-4.6H3A3.4 3.4 0 0 1-.4 17.4v-9A3.4 3.4 0 0 1 3 5z" transform="translate(2 0)" fill="#02A885"/>
+        <rect x="9" y="10" width="13" height="2.2" rx="1.1" fill="#fff"/>
+        <path d="M37 18H21a3.4 3.4 0 0 0-3.4 3.4v8A3.4 3.4 0 0 0 21 32.8h9l5.6 4.4v-4.4H37a3.4 3.4 0 0 0 3.4-3.4v-8A3.4 3.4 0 0 0 37 18z" fill="#027A5C"/>
+        <rect x="22" y="23" width="12" height="2.2" rx="1.1" fill="#fff"/>
+        <rect x="22" y="27" width="7" height="2.2" rx="1.1" fill="#F3E202"/></svg>
+            <b>Conversational Chat Interview</b>
+          </span>
+        </div>
+      </div>
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/ats.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
       <circle cx="45" cy="44" r="11" fill="#F3E202"/>
       <path d="M40 44l3.6 3.6 6.6-7.4" stroke="#1F2430" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="nm">ATS</span>
-        <span class="ds">Requisition to signed offer</span>
+        <span class="nm">Intelligent Recruitment Software</span>
+        <span class="ds">End-to-end recruitment system for your hiring needs</span>
         <span class="kin kin-2-modes">2 modes</span>
       </a>
+    </div>
       </div>
 
       <div class="glabel g2">
@@ -311,52 +380,62 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       </div>
 
       <div class="prow prow-5">
-        <a class="tile" href="products/erp.html">
+        <div class="cell">
+      <a class="tile" href="products/erp.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
       <path d="M3 26h52" stroke="#fff" stroke-width="2.6" opacity=".55"/>
       <rect x="10" y="34" width="15" height="4.4" rx="2.2" fill="#fff"/>
       <circle cx="45" cy="37" r="5.4" fill="#F3E202"/>
       <path d="M19 16v-5a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v5" fill="none" stroke="#027A5C" stroke-width="3.4"/></svg></span>
-        <span class="nm">ERP</span>
+        <span class="nm">Business Management System</span>
         <span class="ds">Order to cash, purchase to pay</span>
       </a>
-        <a class="tile" href="products/nouscrm.html">
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/nouscrm.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
       <rect x="20" y="24" width="10" height="28" rx="2.6" fill="#027A5C"/>
       <rect x="35" y="14" width="10" height="38" rx="2.6" fill="#02A885"/>
       <path d="M8 24L21 15l11 4L52 5" fill="none" stroke="#C48A00" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="52" cy="5" r="4.2" fill="#F3E202" stroke="#C48A00" stroke-width="2"/></svg></span>
-        <span class="nm">CRM</span>
-        <span class="ds">The intelligent hub for sales teams</span>
+        <span class="nm">Sales CRM</span>
+        <span class="ds">Intelligent platform for leads and sales</span>
       </a>
-        <a class="tile" href="products/tasca.html">
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/tasca.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
       <rect x="32" y="5" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="5" y="32" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="32" y="32" width="21" height="21" rx="5" fill="#F3E202"/>
       <path d="M10 15.5l4 4 7-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M37 42.5l4 4 7-8" stroke="#1F2430" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <span class="nm">tasca</span>
-        <span class="ds">Plan, track, ship faster</span>
+        <span class="nm">Task &amp; Productivity Manager</span>
+        <span class="ds">Smart management for tasks and productivity</span>
       </a>
-        <a class="tile" href="products/lexer.html">
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/lexer.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
       <path d="M33 3l16 16H33z" fill="#027A5C"/>
       <rect x="16" y="26" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="34" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="42" width="14" height="3.6" rx="1.8" fill="#F3E202"/></svg></span>
-        <span class="nm">Lexer</span>
-        <span class="ds">Contact and receipt intelligence</span>
+        <span class="nm">Intelligent Document Management</span>
+        <span class="ds">Scan and parse all types of documents</span>
       </a>
-        <a class="tile" href="products/recapr.html">
+    </div>
+        <div class="cell">
+      <a class="tile" href="products/recapr.html">
         <span class="card"><svg width="58" height="58" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
       <rect x="15" y="19" width="21" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="15" y="27" width="14" height="3.6" rx="1.8" fill="#fff"/>
       <circle cx="45" cy="43" r="11" fill="#C48A00"/>
       <path d="M45 37v6.4l4 2.8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></span>
-        <span class="nm">Recapr</span>
-        <span class="ds">The meeting, on the record</span>
+        <span class="nm">Intelligent Note Taker</span>
+        <span class="ds">The intelligent note taker for all your meetings</span>
       </a>
+    </div>
       </div>
 
       <div class="glabel g3">
@@ -364,7 +443,8 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       </div>
 
       <div class="pengine">
-        <a class="tile" href="products/vawlt.html">
+        <div class="cell">
+      <a class="tile" href="products/vawlt.html">
         <span class="card"><svg width="70" height="70" viewBox="0 0 70 70" aria-hidden="true" focusable="false"><path d="M35 4l25 10v20c0 16-10 24-25 31C20 58 10 50 10 34V14z" fill="#027A5C"/>
       <rect x="24" y="30" width="22" height="17" rx="3.6" fill="#F3E202"/>
       <path d="M28.5 30v-5a6.5 6.5 0 0 1 13 0v5" fill="none" stroke="#F3E202" stroke-width="3.4"/>
@@ -372,7 +452,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
         <span class="nm">Private AI Engine</span>
         <span class="ds">Your AI, inside your perimeter</span>
       </a>
-        <p class="enote"><b>The other nine are things you use. This is what they run on</b> — purpose-trained models on hardware we control, with every task declaring where it runs and what it does with personal data.</p>
+    </div>
       </div>
     </div>
 
@@ -419,39 +499,83 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       </div>
       </div>
       <div class="ecowell">
-        <svg class="well" viewBox="0 0 1000 720" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
-          <g class="wrings">
-        <path class="wr" style="--i:0" d="M976.0 286.0L974.8 297.1L971.4 308.2L965.6 319.2L957.6 330.0L947.3 340.5L934.8 350.9L920.3 360.9L903.7 370.5L885.1 379.7L864.6 388.5L842.4 396.8L818.5 404.5L793.1 411.7L766.2 418.2L738.0 424.1L708.7 429.3L678.3 433.8L647.1 437.7L615.2 440.7L582.7 443.0L549.8 444.6L516.6 445.4L483.4 445.4L450.2 444.6L417.3 443.0L384.8 440.7L352.9 437.7L321.7 433.8L291.3 429.3L262.0 424.1L233.8 418.2L206.9 411.7L181.5 404.5L157.6 396.8L135.4 388.5L114.9 379.7L96.3 370.5L79.7 360.9L65.2 350.9L52.7 340.5L42.4 330.0L34.4 319.2L28.6 308.2L25.2 297.1L24.0 286.0L25.2 274.9L28.6 263.8L34.4 252.8L42.4 242.0L52.7 231.5L65.2 221.1L79.7 211.1L96.3 201.5L114.9 192.3L135.4 183.5L157.6 175.2L181.5 167.5L206.9 160.3L233.8 153.8L262.0 147.9L291.3 142.7L321.7 138.2L352.9 134.3L384.8 131.3L417.3 129.0L450.2 127.4L483.4 126.6L516.6 126.6L549.8 127.4L582.7 129.0L615.2 131.3L647.1 134.3L678.3 138.2L708.7 142.7L738.0 147.9L766.2 153.8L793.1 160.3L818.5 167.5L842.4 175.2L864.6 183.5L885.1 192.3L903.7 201.5L920.3 211.1L934.8 221.1L947.3 231.5L957.6 242.0L965.6 252.8L971.4 263.8L974.8 274.9L976.0 286.0Z"/>
-        <path class="wr" style="--i:1" d="M908.1 293.2L907.1 302.7L904.1 312.2L899.2 321.6L892.3 330.9L883.5 339.9L872.8 348.8L860.3 357.4L846.1 365.6L830.2 373.5L812.6 381.1L793.6 388.2L773.1 394.8L751.3 400.9L728.2 406.5L704.1 411.6L678.9 416.1L652.9 419.9L626.1 423.2L598.7 425.8L570.9 427.8L542.7 429.1L514.2 429.8L485.8 429.8L457.3 429.1L429.1 427.8L401.3 425.8L373.9 423.2L347.1 419.9L321.1 416.1L295.9 411.6L271.8 406.5L248.7 400.9L226.9 394.8L206.4 388.2L187.4 381.1L169.8 373.5L153.9 365.6L139.7 357.4L127.2 348.8L116.5 339.9L107.7 330.9L100.8 321.6L95.9 312.2L92.9 302.7L91.9 293.2L92.9 283.6L95.9 274.2L100.8 264.8L107.7 255.5L116.5 246.4L127.2 237.6L139.7 229.0L153.9 220.7L169.8 212.8L187.4 205.3L206.4 198.2L226.9 191.6L248.7 185.4L271.8 179.8L295.9 174.8L321.1 170.3L347.1 166.4L373.9 163.2L401.3 160.5L429.1 158.5L457.3 157.2L485.8 156.5L514.2 156.5L542.7 157.2L570.9 158.5L598.7 160.5L626.1 163.2L652.9 166.4L678.9 170.3L704.1 174.8L728.2 179.8L751.3 185.4L773.1 191.6L793.6 198.2L812.6 205.3L830.2 212.8L846.1 220.7L860.3 229.0L872.8 237.6L883.5 246.4L892.3 255.5L899.2 264.8L904.1 274.2L907.1 283.6L908.1 293.2Z"/>
-        <path class="wr" style="--i:2" d="M844.6 310.4L843.8 318.4L841.2 326.4L837.1 334.4L831.3 342.2L823.8 349.8L814.8 357.3L804.3 364.6L792.2 371.5L778.8 378.2L764.0 384.6L747.9 390.6L730.6 396.2L712.2 401.3L692.7 406.1L672.3 410.3L651.1 414.1L629.1 417.4L606.5 420.2L583.4 422.4L559.8 424.1L536.0 425.2L512.0 425.7L488.0 425.7L464.0 425.2L440.2 424.1L416.6 422.4L393.5 420.2L370.9 417.4L348.9 414.1L327.7 410.3L307.3 406.1L287.8 401.3L269.4 396.2L252.1 390.6L236.0 384.6L221.2 378.2L207.8 371.5L195.7 364.6L185.2 357.3L176.2 349.8L168.7 342.2L162.9 334.4L158.8 326.4L156.2 318.4L155.4 310.4L156.2 302.3L158.8 294.3L162.9 286.4L168.7 278.5L176.2 270.9L185.2 263.4L195.7 256.2L207.8 249.2L221.2 242.5L236.0 236.2L252.1 230.2L269.4 224.6L287.8 219.4L307.3 214.7L327.7 210.4L348.9 206.6L370.9 203.3L393.5 200.6L416.6 198.4L440.2 196.7L464.0 195.6L488.0 195.0L512.0 195.0L536.0 195.6L559.8 196.7L583.4 198.4L606.5 200.6L629.1 203.3L651.1 206.6L672.3 210.4L692.7 214.7L712.2 219.4L730.6 224.6L747.9 230.2L764.0 236.2L778.8 242.5L792.2 249.2L804.3 256.2L814.8 263.4L823.8 270.9L831.3 278.5L837.1 286.4L841.2 294.3L843.8 302.3L844.6 310.4Z"/>
-        <path class="wr" style="--i:3" d="M785.5 334.5L784.8 341.1L782.7 347.8L779.2 354.3L774.4 360.8L768.3 367.2L760.8 373.3L752.1 379.3L742.1 385.1L731.0 390.7L718.7 395.9L705.3 400.9L691.0 405.5L675.8 409.8L659.6 413.7L642.7 417.3L625.1 420.4L606.9 423.1L588.2 425.4L569.1 427.2L549.6 428.6L529.8 429.6L510.0 430.0L490.0 430.0L470.2 429.6L450.4 428.6L430.9 427.2L411.8 425.4L393.1 423.1L374.9 420.4L357.3 417.3L340.4 413.7L324.2 409.8L309.0 405.5L294.7 400.9L281.3 395.9L269.0 390.7L257.9 385.1L247.9 379.3L239.2 373.3L231.7 367.2L225.6 360.8L220.8 354.3L217.3 347.8L215.2 341.1L214.5 334.5L215.2 327.8L217.3 321.1L220.8 314.6L225.6 308.1L231.7 301.7L239.2 295.6L247.9 289.6L257.9 283.8L269.0 278.2L281.3 273.0L294.7 268.0L309.0 263.4L324.2 259.1L340.4 255.2L357.3 251.6L374.9 248.5L393.1 245.8L411.8 243.5L430.9 241.7L450.4 240.3L470.2 239.3L490.0 238.9L510.0 238.9L529.8 239.3L549.6 240.3L569.1 241.7L588.2 243.5L606.9 245.8L625.1 248.5L642.7 251.6L659.6 255.2L675.8 259.1L691.0 263.4L705.3 268.0L718.7 273.0L731.0 278.2L742.1 283.8L752.1 289.6L760.8 295.6L768.3 301.7L774.4 308.1L779.2 314.6L782.7 321.1L784.8 327.8L785.5 334.5Z"/>
-        <path class="wr" style="--i:4" d="M730.7 363.3L730.2 368.7L728.5 374.1L725.7 379.4L721.8 384.6L716.8 389.7L710.8 394.8L703.7 399.6L695.7 404.3L686.7 408.7L676.7 413.0L666.0 417.0L654.4 420.8L642.0 424.2L629.0 427.4L615.4 430.2L601.1 432.8L586.4 435.0L571.3 436.8L555.8 438.3L540.1 439.4L524.1 440.2L508.1 440.6L491.9 440.6L475.9 440.2L459.9 439.4L444.2 438.3L428.7 436.8L413.6 435.0L398.9 432.8L384.6 430.2L371.0 427.4L358.0 424.2L345.6 420.8L334.0 417.0L323.3 413.0L313.3 408.7L304.3 404.3L296.3 399.6L289.2 394.8L283.2 389.7L278.2 384.6L274.3 379.4L271.5 374.1L269.8 368.7L269.3 363.3L269.8 357.9L271.5 352.6L274.3 347.2L278.2 342.0L283.2 336.9L289.2 331.9L296.3 327.0L304.3 322.4L313.3 317.9L323.3 313.6L334.0 309.6L345.6 305.9L358.0 302.4L371.0 299.2L384.6 296.4L398.9 293.8L413.6 291.7L428.7 289.8L444.2 288.3L459.9 287.2L475.9 286.4L491.9 286.1L508.1 286.1L524.1 286.4L540.1 287.2L555.8 288.3L571.3 289.8L586.4 291.7L601.1 293.8L615.4 296.4L629.0 299.2L642.0 302.4L654.4 305.9L666.0 309.6L676.7 313.6L686.7 317.9L695.7 322.4L703.7 327.0L710.8 331.9L716.8 336.9L721.8 342.0L725.7 347.2L728.5 352.6L730.2 357.9L730.7 363.3Z"/>
-        <path class="wr" style="--i:5" d="M680.4 395.2L679.9 399.4L678.6 403.6L676.4 407.8L673.4 411.9L669.5 415.9L664.8 419.8L659.2 423.6L652.9 427.2L645.9 430.7L638.2 434.1L629.7 437.2L620.7 440.1L611.0 442.8L600.9 445.3L590.2 447.5L579.1 449.5L567.6 451.2L555.7 452.7L543.6 453.8L531.3 454.7L518.9 455.3L506.3 455.6L493.7 455.6L481.1 455.3L468.7 454.7L456.4 453.8L444.3 452.7L432.4 451.2L420.9 449.5L409.8 447.5L399.1 445.3L389.0 442.8L379.3 440.1L370.3 437.2L361.8 434.1L354.1 430.7L347.1 427.2L340.8 423.6L335.2 419.8L330.5 415.9L326.6 411.9L323.6 407.8L321.4 403.6L320.1 399.4L319.6 395.2L320.1 391.0L321.4 386.8L323.6 382.7L326.6 378.6L330.5 374.6L335.2 370.7L340.8 366.9L347.1 363.2L354.1 359.7L361.8 356.4L370.3 353.3L379.3 350.3L389.0 347.6L399.1 345.1L409.8 342.9L420.9 340.9L432.4 339.2L444.3 337.8L456.4 336.6L468.7 335.7L481.1 335.1L493.7 334.8L506.3 334.8L518.9 335.1L531.3 335.7L543.6 336.6L555.7 337.8L567.6 339.2L579.1 340.9L590.2 342.9L600.9 345.1L611.0 347.6L620.7 350.3L629.7 353.3L638.2 356.4L645.9 359.7L652.9 363.2L659.2 366.9L664.8 370.7L669.5 374.6L673.4 378.6L676.4 382.7L678.6 386.8L679.9 391.0L680.4 395.2Z"/>
-        <path class="wr" style="--i:6" d="M635.2 428.0L634.9 431.2L633.9 434.3L632.3 437.5L630.0 440.5L627.1 443.5L623.5 446.5L619.4 449.3L614.7 452.1L609.4 454.7L603.6 457.2L597.3 459.5L590.5 461.7L583.3 463.7L575.6 465.6L567.6 467.3L559.3 468.8L550.7 470.0L541.8 471.1L532.7 472.0L523.5 472.7L514.1 473.1L504.7 473.3L495.3 473.3L485.9 473.1L476.5 472.7L467.3 472.0L458.2 471.1L449.3 470.0L440.7 468.8L432.4 467.3L424.4 465.6L416.7 463.7L409.5 461.7L402.7 459.5L396.4 457.2L390.6 454.7L385.3 452.1L380.6 449.3L376.5 446.5L372.9 443.5L370.0 440.5L367.7 437.5L366.1 434.3L365.1 431.2L364.8 428.0L365.1 424.9L366.1 421.7L367.7 418.6L370.0 415.6L372.9 412.5L376.5 409.6L380.6 406.8L385.3 404.0L390.6 401.4L396.4 398.9L402.7 396.6L409.5 394.4L416.7 392.3L424.4 390.5L432.4 388.8L440.7 387.3L449.3 386.0L458.2 385.0L467.3 384.1L476.5 383.4L485.9 383.0L495.3 382.8L504.7 382.8L514.1 383.0L523.5 383.4L532.7 384.1L541.8 385.0L550.7 386.0L559.3 387.3L567.6 388.8L575.6 390.5L583.3 392.3L590.5 394.4L597.3 396.6L603.6 398.9L609.4 401.4L614.7 404.0L619.4 406.8L623.5 409.6L627.1 412.5L630.0 415.6L632.3 418.6L633.9 421.7L634.9 424.9L635.2 428.0Z"/>
-        <path class="wr" style="--i:7" d="M594.9 460.7L594.7 462.9L594.0 465.1L592.9 467.3L591.3 469.4L589.2 471.5L586.7 473.6L583.8 475.6L580.5 477.5L576.8 479.4L572.7 481.1L568.3 482.8L563.5 484.3L558.5 485.7L553.1 487.0L547.5 488.2L541.6 489.3L535.6 490.2L529.3 490.9L523.0 491.5L516.5 492.0L509.9 492.3L503.3 492.5L496.7 492.5L490.1 492.3L483.5 492.0L477.0 491.5L470.7 490.9L464.4 490.2L458.4 489.3L452.5 488.2L446.9 487.0L441.5 485.7L436.5 484.3L431.7 482.8L427.3 481.1L423.2 479.4L419.5 477.5L416.2 475.6L413.3 473.6L410.8 471.5L408.7 469.4L407.1 467.3L406.0 465.1L405.3 462.9L405.1 460.7L405.3 458.5L406.0 456.2L407.1 454.1L408.7 451.9L410.8 449.8L413.3 447.7L416.2 445.7L419.5 443.8L423.2 442.0L427.3 440.2L431.7 438.6L436.5 437.0L441.5 435.6L446.9 434.3L452.5 433.1L458.4 432.1L464.4 431.2L470.7 430.4L477.0 429.8L483.5 429.3L490.1 429.0L496.7 428.9L503.3 428.9L509.9 429.0L516.5 429.3L523.0 429.8L529.3 430.4L535.6 431.2L541.6 432.1L547.5 433.1L553.1 434.3L558.5 435.6L563.5 437.0L568.3 438.6L572.7 440.2L576.8 442.0L580.5 443.8L583.8 445.7L586.7 447.7L589.2 449.8L591.3 451.9L592.9 454.1L594.0 456.2L594.7 458.5L594.9 460.7Z"/>
-          </g>
-          <g class="wmers">
-        <path class="wm" style="--i:0" d="M976.0 286.0L960.7 286.5L945.3 287.7L930.0 289.5L914.7 291.9L899.3 295.0L884.0 298.6L868.7 302.8L853.4 307.4L838.0 312.7L822.7 318.4L807.4 324.7L792.0 331.4L776.7 338.7L761.4 346.4L746.0 354.6L730.7 363.3L715.4 372.5L700.1 382.1L684.7 392.2L669.4 402.8L654.1 413.9L638.7 425.4L623.4 437.3L608.1 449.7L592.7 462.5"/>
-        <path class="wm" style="--i:1" d="M912.2 365.7L899.0 363.6L885.7 362.2L872.4 361.5L859.1 361.4L845.8 361.9L832.6 362.9L819.3 364.5L806.0 366.6L792.7 369.3L779.5 372.5L766.2 376.1L752.9 380.3L739.6 385.0L726.4 390.2L713.1 395.8L699.8 402.0L686.5 408.6L673.3 415.6L660.0 423.2L646.7 431.2L633.4 439.7L620.2 448.6L606.9 458.0L593.6 467.8L580.3 478.1"/>
-        <path class="wm" style="--i:2" d="M738.0 424.1L730.3 420.1L722.7 416.9L715.0 414.2L707.3 412.3L699.7 410.8L692.0 410.0L684.3 409.7L676.7 410.0L669.0 410.7L661.3 412.0L653.7 413.8L646.0 416.1L638.4 418.9L630.7 422.2L623.0 426.0L615.4 430.2L607.7 435.0L600.0 440.2L592.4 445.8L584.7 452.0L577.0 458.6L569.4 465.6L561.7 473.1L554.0 481.0L546.4 489.4"/>
-        <path class="wm" style="--i:3" d="M500.0 445.5L500.0 440.8L500.0 436.8L500.0 433.5L500.0 430.9L500.0 428.8L500.0 427.2L500.0 426.3L500.0 425.8L500.0 425.9L500.0 426.5L500.0 427.6L500.0 429.2L500.0 431.4L500.0 434.0L500.0 437.0L500.0 440.6L500.0 444.6L500.0 449.2L500.0 454.1L500.0 459.6L500.0 465.5L500.0 471.8L500.0 478.6L500.0 485.9L500.0 493.6"/>
-        <path class="wm" style="--i:4" d="M262.0 424.1L269.7 420.1L277.3 416.9L285.0 414.2L292.7 412.3L300.3 410.8L308.0 410.0L315.7 409.7L323.3 410.0L331.0 410.7L338.7 412.0L346.3 413.8L354.0 416.1L361.6 418.9L369.3 422.2L377.0 426.0L384.6 430.2L392.3 435.0L400.0 440.2L407.6 445.8L415.3 452.0L423.0 458.6L430.6 465.6L438.3 473.1L446.0 481.0L453.6 489.4"/>
-        <path class="wm" style="--i:5" d="M87.8 365.7L101.0 363.6L114.3 362.2L127.6 361.5L140.9 361.4L154.2 361.9L167.4 362.9L180.7 364.5L194.0 366.6L207.3 369.3L220.5 372.5L233.8 376.1L247.1 380.3L260.4 385.0L273.6 390.2L286.9 395.8L300.2 402.0L313.5 408.6L326.7 415.6L340.0 423.2L353.3 431.2L366.6 439.7L379.8 448.6L393.1 458.0L406.4 467.8L419.7 478.1"/>
-        <path class="wm" style="--i:6" d="M24.0 286.0L39.3 286.5L54.7 287.7L70.0 289.5L85.3 291.9L100.7 295.0L116.0 298.6L131.3 302.8L146.6 307.4L162.0 312.7L177.3 318.4L192.6 324.7L208.0 331.4L223.3 338.7L238.6 346.4L254.0 354.6L269.3 363.3L284.6 372.5L299.9 382.1L315.3 392.2L330.6 402.8L345.9 413.9L361.3 425.4L376.6 437.3L391.9 449.7L407.3 462.5"/>
-        <path class="wm" style="--i:7" d="M87.8 206.3L101.0 209.3L114.3 213.1L127.6 217.5L140.9 222.5L154.2 228.1L167.4 234.3L180.7 241.0L194.0 248.3L207.3 256.0L220.5 264.4L233.8 273.2L247.1 282.5L260.4 292.3L273.6 302.6L286.9 313.4L300.2 324.7L313.5 336.4L326.7 348.6L340.0 361.3L353.3 374.5L366.6 388.1L379.8 402.1L393.1 416.6L406.4 431.6L419.7 447.0"/>
-        <path class="wm" style="--i:8" d="M262.0 147.9L269.7 152.8L277.3 158.4L285.0 164.7L292.7 171.6L300.3 179.1L308.0 187.2L315.7 195.8L323.3 204.9L331.0 214.6L338.6 224.8L346.3 235.5L354.0 246.7L361.6 258.4L369.3 270.6L377.0 283.2L384.6 296.4L392.3 310.0L400.0 324.1L407.6 338.7L415.3 353.7L423.0 369.2L430.6 385.1L438.3 401.5L446.0 418.3L453.6 435.6"/>
-        <path class="wm" style="--i:9" d="M500.0 126.5L500.0 132.1L500.0 138.5L500.0 145.4L500.0 153.0L500.0 161.2L500.0 169.9L500.0 179.2L500.0 189.1L500.0 199.4L500.0 210.3L500.0 221.7L500.0 233.6L500.0 246.0L500.0 258.8L500.0 272.2L500.0 286.0L500.0 300.3L500.0 315.1L500.0 330.4L500.0 346.1L500.0 362.2L500.0 378.9L500.0 396.0L500.0 413.5L500.0 431.5"/>
-        <path class="wm" style="--i:10" d="M738.0 147.9L730.3 152.8L722.7 158.4L715.0 164.7L707.3 171.6L699.7 179.1L692.0 187.2L684.3 195.8L676.7 204.9L669.0 214.6L661.3 224.8L653.7 235.5L646.0 246.7L638.4 258.4L630.7 270.6L623.0 283.2L615.4 296.4L607.7 310.0L600.0 324.1L592.4 338.7L584.7 353.7L577.0 369.2L569.4 385.1L561.7 401.5L554.0 418.3L546.4 435.6"/>
-        <path class="wm" style="--i:11" d="M912.2 206.3L899.0 209.3L885.7 213.1L872.4 217.5L859.1 222.5L845.8 228.1L832.6 234.3L819.3 241.0L806.0 248.3L792.7 256.0L779.5 264.4L766.2 273.2L752.9 282.5L739.6 292.3L726.4 302.6L713.1 313.4L699.8 324.7L686.5 336.4L673.3 348.6L660.0 361.3L646.7 374.5L633.4 388.1L620.2 402.1L606.9 416.6L593.6 431.6L580.3 447.0"/>
-          </g>
-          <g class="wsigs">
-        <path class="ws" style="--i:0" pathLength="1" d="M976.0 286.0L960.7 286.5L945.3 287.7L930.0 289.5L914.7 291.9L899.3 295.0L884.0 298.6L868.7 302.8L853.4 307.4L838.0 312.7L822.7 318.4L807.4 324.7L792.0 331.4L776.7 338.7L761.4 346.4L746.0 354.6L730.7 363.3L715.4 372.5L700.1 382.1L684.7 392.2L669.4 402.8L654.1 413.9L638.7 425.4L623.4 437.3L608.1 449.7L592.7 462.5"/>
-        <path class="ws" style="--i:1" pathLength="1" d="M500.0 445.5L500.0 440.8L500.0 436.8L500.0 433.5L500.0 430.9L500.0 428.8L500.0 427.2L500.0 426.3L500.0 425.8L500.0 425.9L500.0 426.5L500.0 427.6L500.0 429.2L500.0 431.4L500.0 434.0L500.0 437.0L500.0 440.6L500.0 444.6L500.0 449.2L500.0 454.1L500.0 459.6L500.0 465.5L500.0 471.8L500.0 478.6L500.0 485.9L500.0 493.6"/>
-        <path class="ws" style="--i:2" pathLength="1" d="M87.8 365.7L101.0 363.6L114.3 362.2L127.6 361.5L140.9 361.4L154.2 361.9L167.4 362.9L180.7 364.5L194.0 366.6L207.3 369.3L220.5 372.5L233.8 376.1L247.1 380.3L260.4 385.0L273.6 390.2L286.9 395.8L300.2 402.0L313.5 408.6L326.7 415.6L340.0 423.2L353.3 431.2L366.6 439.7L379.8 448.6L393.1 458.0L406.4 467.8L419.7 478.1"/>
-        <path class="ws" style="--i:3" pathLength="1" d="M262.0 147.9L269.7 152.8L277.3 158.4L285.0 164.7L292.7 171.6L300.3 179.1L308.0 187.2L315.7 195.8L323.3 204.9L331.0 214.6L338.6 224.8L346.3 235.5L354.0 246.7L361.6 258.4L369.3 270.6L377.0 283.2L384.6 296.4L392.3 310.0L400.0 324.1L407.6 338.7L415.3 353.7L423.0 369.2L430.6 385.1L438.3 401.5L446.0 418.3L453.6 435.6"/>
-        <path class="ws" style="--i:4" pathLength="1" d="M738.0 147.9L730.3 152.8L722.7 158.4L715.0 164.7L707.3 171.6L699.7 179.1L692.0 187.2L684.3 195.8L676.7 204.9L669.0 214.6L661.3 224.8L653.7 235.5L646.0 246.7L638.4 258.4L630.7 270.6L623.0 283.2L615.4 296.4L607.7 310.0L600.0 324.1L592.4 338.7L584.7 353.7L577.0 369.2L569.4 385.1L561.7 401.5L554.0 418.3L546.4 435.6"/>
-          </g>
-        </svg>
+        <svg class="nloop" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="Enterprise applications feeding a private AI engine that dispatches to intelligent agents">
+    <defs>
+        <radialGradient id="nl-lift" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#0FA07C" stop-opacity=".16"/>
+        <stop offset="55%" stop-color="#0FA07C" stop-opacity=".05"/>
+        <stop offset="100%" stop-color="#0FA07C" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="nl-halo">
+        <stop offset="0%" stop-color="#5CE4B0" stop-opacity=".55"/>
+        <stop offset="45%" stop-color="#5CE4B0" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#5CE4B0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="nl-hub">
+        <stop offset="0%" stop-color="#D6FFF4" stop-opacity=".90"/>
+        <stop offset="13%" stop-color="#5CE4B0" stop-opacity=".38"/>
+        <stop offset="42%" stop-color="#2FB88E" stop-opacity=".11"/>
+        <stop offset="100%" stop-color="#2FB88E" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="911" cy="568" rx="540" ry="450" fill="url(#nl-lift)"/>
+    
+    <!-- engine panel -->
+    <rect x="566" y="180" width="690" height="776" rx="22"
+          fill="#2A3137" stroke="#3A434B" stroke-width="1.4"/>
+    <rect x="573" y="187" width="676" height="762" rx="17"
+          fill="none" stroke="#303A40" stroke-width="1"/>
+    
+    <!-- header -->
+    <text x="56" y="46" class="nl-eyebrow">EXHIBIT 01  &#183;  PLATFORM ARCHITECTURE</text>
+    <g>
+      <circle cx="74" cy="122" r="17" fill="#234F42" stroke="#34AE80" stroke-width="1.4"/>
+      <text x="74" y="123" class="nl-colnum">1</text>
+      <text x="104" y="122" class="nl-colhead">ENTERPRISE APPLICATIONS</text>
+      <circle cx="584" cy="122" r="17" fill="#234F42" stroke="#34AE80" stroke-width="1.4"/>
+      <text x="584" y="123" class="nl-colnum">2</text>
+      <text x="614" y="122" class="nl-colhead">PRIVATE AI ENGINE</text>
+      <circle cx="1318" cy="122" r="17" fill="#234F42" stroke="#34AE80" stroke-width="1.4"/>
+      <text x="1318" y="123" class="nl-colnum">3</text>
+      <text x="1348" y="122" class="nl-colhead">INTELLIGENT AGENTS</text>
+    </g>
+    
+    <!-- static neural wiring -->
+    <g class="nl-wires" fill="none" stroke-linecap="round">
+      <g class="nl-wl" stroke="#34BA8C" stroke-width="1.3" opacity="0.46"><path d="M506 235L670 344"/><path d="M506 235L670 456"/><path d="M506 235L670 568"/><path d="M506 369L670 344"/><path d="M506 503L670 456"/><path d="M506 503L670 568"/><path d="M506 637L670 344"/><path d="M506 637L670 568"/><path d="M506 637L670 680"/><path d="M506 771L670 792"/><path d="M506 905L670 456"/><path d="M506 905L670 680"/><path d="M506 905L670 792"/></g>
+      <g class="nl-wc" stroke="#2FAD86" stroke-width="1.15" opacity="0.42"><path d="M670 344C795.3 344 785.7 568 911 568"/><path d="M670 344C814.6 344 766.4 400 911 400"/><path d="M670 456C795.3 456 785.7 568 911 568"/><path d="M670 456C814.6 456 766.4 490 911 490"/><path d="M670 568C795.3 568 785.7 568 911 568"/><path d="M670 568C814.6 568 766.4 490 911 490"/><path d="M670 680C795.3 680 785.7 568 911 568"/><path d="M670 680C814.6 680 766.4 646 911 646"/><path d="M670 792C795.3 792 785.7 568 911 568"/><path d="M670 792C814.6 792 766.4 736 911 736"/><path d="M911 400C911 400 911 568 911 568"/><path d="M911 400C1055.6 400 1007.4 344 1152 344"/><path d="M911 490C911 490 911 568 911 568"/><path d="M911 490C1055.6 490 1007.4 456 1152 456"/><path d="M911 646C911 646 911 568 911 568"/><path d="M911 646C1055.6 646 1007.4 680 1152 680"/><path d="M911 736C911 736 911 568 911 568"/><path d="M911 736C1055.6 736 1007.4 680 1152 680"/><path d="M911 568C1036.3 568 1026.7 344 1152 344"/><path d="M911 568C1036.3 568 1026.7 456 1152 456"/><path d="M911 568C1036.3 568 1026.7 568 1152 568"/><path d="M911 568C1036.3 568 1026.7 680 1152 680"/><path d="M911 568C1036.3 568 1026.7 792 1152 792"/></g>
+      <g class="nl-wh" stroke="#4FDCB0" stroke-width="2.0" opacity="0.8"><path d="M670 344C795.3 344 785.7 568 911 568"/><path d="M911 568C1036.3 568 1026.7 792 1152 792"/><path d="M670 792C795.3 792 785.7 568 911 568"/><path d="M911 568C1036.3 568 1026.7 456 1152 456"/><path d="M670 568C795.3 568 785.7 568 911 568"/><path d="M911 568C1036.3 568 1026.7 568 1152 568"/></g>
+      <g class="nl-wr" stroke="#34BA8C" stroke-width="1.3" opacity="0.46"><path d="M1152 344L1300 194"/><path d="M1152 344L1300 287.5"/><path d="M1152 456L1300 287.5"/><path d="M1152 344L1300 381"/><path d="M1152 456L1300 474.5"/><path d="M1152 568L1300 474.5"/><path d="M1152 456L1300 568"/><path d="M1152 568L1300 568"/><path d="M1152 680L1300 661.5"/><path d="M1152 792L1300 661.5"/><path d="M1152 680L1300 755"/><path d="M1152 792L1300 755"/><path d="M1152 792L1300 848.5"/><path d="M1152 680L1300 942"/><path d="M1152 792L1300 942"/></g>
+    </g>
+    
+    <!-- engine core -->
+    <g transform="translate(911 568)">
+      <circle class="nl-hubhalo" r="120" fill="url(#nl-hub)"/>
+      <circle class="nl-ring" r="60"/>
+      <circle class="nl-ring" r="60" style="animation-delay:-1.125s"/>
+      <circle r="4.6" fill="#EAFFF9"/>
+    </g>
+    
+    <!-- nodes -->
+    <g><g class="nl-node" transform="translate(670 344)" style="animation-delay:-0.00s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 456)" style="animation-delay:-0.90s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 568)" style="animation-delay:-1.80s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 680)" style="animation-delay:-2.70s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(670 792)" style="animation-delay:-3.60s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 344)" style="animation-delay:-1.40s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 456)" style="animation-delay:-2.30s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 568)" style="animation-delay:-3.20s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 680)" style="animation-delay:-4.10s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node" transform="translate(1152 792)" style="animation-delay:-5.00s"><circle r="16" fill="url(#nl-halo)"/><circle r="2.7" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 400)" style="animation-delay:-0.50s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 490)" style="animation-delay:-1.80s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 646)" style="animation-delay:-3.10s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-dim" transform="translate(911 736)" style="animation-delay:-4.40s"><circle r="11" fill="url(#nl-halo)"/><circle r="2.1" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 235)" style="animation-delay:-0.00s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 369)" style="animation-delay:-0.70s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 503)" style="animation-delay:-1.40s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 637)" style="animation-delay:-2.10s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 771)" style="animation-delay:-2.80s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(506 905)" style="animation-delay:-3.50s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 194)" style="animation-delay:-2.10s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 287.5)" style="animation-delay:-2.80s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 381)" style="animation-delay:-3.50s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 474.5)" style="animation-delay:-4.20s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 568)" style="animation-delay:-4.90s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 661.5)" style="animation-delay:-5.60s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 755)" style="animation-delay:-6.30s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 848.5)" style="animation-delay:-7.00s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g><g class="nl-node nl-term" transform="translate(1300 942)" style="animation-delay:-7.70s"><circle r="14" fill="url(#nl-halo)"/><circle r="2.6" fill="#9BFFE6"/></g></g>
+    
+    <!-- flowing data -->
+    <g><g class="nl-flow" style="animation-delay:-0.00s"><path class="nl-fg" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 194" pathLength="1000"/><path class="nl-fm" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 194" pathLength="1000"/><path class="nl-fh" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 194" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-2.78s"><path class="nl-fg" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 287.5" pathLength="1000"/><path class="nl-fm" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 287.5" pathLength="1000"/><path class="nl-fh" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 287.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-1.06s"><path class="nl-fg" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fm" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fh" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-3.84s"><path class="nl-fg" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 456 1152 456L1300 474.5" pathLength="1000"/><path class="nl-fm" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 456 1152 456L1300 474.5" pathLength="1000"/><path class="nl-fh" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 456 1152 456L1300 474.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-2.12s"><path class="nl-fg" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fm" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fh" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-0.41s"><path class="nl-fg" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fm" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fh" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-3.19s"><path class="nl-fg" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 755" pathLength="1000"/><path class="nl-fm" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 755" pathLength="1000"/><path class="nl-fh" d="M506 503L670 456C795.3 456 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 755" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-1.47s"><path class="nl-fg" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 848.5" pathLength="1000"/><path class="nl-fm" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 848.5" pathLength="1000"/><path class="nl-fh" d="M506 503L670 568C795.3 568 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 848.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-4.25s"><path class="nl-fg" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 942" pathLength="1000"/><path class="nl-fm" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 942" pathLength="1000"/><path class="nl-fh" d="M506 637L670 680C795.3 680 785.7 568 911 568C1036.3 568 1026.7 792 1152 792L1300 942" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-2.53s"><path class="nl-fg" d="M506 235L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fm" d="M506 235L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fh" d="M506 235L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-0.81s"><path class="nl-fg" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fm" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/><path class="nl-fh" d="M506 369L670 344C795.3 344 785.7 568 911 568C1036.3 568 1026.7 568 1152 568L1300 568" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-3.59s"><path class="nl-fg" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fm" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/><path class="nl-fh" d="M506 771L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 680 1152 680L1300 661.5" pathLength="1000"/></g><g class="nl-flow" style="animation-delay:-1.87s"><path class="nl-fg" d="M506 905L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fm" d="M506 905L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/><path class="nl-fh" d="M506 905L670 792C795.3 792 785.7 568 911 568C1036.3 568 1026.7 344 1152 344L1300 381" pathLength="1000"/></g></g>
+    
+    <!-- left: enterprise applications -->
+    <g><g><rect x="56" y="196" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="235" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 235)"><circle cx="0" cy="-5.3" r="4.2"/><path d="M-8.5 9.4a8.5 8.5 0 0 1 17 0"/></g><text x="134" y="235" class="nl-pill" font-size="19">Conversational AI Avatar Interview</text></g><g><rect x="56" y="330" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="369" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 369)"><rect x="-3" y="-9.5" width="6" height="11.5" rx="3"/><path d="M-7 -1.5a7 7 0 0 0 14 0M0 5.6v3.8M-4.2 9.4h8.4"/></g><text x="134" y="369" class="nl-pill" font-size="19">Conversational AI Voice Interview</text></g><g><rect x="56" y="464" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="503" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 503)"><path d="M-9 -5l3 3 5-5M2 -4h7M-9 2l3 3 5-5M2 3h7"/></g><text x="134" y="503" class="nl-pill" font-size="22">Task &amp; Productivity Manager</text></g><g><rect x="56" y="598" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="637" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 637)"><rect x="-7" y="-9" width="14" height="18" rx="2.5"/><path d="M-4 -5h8M-4 -1h8M-4 3h5"/></g><text x="134" y="637" class="nl-pill" font-size="22">Intelligent Note Taker</text></g><g><rect x="56" y="732" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="771" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 771)"><path d="M-8 -4v-4h4M8 -4v-4h-4M-8 4v4h4M8 4v4h-4M-7 0h14"/></g><text x="134" y="771" class="nl-pill" font-size="22">Intelligent Document Parser</text></g><g><rect x="56" y="866" width="450" height="78" rx="39.0" fill="#32363F" stroke="#3F4450" stroke-width="1.1"/><circle cx="96" cy="905" r="21" fill="#263E38" stroke="#2E8468" stroke-width="1.3"/><g class="nl-ic" transform="translate(96 905)"><path d="M-8 5l5-6 4 3 6.5-8"/><path d="M9 -7l-5.5 1 4.5 4.5z" stroke="none" fill="currentColor"/></g><text x="134" y="905" class="nl-pill" font-size="22">Sales CRM</text></g></g>
+    
+    <!-- engine labels -->
+    <text x="911" y="236" class="nl-coretitle">N E U R A L &#160;&#160; C O R E</text>
+    <text x="670" y="900" class="nl-layer">ENCODE</text>
+    <text x="911" y="900" class="nl-layer">REASON</text>
+    <text x="1152" y="900" class="nl-layer">ROUTE</text>
+    <text x="911" y="1000" class="nl-cap">Zero Trust &#183; Local Models &#183; Smart Routing &#183; Learning</text>
+    
+    <!-- right: intelligent agents -->
+    <g><text x="1338" y="194" class="nl-rn">I</text><text x="1362" y="194" class="nl-agent" font-size="21">Conversational AI Avatar Agent</text><text x="1338" y="287.5" class="nl-rn">II</text><text x="1362" y="287.5" class="nl-agent" font-size="21">Conversational AI Voice Agent</text><text x="1338" y="381" class="nl-rn">III</text><text x="1362" y="381" class="nl-agent" font-size="21">Conversational Chat Assistant</text><text x="1338" y="474.5" class="nl-rn">IV</text><text x="1362" y="474.5" class="nl-agent" font-size="21">Document Extraction Agent</text><text x="1338" y="568" class="nl-rn">V</text><text x="1362" y="568" class="nl-agent" font-size="21">Field Validation Agent</text><text x="1338" y="661.5" class="nl-rn">VI</text><text x="1362" y="661.5" class="nl-agent" font-size="21">Language Translation Agent</text><text x="1338" y="755" class="nl-rn">VII</text><text x="1362" y="755" class="nl-agent" font-size="21">Live In-Meeting Copilot</text><text x="1338" y="848.5" class="nl-rn">VIII</text><text x="1362" y="848.5" class="nl-agent" font-size="21">Conversational Recall Agent</text><text x="1338" y="942" class="nl-rn">IX</text><text x="1362" y="942" class="nl-agent" font-size="21">CRM Conversational Assistant</text></g>
+    </svg>
       </div>
     </div>
   </div>
@@ -459,31 +583,14 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 
 <section>
   <div class="wrap">
-    <h2 class="hand">
-      Technology is a tool.
-      <span class="u-lasso">
-        <svg viewBox="0 0 260 80" preserveAspectRatio="none" aria-hidden="true">
-      <path pathLength="1" d="M132 8 C 66 2, 8 20, 12 42 C 16 66, 104 76, 170 72 C 232 68, 254 50, 246 32 C 239 16, 196 6, 150 7" fill="none" stroke="#02A885" stroke-width="4.2" stroke-linecap="round"/>
-    </svg>
-        <span>Intelligence</span>
-      </span>
-      is the edge.
-    </h2>
+    <h2 class="hand"><span class="k-g">Technology</span> is a tool. <span class="k-y">Intelligence</span> is the edge.</h2>
     <p class="sec-lede">At Talbotiq, we believe the next decade of business will be defined by those who can successfully transition from manual workflows to intelligent systems. Our mission is to dismantle the operational bottlenecks that stifle growth by injecting high-fidelity AI and robust engineering into the core of your business.</p>
   </div>
 </section>
 
 <div class="caps">
   <div class="wrap">
-    <h2 class="hand left">
-      Enterprise AI,
-      <span class="u-line">
-        <svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true">
-      <path pathLength="1" d="M3 9 C 50 3, 130 12, 197 5" fill="none" stroke="#1B7FC4" stroke-width="4.4" stroke-linecap="round"/>
-    </svg>
-        <span>done properly.</span>
-      </span>
-    </h2>
+    <h2 class="hand left">Enterprise <span class="k-g">AI</span>, done properly.</h2>
 
     <div class="capgrid">
       <div class="cap">
@@ -513,7 +620,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
         <h3>Expert guidance</h3>
         <p>Work with specialists who simplify AI implementation through practical, results-driven expertise.</p>
       </div>
-      <div class="cap wide">
+      <div class="cap">
         <div class="star"><div class="glow"></div>
           <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
             <path d="M13 2 l3.4 7.2 l7.6 .9 l-5.6 5.3 l1.5 7.6 l-6.9 -3.8 l-6.9 3.8 l1.5 -7.6 l-5.6 -5.3 l7.6 -.9 z" fill="#F3E202" stroke="#1F2430" stroke-width="1.5" stroke-linejoin="round"/>
@@ -531,13 +638,22 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
         <h3>Efficient deployment</h3>
         <p>Launch AI tools through structured workflows that minimize disruption and maximize adoption speed.</p>
       </div>
+      <div class="cap">
+        <div class="star"><div class="glow"></div>
+          <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
+            <path d="M13 2 l3.4 7.2 l7.6 .9 l-5.6 5.3 l1.5 7.6 l-6.9 -3.8 l-6.9 3.8 l1.5 -7.6 l-5.6 -5.3 l7.6 -.9 z" fill="#F3E202" stroke="#1F2430" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Subject Matter Expertise</h3>
+        <p>Combine deep industry knowledge with AI expertise to build solutions tailored to real-world business challenges, workflows, and domain-specific requirements.</p>
+      </div>
     </div>
   </div>
 </div>
 
 <section class="why" id="why">
   <div class="wrap">
-    <h2 class="hand">Why Lead with Talbotiq?</h2>
+    <h2 class="hand">Why <span class="k-g">Lead</span> with <span class="k-y">Talbotiq</span>?</h2>
     <p class="sec-lede">We combine technical craftsmanship with the predictive power of Artificial Intelligence.</p>
     <div class="whygrid">
       <div class="whyitem">
@@ -561,79 +677,117 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 
 <section style="padding-top:0" id="insights">
   <div class="wrap">
-    <h2 class="hand left">
-      Thought Leadership &amp;
-      <span class="u-squig">
-        <svg viewBox="0 0 150 14" preserveAspectRatio="none" aria-hidden="true">
-      <path pathLength="1" d="M3 8 q 12 -7 24 0 t 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="#02A885" stroke-width="3.6" stroke-linecap="round"/>
-    </svg>
-        <span>Media Coverage</span>
-      </span>
-    </h2>
+    <h2 class="hand left">Thought <span class="k-g">Leadership</span> &amp; Media <span class="k-y">Coverage</span></h2>
     <p class="sec-lede blog-lede">Akhil Gupta is a regular columnist for The Edge Malaysia and an active contributor to a range of national and regional media platforms. The Edge Malaysia is one of the country’s leading business and financial news publications. His writing explores the evolving intersections of AI, business strategy, digital transformation, and talent development.</p>
-    <div class="blog">
+
+    <div class="tlfeat">
+      <div class="tlfeat-media">
+        <button class="ytlite" type="button"
+                data-yt="AbNEbtdJUB8"
+                data-title="[EP120] BTH: The AI Race: Preparing Malaysia’s workforce and economy"
+                aria-label="Play: [EP120] BTH: The AI Race: Preparing Malaysia’s workforce and economy">
+          <img src="assets/feature-AbNEbtdJUB8.jpg" alt="" width="1280" height="720" loading="lazy" decoding="async">
+          <span class="ytplay" aria-hidden="true"><svg width="26" height="30" viewBox="0 0 22 26"><path d="M3 2.5v21l17-10.5z" fill="#fff"/></svg></span>
+        </button>
+      </div>
+      <div class="tlfeat-body">
+        <h3 class="tlfeat-show">Beyond the Headlines</h3>
+        <p class="tlfeat-ep">[EP120] BTH: The AI Race: Preparing Malaysia’s workforce and economy</p>
+        <p class="tlfeat-desc">A closer look at Artificial Intelligence and its growing impact on Malaysia’s economy, businesses, and society. A talk about how the country is preparing to become an AI nation by 2030, and what challenges lie ahead for small and medium enterprises as they navigate this technological shift.</p>
+      </div>
+    </div>
+
+    <div class="tlfeat tlfeat--press">
+      <a class="tlfeat-media tlfeat-media--photo" href="https://www.linkedin.com/posts/akhil-gupta-a706503_ai-artificialintelligence-tech-activity-7295724190286917632-nsfB" target="_blank" rel="noopener">
+        <img src="assets/press-cgtn.jpg" alt="CGTN Global Business, during the segment on the global AI competition"
+             width="778" height="512" loading="lazy" decoding="async">
+        <span class="ytplay" aria-hidden="true"><svg width="20" height="24" viewBox="0 0 22 26"><path d="M3 2.5v21l17-10.5z" fill="#fff"/></svg></span>
+      </a>
+      <div class="tlfeat-body">
+        <h3 class="tlfeat-show">Live TV Interview with China Global Television Network</h3>
+        <p class="tlfeat-ep">AI on the Global Stage: A Conversation That Matters</p>
+        <p class="tlfeat-desc">Catch a glimpse of a dynamic live discussion on CGTN about the Global AI Competition. Explore how AI is rapidly transforming industries and shifting global power. Dive into key insights and bold questions shaping our tech-driven future.</p>
+        <p class="tlfeat-out"><a href="https://www.linkedin.com/posts/akhil-gupta-a706503_ai-artificialintelligence-tech-activity-7295724190286917632-nsfB" target="_blank" rel="noopener">Watch on LinkedIn &rarr;</a></p>
+      </div>
+    </div>
+    <div class="blogsel">Selected thought leadership</div>
+    <div class="blog" id="tl-grid">
       <a class="post" href="https://theedgemalaysia.com/node/815608" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/P55-AI-2-TEM1641_Forum_pixabay.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2026-08-28">28 Aug 2026</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: The tokenmaxxing trap: Why cheaper AI is blowing up enterprise budgets</h3>
-        <p>The unit cost of artificial intelligence tokens, the smallest unit of data processed by an artificial intelligence (AI) model, has plummeted since 2023. Yet across the corporate landscape, chief financial officers and engineering leaders are facing unexpected AI invoice shocks.
+        <span class="shot"><img class="thumb" src="assets/articles/815608.jpg" alt="Digital Intelligence: The tokenmaxxing trap: Why cheaper AI is blowing up enterprise budgets" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">The unit cost of artificial intelligence tokens, the smallest unit of data processed by an artificial intelligence (AI) model, has plummeted since 2023. Yet across the corporate landscape, chief financial officers and engineering leaders are facing unexpected AI invoice shocks.
 
 Over the...</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
       <a class="post" href="https://theedgemalaysia.com/node/805615" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/Agriculture_Forum_theedgemalaysia.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2026-06-04">4 Jun 2026</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: From guesswork to ground truth: The deep tech revolution in modern agriculture</h3>
-        <p>The agricultural sector must transition from intuition-based farming to data-driven Agriculture 5.0, using deep tech like AI, IoT sensors, and drones to address climate change, labor shortages, and rising food production needs driven by population growth.</p>
+        <span class="shot"><img class="thumb" src="assets/articles/805615.jpg" alt="Digital Intelligence: From guesswork to ground truth: The deep tech revolution in modern agriculture" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">The agricultural sector must transition from intuition-based farming to data-driven Agriculture 5.0, using deep tech like AI, IoT sensors, and drones to address climate change, labor shortages, and rising food production needs driven by population growth.</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
       <a class="post" href="https://theedgemalaysia.com/node/771029" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/P45-surgery-TEM1593_Forum_reuters.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2025-09-23">23 Sep 2025</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: Beyond the human hand: The rise of AI in surgery</h3>
-        <p>Artificial intelligence (AI) is revolutionising the field of surgery. AI-powered applications are now working alongside surgeons as indispensable partners, using vast datasets and advanced algorithms to provide real-time, life-saving insights. This technology isn’t just reshaping surgical procedu...</p>
+        <span class="shot"><img class="thumb" src="assets/articles/771029.jpg" alt="Digital Intelligence: Beyond the human hand: The rise of AI in surgery" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">Artificial intelligence (AI) is revolutionising the field of surgery. AI-powered applications are now working alongside surgeons as indispensable partners, using vast datasets and advanced algorithms to provide real-time, life-saving insights. This technology isn’t just reshaping surgical procedu...</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
-      <a class="post" href="https://theedgemalaysia.com/node/763415" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/P62-AI-TEM1584_Forum_freepik.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2025-07-25">25 Jul 2025</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: The AI advantage: Twin turbo for profit and purpose</h3>
-        <p>The artificial intelligence (AI) revolution presents a critical dilemma: How do businesses leverage its immense power to drive profitability without compromising environmental responsibility and ethical integrity? The solution lies in consciously integrating AI as a twin-turbo engine, simultaneou...</p>
+      <a class="post post--rest" href="https://theedgemalaysia.com/node/763415" target="_blank" rel="noopener">
+        <span class="shot"><img class="thumb" src="assets/articles/763415.jpg" alt="Digital Intelligence: The AI advantage: Twin turbo for profit and purpose" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">The artificial intelligence (AI) revolution presents a critical dilemma: How do businesses leverage its immense power to drive profitability without compromising environmental responsibility and ethical integrity? The solution lies in consciously integrating AI as a twin-turbo engine, simultaneou...</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
-      <a class="post" href="https://theedgemalaysia.com/node/756655" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/P47-AI-TEM1576_Forum_123rf.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2025-05-27">27 May 2025</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: AI’s impact on jobs: Evolution not extinction</h3>
-        <p>The robots are coming! Or so the headlines scream. The rapid, almost dizzying advancement of artificial intelligence (AI) has plunged the world into a fervent debate.
+      <a class="post post--rest" href="https://theedgemalaysia.com/node/756655" target="_blank" rel="noopener">
+        <span class="shot"><img class="thumb" src="assets/articles/756655.jpg" alt="Digital Intelligence: AI’s impact on jobs: Evolution not extinction" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">The robots are coming! Or so the headlines scream. The rapid, almost dizzying advancement of artificial intelligence (AI) has plunged the world into a fervent debate.
 
 At the heart of this discourse lies a question that touches every individual, every industry and every segment of societ...</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
-      <a class="post" href="https://theedgemalaysia.com/node/754007" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/P51-SMEs-TEM1573_Forum_vecteezy.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2025-05-08">8 May 2025</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: AI-driven digital strategies can transform SMEs</h3>
-        <p>Imagine the possibilities: A small and medium enterprise (SME) involved in fashion in Malaysia cut customer service calls by 40% and boosted satisfaction by 25% after adopting AI chatbots and sentiment analysis tools. Likewise, a logistics firm leveraged AI for supply chain forecasting — reducing...</p>
+      <a class="post post--rest" href="https://theedgemalaysia.com/node/754007" target="_blank" rel="noopener">
+        <span class="shot"><img class="thumb" src="assets/articles/754007.jpg" alt="Digital Intelligence: AI-driven digital strategies can transform SMEs" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">Imagine the possibilities: A small and medium enterprise (SME) involved in fashion in Malaysia cut customer service calls by 40% and boosted satisfaction by 25% after adopting AI chatbots and sentiment analysis tools. Likewise, a logistics firm leveraged AI for supply chain forecasting — reducing...</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
-      <a class="post" href="https://theedgemalaysia.com/node/750445" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/P49-AI-TEM1569_Forum_123rf.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2025-04-09">9 Apr 2025</time> &middot; The Edge Malaysia</p>
-        <h3>Digital Intelligence: The algorithmic edge: How AI is reshaping the business landscape</h3>
-        <p>Artificial intelligence (AI) is no longer a distant vision of the future; it’s a driving force in today’s global economy. PwC estimates AI could contribute US$15.7 trillion by 2030, a figure that surpasses the combined gross domestic product of India and China today.
+      <a class="post post--rest" href="https://theedgemalaysia.com/node/750445" target="_blank" rel="noopener">
+        <span class="shot"><img class="thumb" src="assets/articles/750445.jpg" alt="Digital Intelligence: The algorithmic edge: How AI is reshaping the business landscape" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">Artificial intelligence (AI) is no longer a distant vision of the future; it’s a driving force in today’s global economy. PwC estimates AI could contribute US$15.7 trillion by 2030, a figure that surpasses the combined gross domestic product of India and China today.
 
 Businesses that fai...</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
-      <a class="post" href="https://theedgemalaysia.com/node/743770" target="_blank" rel="noopener">
-        <span class="shot"><img class="thumb" src="https://assets.theedgemarkets.com/ai-chips_reuters.jpg" alt="" width="1200" height="800" loading="lazy" decoding="async"></span>
-        <p class="pmeta"><time datetime="2025-02-08">8 Feb 2025</time> &middot; The Edge Malaysia</p>
-        <h3>The global AI race: The new Cold War</h3>
-        <p>The 20th-century Cold War was defined by nuclear weapons. Today, a new cold war is being waged, with artificial intelligence (AI) as the ultimate weapon. The stakes are arguably even higher, as nations compete for control of a technology that promises to redefine our world.</p>
+      <a class="post post--rest" href="https://theedgemalaysia.com/node/743770" target="_blank" rel="noopener">
+        <span class="shot"><img class="thumb" src="assets/articles/743770.jpg" alt="The global AI race: The new Cold War" width="1200" height="675" loading="lazy" decoding="async"></span>
+        <p class="pby">By Akhil Gupta · Group CEO, Talbotiq</p>
+        <p class="psum">The 20th-century Cold War was defined by nuclear weapons. Today, a new cold war is being waged, with artificial intelligence (AI) as the ultimate weapon. The stakes are arguably even higher, as nations compete for control of a technology that promises to redefine our world.</p>
+        <span class="pmore">Read more <span aria-hidden="true">&rarr;</span></span>
       </a>
     </div>
-    <div class="allp allp--blog"><a href="https://theedgemalaysia.com/author/Akhil%20Gupta" target="_blank" rel="noopener">All articles on The Edge Malaysia &rarr;</a></div>
+    <div class="allp allp--blog">
+      <!-- TWO CONTROLS, ONE VISIBLE. The anchor is what the page ships with and
+           what a reader without JavaScript gets: every card is already on the
+           page, and this is the route to the columns published since this build.
+           app.js hides it and reveals the button, which expands the five cards
+           already sitting in this grid rather than leaving the page.
+
+           A button and not a restyled link, because after the swap it no longer
+           goes anywhere — it discloses. That is what aria-expanded says, and a
+           link cannot say it. -->
+      <a class="blogall" href="https://theedgemalaysia.com/author/Akhil%20Gupta" target="_blank" rel="noopener">View all thought leadership &rarr;</a>
+      <button class="blogall blogmore" type="button" hidden
+              aria-expanded="false" aria-controls="tl-grid"
+              data-more="View all thought leadership &darr;" data-less="Show less &uarr;"></button>
+    </div>
   </div>
 </section>
 
 <div class="cta">
   <div class="wrap">
-    <h2 class="hand" style="color:#fff">Ready to accelerate your business?</h2>
+    <h2 class="hand" style="color:#fff">Ready to <span class="k-y">accelerate</span> your business?</h2>
     <div class="cta-pair">
       <a class="btn btn-white btn-lg" href="demo.html">Book a demo</a>
       <a class="btn btn-outline-white btn-lg" href="contact.html">Talk to us</a>
@@ -651,15 +805,15 @@ Businesses that fai...</p>
     <a class="flogo" href="index.html" aria-label="TalbotIQ home"><img src="assets/brand/talbotiq-logo.png" alt="TalbotIQ" width="262" height="72"></a>
     <div class="fgrid">
       <div class="fcol"><h4>Products</h4>
-        <a href="products/mimic.html">Video Interviewer</a>
-        <a href="products/mimic.html">Voice Interviewer</a>
-        <a href="products/mimic.html">Chat Interviewer</a>
-        <a href="products/ats.html">ATS</a>
-        <a href="products/erp.html">ERP</a>
-        <a href="products/nouscrm.html">CRM</a>
-        <a href="products/tasca.html">tasca</a>
-        <a href="products/lexer.html">Lexer</a>
-        <a href="products/recapr.html">Recapr</a>
+        <a href="products/video-interviewer.html">Video Interview</a>
+        <a href="products/voice-interviewer.html">Voice Interview</a>
+        <a href="products/chat-interviewer.html">Chat Interview</a>
+        <a href="products/ats.html">Intelligent Recruitment Software</a>
+        <a href="products/erp.html">Business Management System</a>
+        <a href="products/nouscrm.html">Sales CRM</a>
+        <a href="products/tasca.html">Task &amp; Productivity Manager</a>
+        <a href="products/lexer.html">Intelligent Document Management</a>
+        <a href="products/recapr.html">Intelligent Note Taker</a>
         <a href="products/vawlt.html">Private AI Engine</a>
       </div>
       <div class="fcol"><h4>Solutions</h4>
@@ -682,10 +836,14 @@ Businesses that fai...</p>
         <span class="soon">Support</span>
         <span class="soon">Release notes</span>
       </div>
+      <!-- THE PHONE NUMBERS ARE NOT IN THE FOOTER, by request. Both of
+           CONTACTS held both numbers and both sat under the address here, on
+           all 27 pages.
+           They are still on the contact page and in the demo aside, which is
+           where somebody looking for a number goes — the footer offered them to
+           everybody scrolling past instead. -->
       <div class="fcol"><h4>Get in touch</h4>
         <a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a>
-        <a href="tel:+60128177741">+60 12-817 7741</a>
-        <a href="tel:+60320111320">+603 20 111 320</a>
         <a class="book" href="demo.html">Book a demo &rarr;</a>
       </div>
     </div>
@@ -700,21 +858,36 @@ Businesses that fai...</p>
       </div>
     </div>
 
+    <!-- PRIVACY POLICY · TERMS · SECURITY ARE GONE, by request. All three were
+         unlinked text: there is no privacy page, no terms page and no security
+         page on this site, so the row named three documents a reader could not
+         open. Removed rather than re-pointed — the old site's policy is not
+         this site's policy. Write the pages, then put the row back. -->
     <div class="legal">
       <span>Copyright &copy; 2026, Talbotiq Technologies Sdn Bhd [1313215-V]. All rights reserved.</span>
-      <span><a href="https://talbotiq.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a> &middot; <span class="soon">Terms</span> &middot; <span class="soon">Security</span></span>
     </div>
   </div>
 </footer>
 
-<script src="assets/js/app.js?v=c0051961" defer></script>
+<script src="assets/js/app.js?v=7c271fc4" defer></script>
 
 <!-- THE SCROLL CHOREOGRAPHY. Progressive enhancement, top to bottom: this file
      only adds classes and one custom property, and every animation is CSS. The
      page above is complete without it — no content lives inside a transition,
      nothing is ever covered, and under prefers-reduced-motion the reveals
      resolve instantly instead of moving. -->
-<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"ATS","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"ERP","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"tasca","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Lexer","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Recapr","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
-<script defer src="assets/js/scroll.js?v=e2775d39"></script>
+<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interview","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"Intelligent Recruitment Software","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"Business Management System","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"Sales CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"Task & Productivity Manager","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Intelligent Document Management","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Intelligent Note Taker","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
+<script defer src="assets/js/scroll.js?v=574d5163"></script>
+
+<!-- THE WEBSITE ASSISTANT. One line, and the same line on all twenty pages,
+     including the eighteen standalone ones — which is why the src is
+     root-absolute rather than depth-relative like everything else here. The
+     widget posts to /api/chat, so it already requires the site to be served
+     from the domain root; making the script path match adds no new constraint
+     and removes the need for a ../ that differs by directory. It carries its
+     own stylesheet, so there is no second <link> to place. Unstamped, so the
+     eighteen pages that have no stamp() can use the identical line. -->
+<script defer src="/assets/js/demoform.js"></script>
+<script defer src="/assets/js/chat.js"></script>
 </body>
 </html>

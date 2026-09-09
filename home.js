@@ -64,12 +64,15 @@ const PALETTE = {
    (Recapr), and the engine all nine ask (Private AI Engine). The engine goes
    last because it is the floor the rest stand on, not the tenth thing you buy.
 
-   THREE TILES SHARE ONE SLUG, DELIBERATELY. Video, Voice and Chat Interviewer
-   are the three modalities of Mimic, which is one product with one page. They
-   are three tiles because that is the question a reader actually arrives with
-   — "can it interview on video?" — and one product because that is what is
-   true. `slug` is the join to products.js, not a tile's identity, so the
-   build's uniqueness check is on `name`.
+   THREE TILES SHARE ONE SLUG, DELIBERATELY. Video, Voice and Chat Interview
+   are the three modalities of Mimic, which is ONE product — one entry in
+   products.js, one licence, one rubric — but each modality now ships its own
+   page, because each answers a different question a reader arrives with
+   ("can it interview on video?", "what about candidates with no camera?").
+   So `local` differs per tile while `slug` stays the join to products.js.
+   `slug` is not a tile's identity, so the build's uniqueness check is on
+   `name`. If the three ever become three products, this is the line that
+   changes — products.js gains two entries and the slugs split.
 
    `icon` is the mockup's SVG body, verbatim. `vb` is that icon's own viewBox
    when it is not the default 56 — the mockup draws the nine on 58 and the
@@ -109,14 +112,93 @@ const GROUPS = [
   { id: 'engine',   tone: 'g3', label: 'The layer underneath' },
 ];
 
+/* -------------------------------------------------------------------------
+   THE SUB-MODES OF TWO TILES
+   A video round and a chat round each come in three shapes, and each shape
+   now ships its own page under products/. They are not four and six tiles:
+   a reader choosing between "video" and "chat" is answering a different
+   question from a reader choosing between an avatar and a recording. So the
+   tile stays one tile, wears a "3 modes" pill, and opens a branch of three
+   real doors on hover, on focus, or inline on a narrow screen.
+
+   `local` is a page in this repo, same as a tile's — the branch is navigation,
+   not a tooltip. `icon` is the mockup's SVG body, drawn on 40.
+   ---------------------------------------------------------------------- */
+const MODES = {
+  video: [
+    {
+      name: 'Conversational AI Avatar Interview',
+      local: 'products/avatar-interviewer.html',
+      icon: `<rect x="4" y="4" width="32" height="24" rx="5" fill="#0E1A20"/>
+        <circle cx="20" cy="14" r="4.8" fill="#02A885"/>
+        <path d="M12 25c1.8-5 14.2-5 16 0z" fill="#02A885"/>
+        <g stroke="#F3E202" stroke-width="2" stroke-linecap="round"><path d="M20 4V1"/><path d="M8 7L6 5"/><path d="M32 7l2-2"/></g>
+        <path d="M14 36h12M20 28v8" stroke="#1F2430" stroke-width="2.2" stroke-linecap="round"/>`,
+    },
+    {
+      name: 'Recorded Video Interview',
+      local: 'products/recorded-interviewer.html',
+      icon: `<rect x="2" y="11" width="25" height="19" rx="4" fill="#02A885"/>
+        <path d="M29 19l9-5v17l-9-5z" fill="#027A5C"/>
+        <circle cx="10" cy="19" r="3.2" fill="#fff"/>
+        <rect x="16" y="17" width="8" height="2.4" rx="1.2" fill="#fff"/>
+        <circle cx="32" cy="33" r="5.6" fill="#E0655F" stroke="#fff" stroke-width="1.6"/>`,
+    },
+    {
+      name: '2-Way Interview',
+      local: 'products/two-way-interviewer.html',
+      icon: `<rect x="2" y="5" width="19" height="14" rx="3.4" fill="#02A885"/>
+        <circle cx="11.5" cy="11" r="3" fill="#fff"/>
+        <rect x="19" y="21" width="19" height="14" rx="3.4" fill="#027A5C"/>
+        <circle cx="28.5" cy="27" r="3" fill="#fff"/>
+        <g stroke="#C48A00" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 11h9"/><path d="M28 7l4 4-4 4"/><path d="M17 29H8"/><path d="M12 25l-4 4 4 4"/></g>`,
+    },
+  ],
+  chat: [
+    {
+      name: 'MCQs',
+      local: 'products/mcqs.html',
+      icon: `<rect x="3" y="3" width="34" height="34" rx="5" fill="#fff" stroke="#1F2430" stroke-width="2"/>
+        <circle cx="12" cy="12" r="3.8" fill="#02A885"/>
+        <path d="M10.2 12l1.6 1.6 3.2-3.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="19" y="10.4" width="14" height="2.6" rx="1.3" fill="#C4C2C2"/>
+        <circle cx="12" cy="21" r="3.8" fill="none" stroke="#C4C2C2" stroke-width="1.8"/>
+        <rect x="19" y="19.4" width="11" height="2.6" rx="1.3" fill="#C4C2C2"/>
+        <circle cx="12" cy="30" r="3.8" fill="#02A885"/>
+        <path d="M10.2 30l1.6 1.6 3.2-3.4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="19" y="28.4" width="14" height="2.6" rx="1.3" fill="#C4C2C2"/>`,
+    },
+    {
+      name: 'Timed Q&A',
+      local: 'products/timed-qa.html',
+      icon: `<rect x="2" y="6" width="22" height="19" rx="4" fill="#02A885"/>
+        <rect x="7" y="12" width="12" height="2.4" rx="1.2" fill="#fff"/>
+        <rect x="7" y="17" width="8" height="2.4" rx="1.2" fill="#fff"/>
+        <circle cx="28" cy="27" r="11" fill="#fff" stroke="#1F2430" stroke-width="2"/>
+        <path d="M28 27v-7" stroke="#E0655F" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M28 27l5 3" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/>`,
+    },
+    {
+      name: 'Conversational Chat Interview',
+      local: 'products/conversational-interview.html',
+      icon: `<path d="M3 5h21a3.4 3.4 0 0 1 3.4 3.4v9A3.4 3.4 0 0 1 24 20.8H12l-5.6 4.6v-4.6H3A3.4 3.4 0 0 1-.4 17.4v-9A3.4 3.4 0 0 1 3 5z" transform="translate(2 0)" fill="#02A885"/>
+        <rect x="9" y="10" width="13" height="2.2" rx="1.1" fill="#fff"/>
+        <path d="M37 18H21a3.4 3.4 0 0 0-3.4 3.4v8A3.4 3.4 0 0 0 21 32.8h9l5.6 4.4v-4.4H37a3.4 3.4 0 0 0 3.4-3.4v-8A3.4 3.4 0 0 0 37 18z" fill="#027A5C"/>
+        <rect x="22" y="23" width="12" height="2.2" rx="1.1" fill="#fff"/>
+        <rect x="22" y="27" width="7" height="2.2" rx="1.1" fill="#F3E202"/>`,
+    },
+  ],
+};
+
 const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
-    local: 'products/mimic.html',
-    name: 'Video Interviewer',
-    tagline: 'Structured video screening at volume',
-    kin: 'Async',
+    local: 'products/video-interviewer.html',
+    name: 'Video Interview',
+    tagline: 'Multi-way, one-way and AI avatar interview',
+    modes: MODES.video,
     vb: 58,
     icon: `<rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
       <path d="M42 22l14-8v26l-14-8z" fill="#027A5C"/>
@@ -128,8 +210,8 @@ const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
-    local: 'products/mimic.html',
-    name: 'Voice Interviewer',
+    local: 'products/voice-interviewer.html',
+    name: 'Voice Interview',
     tagline: 'A spoken round, transcribed live',
     kin: 'Live',
     vb: 58,
@@ -143,10 +225,10 @@ const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
-    local: 'products/mimic.html',
-    name: 'Chat Interviewer',
+    local: 'products/chat-interviewer.html',
+    name: 'Chat Interview',
     tagline: 'Blind text assessment, AI answers flagged',
-    kin: 'Async',
+    modes: MODES.chat,
     vb: 58,
     icon: `<path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
       <rect x="16" y="19" width="22" height="3.6" rx="1.8" fill="#fff"/>
@@ -158,8 +240,9 @@ const TILES = [
     slug: 'ats',
     group: 'hiring',
     local: 'products/ats.html',
-    name: 'ATS',
-    tagline: 'Requisition to signed offer',
+    name: 'Intelligent Recruitment Software',
+    was: 'ATS',
+    tagline: 'End-to-end recruitment system for your hiring needs',
     kin: '2 modes',
     vb: 58,
     icon: `<path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
@@ -170,7 +253,13 @@ const TILES = [
     slug: 'erp',
     group: 'business',
     local: 'products/erp.html',
-    name: 'ERP',
+    name: 'Business Management System',
+    was: 'ERP',
+    /* NOT SETTLED. The meeting named the modules — purchase, procurement,
+       invoicing, vendor management, cash flow — but stopped short of the final
+       two lines, which were to be written from the ERP module list. This is the
+       previous line, kept because a placeholder that reads like copy is worse
+       than an old line that is at least true. Replace when the wording lands. */
     tagline: 'Order to cash, purchase to pay',
     vb: 58,
     icon: `<rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
@@ -183,9 +272,9 @@ const TILES = [
     slug: 'nouscrm',
     group: 'business',
     local: 'products/nouscrm.html',
-    name: 'CRM',
+    name: 'Sales CRM',
     was: 'NousCRM',
-    tagline: 'The intelligent hub for sales teams',
+    tagline: 'Intelligent platform for leads and sales',
     page: 'https://talbotiq.com/products/sales-crm/',
     vb: 58,
     icon: `<rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
@@ -198,9 +287,9 @@ const TILES = [
     slug: 'task-manager',
     group: 'business',
     local: 'products/tasca.html',
-    name: 'tasca',
-    was: 'Task Manager',
-    tagline: 'Plan, track, ship faster',
+    name: 'Task & Productivity Manager',
+    was: 'tasca',
+    tagline: 'Smart management for tasks and productivity',
     page: 'https://talbotiq.com/products/task-management-system/',
     vb: 58,
     icon: `<rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
@@ -214,9 +303,12 @@ const TILES = [
     slug: 'lexerai',
     group: 'business',
     local: 'products/lexer.html',
-    name: 'Lexer',
-    was: 'Document Parser',
-    tagline: 'Contact and receipt intelligence',
+    /* NOT "Parser". The meeting is explicit that the product scans as well as
+       parses, so calling it a parser understates it — "Intelligent Document
+       Management" was the name settled on. */
+    name: 'Intelligent Document Management',
+    was: 'Lexer',
+    tagline: 'Scan and parse all types of documents',
     vb: 58,
     icon: `<path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
       <path d="M33 3l16 16H33z" fill="#027A5C"/>
@@ -228,8 +320,9 @@ const TILES = [
     slug: 'recapr',
     group: 'business',
     local: 'products/recapr.html',
-    name: 'Recapr',
-    tagline: 'The meeting, on the record',
+    name: 'Intelligent Note Taker',
+    was: 'Recapr',
+    tagline: 'The intelligent note taker for all your meetings',
     vb: 58,
     icon: `<path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
       <rect x="15" y="19" width="21" height="3.6" rx="1.8" fill="#fff"/>
@@ -259,8 +352,6 @@ const TILES = [
 const NUMWORD = ['no', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
   'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
 const COUNT = NUMWORD[TILES.length] || String(TILES.length);
-/* "the other nine" in the engine's note: everything except the engine itself. */
-const COUNT_BUT_ENGINE = (NUMWORD[TILES.length - 1] || String(TILES.length - 1)).toLowerCase();
 
 /* -------------------------------------------------------------------------
    COPY
@@ -275,7 +366,10 @@ const COPY = {
      from the live inquiry page because it is a good one; the rest is written
      for a form that now sits on this site rather than on the old one. */
   demo: {
-    heading: 'Ready to accelerate your business with AI?',
+    heading: {
+      text: 'Ready to accelerate your business with AI?',
+      keys: [['accelerate', 'g'], ['AI', 'y']],
+    },
     lede: 'Tell us which product you want to see and we will come back to you within one business day.',
     notesPlaceholder: 'What you would like the demo to cover, and roughly how many people would use it.',
     cta: 'Request a demo',
@@ -284,25 +378,42 @@ const COPY = {
   /* THE PRODUCT SECTION'S OWN HEADING AND LEDE. It is `lead` + `marked`
      like the hero, because the highlighter lands on the second clause only —
      a mark that has to guess where a line wraps is a mark in the wrong place.
-     `enote` is the sentence under the engine, and it is the one claim in this
-     section that the other nine tiles cannot make for themselves. */
+
+     THE ENGINE'S NOTE IS GONE, by request. `enote` was a sentence set under
+     the engine tile claiming purpose-trained models on controlled hardware and
+     per-task data declarations. It was the one claim in this section the other
+     tiles could not make for themselves, and it is removed rather than
+     softened — an unmade claim needs no hedging. `COUNT_BUT_ENGINE` went with
+     it; it counted the tiles for that sentence and had no other reader. */
   products: {
-    lead: `${COUNT} products.`,
-    marked: 'One data layer.',
+    heading: {
+      text: 'All products Powered by or Connected to an AI Engine.',
+      keys: [['Powered by', 'g'], ['AI Engine', 'y']],
+    },
     lede: {
       strong: 'Buy one, or buy the suite.',
       rest: 'Work moves between them without an export, a hand-off, or a second version of the truth.',
     },
-    enote: {
-      strong: `The other ${COUNT_BUT_ENGINE} are things you use. This is what they run on`,
-      rest: '\u2014 purpose-trained models on hardware we control, with every task declaring where it runs and what it does with personal data.',
-    },
   },
 
+  /* THE HEADER'S OWN CALL TO ACTION, separate from the hero's. The top-right
+     button used to reuse `hero.primary` ("Book a demo") and open demo.html;
+     by request it now offers the contact page instead. It is its own key
+     because the hero, the closing band and the footer still ask for a demo —
+     one string serving four buttons is what made this look like a site-wide
+     change when it is only the header. */
+  headerCta: 'Get in touch',
+
   hero: {
-    lead: 'Every workflow, running',
-    marked: 'on intelligence.',
-    lede: { strong: 'One connected suite.', rest: `${COUNT} products, one data layer.` },
+    /* ONE HEADING, NOT TWO HALVES. It used to be split into `lead` and
+       `marked` because a highlighter had to be positioned over the second
+       clause. The emphasis is colour now, so the sentence is whole and the
+       words that carry it are simply named. */
+    heading: {
+      text: 'Every workflow, running on intelligence.',
+      keys: [['workflow', 'y'], ['intelligence', 'g']],
+    },
+    lede: { strong: 'All products', rest: 'Powered by or Connected to an AI Engine.' },
     primary: 'Book a demo',
     secondary: 'Explore the products',
     /* REMOVED, both on request:
@@ -345,24 +456,38 @@ const COPY = {
       Answer: 'Execute result',
     },
 
-    /* THE RIGHT-HAND VISUAL. Null until a file exists, and while it is null the
-       wireframe well is drawn in that slot as a static figure — it was always
-       the placeholder. Set this and the well is replaced by the video, which
-       plays on its own clock: muted, looping, no controls, no interaction and
-       nothing whatsoever to do with the scroll position.
+    /* THE RIGHT-HAND VISUAL IS INLINE SVG, not a file. The neural loop lives in
+       build.js and animates in CSS, which is why this is null: three columns,
+       the signal travelling application -> engine -> agent, on a 9s cycle
+       whose every duration divides 9 so it closes on itself and runs for ever.
 
-         video: { src: 'assets/eco/core.mp4', poster: 'assets/eco/core.jpg' }
+       INLINE BEAT THE MP4 ON ALL THREE THINGS THAT MATTER HERE. The figure
+       carries eleven product names and nine agent names at about 9px on
+       screen, where vector text stays sharp and a 1080p frame upscaled into a
+       810px column at 2x does not. It is 20kB against 4.4MB. And a CSS
+       animation cannot be paused by an autoplay policy, a battery saver or a
+       backgrounded tab, which is what "never stops" actually requires.
+       `prefers-reduced-motion` still stops it, deliberately.
 
-       `poster` is optional but worth having: it is what fills the frame on a
-       slow connection and on the first paint before the video decodes. */
+       TO GO BACK TO A VIDEO, set this and the SVG is not emitted at all:
+
+         video: { src: 'assets/eco/neural-loop.mp4', poster: 'assets/eco/neural-loop.jpg' }
+
+       Both files are current — same revision as the inline figure — so the
+       switch is one line and nothing else has to change. The mp4 is a
+       9-second 1920x1080 H.264 loop with NO AUDIO TRACK at all, not merely
+       muted, so there is nothing for an autoplay policy to block. Note that
+       it carries the exhibit's own opaque ground, which the inline version
+       drops so the figure sits on the section's flat black. */
     video: null,
   },
 
-  /* the company's own line, from about-us. `lassoed` gets the circle. */
+  /* the company's own line, from about-us. */
   mission: {
-    lead: 'Technology is a tool.',
-    lassoed: 'Intelligence',
-    tail: 'is the edge.',
+    heading: {
+      text: 'Technology is a tool. Intelligence is the edge.',
+      keys: [['Technology', 'g'], ['Intelligence', 'y']],
+    },
     body:
       'At Talbotiq, we believe the next decade of business will be defined by those '
       + 'who can successfully transition from manual workflows to intelligent systems. '
@@ -370,12 +495,19 @@ const COPY = {
       + 'injecting high-fidelity AI and robust engineering into the core of your business.',
   },
 
-  capsHeading: { lead: 'Enterprise AI,', underlined: 'done properly.' },
+  /* One keyword, not two: "AI" is the whole subject of the line and a second
+     colour would be decoration rather than emphasis. */
+  capsHeading: {
+    text: 'Enterprise AI, done properly.',
+    keys: [['AI', 'g']],
+  },
   /* The section is a media-and-thought-leadership showcase, not a company
      blog: every card is a column published BY a masthead, so the heading names
-     what the cards actually are. The squiggle keeps to the second half, the
-     same shape the other section headings use. */
-  blogHeading: { lead: 'Thought Leadership &', squiggled: 'Media Coverage' },
+     what the cards actually are. */
+  blogHeading: {
+    text: 'Thought Leadership & Media Coverage',
+    keys: [['Leadership', 'g'], ['Coverage', 'y']],
+  },
   /* The editorial introduction, set between the heading and the grid. It says
      whose byline these are and where they run, which is the claim the cards
      only imply one at a time. `.sec-lede` is already in scroll.js's reveal KIT,
@@ -383,7 +515,10 @@ const COPY = {
   blogLede: 'Akhil Gupta is a regular columnist for The Edge Malaysia and an active contributor to a range of national and regional media platforms. The Edge Malaysia is one of the country\u2019s leading business and financial news publications. His writing explores the evolving intersections of AI, business strategy, digital transformation, and talent development.',
 
   close: {
-    heading: 'Ready to accelerate your business?',
+    heading: {
+      text: 'Ready to accelerate your business?',
+      keys: [['accelerate', 'y']],
+    },
     primary: 'Book a demo',
     secondary: 'Talk to us',
     /* The company's creed, quoted from the accuracy contract rather than
@@ -403,8 +538,12 @@ const COPY = {
   allProducts: 'View all products',
 };
 
-/* `wide` spans two columns, which is what makes the five cards sit in a
-   3 + 2 grid instead of leaving a hole in the second row. */
+/* SIX CARDS, so nothing spans. `wide: true` used to sit on "Innovation at
+   speed" and stretch it across two columns — it existed for one reason, which
+   was that five cards in a three-column grid leave a hole in the second row.
+   Six fill it, so the workaround came off with the sixth card's arrival and
+   every card is now the same width. `.cap.wide` is still in §8 of the
+   stylesheet if an odd count ever comes back. */
 const CAPABILITIES = [
   {
     title: 'Strategic insights',
@@ -420,7 +559,6 @@ const CAPABILITIES = [
   },
   {
     title: 'Innovation at speed, integrity in data',
-    wide: true,
     body:
       'We move at the pace of the AI industry, so our clients never fall behind — and we '
       + 'prioritize security and ethical AI practices above all else. We work with your team '
@@ -429,6 +567,10 @@ const CAPABILITIES = [
   {
     title: 'Efficient deployment',
     body: 'Launch AI tools through structured workflows that minimize disruption and maximize adoption speed.',
+  },
+  {
+    title: 'Subject Matter Expertise',
+    body: 'Combine deep industry knowledge with AI expertise to build solutions tailored to real-world business challenges, workflows, and domain-specific requirements.',
   },
 ];
 
@@ -460,7 +602,10 @@ const CAPABILITIES = [
    two cannot drift apart.
    ---------------------------------------------------------------------- */
 const WHY = {
-  heading: 'Why Lead with Talbotiq?',
+  heading: {
+    text: 'Why Lead with Talbotiq?',
+    keys: [['Lead', 'g'], ['Talbotiq', 'y']],
+  },
   lede: 'We combine technical craftsmanship with the predictive power of Artificial Intelligence.',
   points: [
     {
@@ -496,38 +641,114 @@ const WHY = {
    This replaced three placeholder cards, two of which were loose paraphrases
    of articles now shown verbatim from the source — the "US$15.7 trillion"
    line was a rewrite of the real summary of "The algorithmic edge". The third
-   was a podcast episode ([EP120] Beyond the Headlines) that is not in the
-   author index and had no URL; if it should appear, it belongs in a separate
-   list rather than mixed in with these, because it is not one of these.
+   was a podcast episode ([EP120] Beyond the Headlines), which is not in the
+   author index and is not one of these. It has its own record now — FEATURE,
+   below — and its own layout above the grid, which is where it belonged.
    ---------------------------------------------------------------------- */
 const BLOG = {
-  /* null shows every article in `articles.js`; a number caps the grid and the
-     rest stay one click away behind the "all articles" link. */
-  show: null,
-  /* Shown on each card beside the date. These are columns published BY a
-     masthead, not posts on our own blog, and saying so is the difference
-     between citing and implying. */
-  attribution: 'The Edge Malaysia',
-  moreLabel: 'All articles on The Edge Malaysia',
+  /* THREE, not eight. All eight records stay in articles.js and none of them
+     are deleted — the grid shows the newest three and the rest are one click
+     away. Eight cards at once read as an archive dump; three read as a
+     selection. `null` here would show every one of them again. */
+  show: 3,
+  /* The label over the three cards. Rendered uppercase by the eyebrow rule. */
+  sectionLabel: 'Selected thought leadership',
+  /* THE ONE METADATA LINE UNDER EACH COVER, and it replaces the date and the
+     masthead that used to sit there. Exact wording, fixed here rather than
+     assembled in the template so it cannot drift between cards. The middle
+     character is U+00B7, a real middle dot. */
+  byline: 'By Akhil Gupta · Group CEO, Talbotiq',
+  /* Points at the publisher's own author index, which is the live list of
+     every column he has written — the five not on the homepage included, and
+     the ones written after this build too. A local archive page would be a
+     second copy of someone else's content that goes stale the day he files
+     again, so this reuses the route that already exists. */
+  moreLabel: 'View all thought leadership',
+};
+
+/* -------------------------------------------------------------------------
+   THE FEATURED EPISODE
+   One media item, set above the grid rather than in it. It is deliberately NOT
+   a ninth article card: the columns below are read and this is watched, and a
+   16:9 player sitting in a row of 3:2 thumbnails would claim to be the same
+   kind of thing. It is also not ours — it is an appearance ON someone else's
+   show, which is why `show` names the programme and is the loudest line in the
+   block.
+
+   `youtube` is the video id, not a URL, so there is exactly one place that
+   knows how a YouTube embed is spelled (build.js) and no chance of a watch
+   link being pasted where an embed URL belongs. The id resolves to
+   https://www.youtube.com/watch?v=AbNEbtdJUB8 — NST Online, 5 Feb 2026.
+
+   Set this to null and the section renders exactly as it did before: heading,
+   lede, grid.
+   ---------------------------------------------------------------------- */
+const FEATURE = {
+  show: 'Beyond the Headlines',
+  title: '[EP120] BTH: The AI Race: Preparing Malaysia\u2019s workforce and economy',
+  desc: 'A closer look at Artificial Intelligence and its growing impact on Malaysia\u2019s '
+    + 'economy, businesses, and society. A talk about how the country is preparing to become '
+    + 'an AI nation by 2030, and what challenges lie ahead for small and medium enterprises '
+    + 'as they navigate this technological shift.',
+  youtube: 'AbNEbtdJUB8',
+};
+
+/* -------------------------------------------------------------------------
+   THE BROADCAST APPEARANCE — the second item under the episode
+   -----------------------------------------------------------------------------
+   NOT A VIDEO, AND IT DOES NOT PRETEND TO BE ONE INLINE. On akhilgupta.live
+   this item is a still with a play glyph baked into it, linked to the LinkedIn
+   post that actually holds the clip. There is no embeddable source — CGTN's
+   segment is not on a channel this page can frame — so the honest version is
+   the same still, linked out, with a visible "Watch on LinkedIn" under it so
+   the glyph is not promising playback this page cannot deliver.
+
+   `image` is served from our own origin rather than hotlinked from
+   akhilgupta.live: the file is cropped of its screenshot borders and
+   recompressed, and a build with it missing fails rather than shipping a hole.
+   ---------------------------------------------------------------------- */
+const BROADCAST = {
+  show: 'Live TV Interview with China Global Television Network',
+  title: 'AI on the Global Stage: A Conversation That Matters',
+  desc: 'Catch a glimpse of a dynamic live discussion on CGTN about the Global AI '
+    + 'Competition. Explore how AI is rapidly transforming industries and shifting '
+    + 'global power. Dive into key insights and bold questions shaping our tech-driven future.',
+  link: 'https://www.linkedin.com/posts/akhil-gupta-a706503_ai-artificialintelligence-tech-activity-7295724190286917632-nsfB',
+  linkLabel: 'Watch on LinkedIn',
+  image: 'assets/press-cgtn.jpg',
+  imageAlt: 'CGTN Global Business, during the segment on the global AI competition',
+  imageW: 778,
+  imageH: 512,
 };
 
 /* -------------------------------------------------------------------------
    NAV
    The mockup draws a caret on Products, Solutions and Company and leaves
-   Pricing and Support bare, so those three own panels and the other two are
-   plain links.
+   the last item bare, so those three own panels and it is a plain link.
 
-   Neither a pricing page nor a support portal exists yet. Both point at
-   contact: a company with no published price list answers that question in a
-   conversation, and a nav item that 404s is worse than one that redirects
-   somewhere real. `note` records why, so it is a decision and not a bug.
+   PRICING IS GONE, by request — the item and the reasoning that kept it. It
+   used to sit here pointing at contact, on the argument that a company with no
+   published price list answers that question in a conversation. Removed
+   outright instead: an item promising a price and delivering a contact form is
+   a nav that does not do what it says, and there is no pricing page to point
+   at. The same removal was made in tools/fix-pages.js, which used to re-aim it
+   on the standalone product pages and now strips it.
+
+   SUPPORT IS NOW CONTACT, by request. It already pointed at the contact page —
+   on the argument that no support portal exists yet and a nav item that 404s is
+   worse than one that redirects somewhere real — so this is the label catching
+   up with where the link always went. It carries no `note` any more: a Contact
+   item pointing at contact is not a decision that needs defending.
+
+   The footer's Resources column still lists a separate `Support`, unlinked and
+   marked "soon". That one means a support portal that does not exist yet, which
+   is a different thing from this nav item, so it was left alone.
    ---------------------------------------------------------------------- */
 const NAV = [
   { label: 'Products', panel: 'products' },
   { label: 'Solutions', panel: 'solutions' },
   { label: 'Company', panel: 'company' },
-  { label: 'Pricing', to: 'contact', note: 'no published price list yet' },
-  { label: 'Support', to: 'contact', note: 'no support portal yet' },
+  { label: 'Contact', to: 'contact' },
 ];
 
 /* SOLUTIONS — the engagements, as opposed to the products: what TALBOTIQ does
@@ -590,11 +811,26 @@ const RESOURCES = [
   { name: 'Release notes', url: null },
 ];
 
-/* The footer's last column. Both numbers are the mockup's; the +603 landline
-   also appears on talbotiq.com. */
+/* ONE NUMBER, NAMED, AND IT IS NEVER PRINTED. This was `phones`, an array of
+   the mobile and the landline, and every place that displayed either of them is
+   gone — no page on this site shows phone digits any more. What is left is the
+   office line, which two `tel:` links on the demo page DIAL behind the words
+   "Call the office".
+
+   IT IS A FIELD RATHER THAN AN ARRAY BECAUSE THE ARRAY HAD TWO TRAPS. Only its
+   LAST element was ever read, so the mobile number sat in the file rendering
+   nowhere and reading as though it did; and the reads were
+   `phones[phones.length - 1]`, so anyone emptying the array to "remove the
+   numbers" got `phones[-1]` — undefined — and a TypeError instead of a page.
+   A named field cannot be half-emptied.
+
+   THE MOBILE IS STILL ON THE SITE, as the wa.me number behind the WhatsApp
+   links in the standalone pages. Those are hand-written in each page, not
+   generated from here — `products.js` records it as COMPANY.whatsapp — so it is
+   not this file's business. */
 const CONTACTS = {
   email: 'hello@talbotiq.com',
-  phones: ['+60 12-817 7741', '+603 20 111 320'],
+  office: '+603 20 111 320',
 };
 
 /* No form endpoint exists yet. Until `action` is set, the field renders
@@ -607,14 +843,19 @@ const NEWSLETTER = {
   cta: 'Subscribe',
 };
 
-const LEGAL = [
-  { name: 'Privacy Policy', url: 'https://talbotiq.com/privacy-policy/' },
-  { name: 'Terms', url: null },
-  { name: 'Security', url: null },
-];
+/* PRIVACY POLICY · TERMS · SECURITY ARE NO LONGER IN THE FOOTER, by request.
+   The array that held them is gone with the row. All three were unlinked text:
+   there is no privacy page, no terms page and no security page in this repo,
+   and the previous decision here was to render them without an href rather
+   than send a reader to the old site's policy. Naming three documents nobody
+   can open is the thing that has now been removed instead.
+
+   THE GAP IS REAL AND DELIBERATE. This site has no privacy policy a reader can
+   open. When one is written, this is where its entry goes, and build.js's
+   footer is where the row comes back. */
 
 module.exports = {
   PALETTE, TILES, GROUPS, COPY, CAPABILITIES,
-  WHY, BLOG,
-  NAV, SOLUTIONS, COMPANY_LINKS, RESOURCES, CONTACTS, NEWSLETTER, LEGAL,
+  WHY, BLOG, FEATURE, BROADCAST,
+  NAV, SOLUTIONS, COMPANY_LINKS, RESOURCES, CONTACTS, NEWSLETTER,
 };

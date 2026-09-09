@@ -1,6 +1,6 @@
 # TALBOTIQ — homepage
 
-One static homepage presenting the eight TALBOTIQ products as a single
+One static homepage presenting the ten TALBOTIQ products as a single
 ecosystem. No build tooling, no framework, **no runtime dependencies** — Node
 is used only to stamp the data into HTML.
 
@@ -40,10 +40,9 @@ The cut corner on the capability band is a separate device and is unchanged.
 ```text
 header        logo · five nav items, three of which open a panel · Book a demo
 hero          one display line, highlighter on its last clause, lede, two buttons
-#products     eight tiles on the grey band, straight edge
+#products     ten tiles on the grey band, in three groups, straight edge
 #ecosystem    the suite's claim, in its own tinted band
 mission       "Technology is a tool. (Intelligence) is the edge."
-trust         four client logos, looping
 caps          five capability cards, 3 + 2, one corner cut
 #why          why lead with Talbotiq — three claims, text only
 #insights     every published column, from articles.js
@@ -51,17 +50,23 @@ cta           the closing offer, in teal
 footer        five columns · newsletter · legal
 ```
 
-Two typefaces. **MESHED Display** (Rajesh Rajput) carries every display line
-and is **self-hosted** from `assets/fonts/`; **Inter** does everything else and
-comes from Google Fonts. The eight product pages use the same pair — see *The
-product pages* below. The display face is the whole voice of the page, so it
-is never used below display sizes — every element that uses it carries the
-`.hand` class.
+Two typefaces. **Bodoni Moda** (Owen Earl) carries every display line and
+**Inter** does everything else; both come from Google Fonts in a single
+stylesheet request, so there is one round trip rather than two and nothing is
+self-hosted. The eleven product pages use the same pair — see *The product
+pages* below. The display face is the whole voice of the page, so it is never
+used below display sizes — every element that uses it carries the `.hand`
+class.
 
-MESHED Display is free for personal and commercial use, and its licence forbids
-modifying the files, so the shipped `.woff2` is the vendor's own, byte for byte
-— **never subset or re-compress it**. Only Bold is shipped because only Bold is
-used; `assets/fonts/README.md` covers switching weights.
+Only weight **700** of the display face is requested, because only 700 is used.
+The `opsz` axis is requested across its full `6..96` range on purpose: Bodoni
+Moda is a Didone whose hairlines thin as the size grows, and
+`font-optical-sizing` (auto by default) is what keeps the 76px hero from going
+wispy and a 19px SVG label from going muddy.
+
+The previous display face was **MESHED Display**, self-hosted from
+`assets/fonts/`. That `.woff2` is still in the repo but is no longer
+referenced — see `assets/fonts/README.md` before deleting it.
 
 > **This replaced Caveat Brush**, the brush script the mockup used. It is a
 > deliberate change of voice: a high-contrast Didone serif reads editorial and
@@ -100,14 +105,14 @@ line wraps is a mark in the wrong place.
 | `products.js` | **What each product IS.** Descriptions, features, real app URLs, and the `evidence` string behind every claim. |
 | `articles.js` | **Generated.** The published columns shown in `#insights`, copied verbatim from The Edge Malaysia. Do not hand-edit. |
 | `tools/fetch-articles.js` | Regenerates `articles.js` from the publisher's own page data. |
-| `products/*.html` | The eight product pages. Standalone mockups, linked from the tiles. |
+| `products/*.html` | The eleven product pages. Standalone mockups, linked from the tiles. |
 | `about.html` | The about page. A standalone mockup, like the product pages. |
 | `contact.html` | The contact page. Standalone mockup; carries the office address and the working phone/email/WhatsApp links. |
 | `signin.html` | The sign-in page. Work email + password, or Continue with Google, through Supabase Auth. Ships **not connected**: fill in the two keys at the top of its script to switch it on. |
 | `solutions/*.html` | One page per service. Four of five; only AI Governance & Security to come. |
-| `tools/fix-pages.js` | Wires the placeholder links in `about.html` and `products/*.html`, fixes the bugs they shipped with, and swaps their display face. |
+| `tools/fix-pages.js` | Wires the placeholder links in `about.html`, `contact.html`, `products/*.html` and `solutions/*.html`, fixes the bugs they shipped with, and swaps their display face. Re-run it whenever a new mockup is dropped in. |
 | `tools/check-signin.py` | Drives `signin.html`'s sign-in flow in headless Chrome against a stubbed provider — 29 assertions across the not-connected and connected states. `python3 tools/check-signin.py`, exit 0 only if all pass. |
-| `home.js` | **How the homepage is COMPOSED.** The eight tiles, every word of copy, the nav, the footer. Joins to `products.js` by `slug`. |
+| `home.js` | **How the homepage is COMPOSED.** The ten tiles, every word of copy, the nav, the footer. Joins to `products.js` by `slug`. |
 | `build.js` | The template + generator. One function per section. |
 | `index.html` | Generated output. Overwritten on every build. |
 | `assets/css/talbotiq.css` | The whole design system. §1–§12 is the mockup's own CSS; §13+ is what a shipped page needs and a mockup does not. |
@@ -132,9 +137,9 @@ rename stays visible:
 
 | Was | Now |
 | --- | --- |
-| NousCRM | Sales CRM |
+| NousCRM | CRM |
 | Task Manager | tasca |
-| lexerai | Document Parser |
+| Document Parser | Lexer |
 | TalbotIQ AI Engine | Private AI Engine |
 | PMS | ERP |
 | HRMS *(was hidden)* | ATS *(shipped)* |
@@ -461,19 +466,40 @@ every product tile, the Products nav panel, the drawer and the footer.
 
 | Tile on the homepage | Page | The page calls it |
 | --- | --- | --- |
-| Mimic | `products/mimic.html` | Mimic |
+| Video Interview | `products/video-interviewer.html` | Video Interview |
+| Voice Interview | `products/voice-interviewer.html` | Voice Interview |
+| Chat Interview | `products/chat-interviewer.html` | Chat Interview |
 | ATS | `products/ats.html` | ATS |
 | ERP | `products/erp.html` | ERP |
-| Sales CRM | `products/nouscrm.html` | **NousCRM** |
+| CRM | `products/nouscrm.html` | **NousCRM** |
 | tasca | `products/tasca.html` | tasca |
+| Lexer | `products/lexer.html` | Lexer |
 | Recapr | `products/recapr.html` | Recapr |
-| Document Parser | `products/lexer.html` | **Lexer** |
 | Private AI Engine | `products/vawlt.html` | **Vawlt** |
+| *(no tile)* | `products/mimic.html` | Mimic |
 
-Tiles resolve through `tileHref()` in `build.js`, which now prefers a local
-page over anything external, so all eight are linked — ERP and Vawlt had no
-destination at all before. Local pages open in the **same tab**; only external
-links get `target="_blank"`.
+Tiles resolve through `tileHref()` in `build.js`, which prefers a local page
+over anything external, so all ten are linked. Local pages open in the **same
+tab**; only external links get `target="_blank"`.
+
+**TEN TILES, ELEVEN PAGES, AND ONE OF THEM IS NOW UNREACHED.** Video, Voice
+and Chat Interview are three modalities of one product — a single `mimic`
+entry in `products.js` — and they used to be three tiles pointing at one
+`products/mimic.html`. Each now has its own page, so the homepage no longer
+links to `mimic.html` at all. The page still exists and the eight older
+product pages still list *Mimic* in their own footers, so it is not orphaned,
+just no longer on the front door. **It is a live decision, not a finished
+one:** either retire `mimic.html` and drop *Mimic* from those footers, or keep
+it as the combined overview and give it a route back. Until then the site
+ships two vocabularies at once — see the note below.
+
+**THE OLDER PAGES' FOOTERS STILL SPEAK THE OLD VOCABULARY.** The three
+interviewer pages list the suite as the homepage does — Video/Voice/Chat
+Interview, CRM, Private AI Engine — while the eight older product pages
+list Mimic, NousCRM and Vawlt. `tools/fix-pages.js` maps **both** spellings to
+the page that exists, so every link resolves either way and no page had to be
+rewritten to match the other; what it cannot do is decide which vocabulary is
+the real one. That is a copy decision, recorded here rather than papered over.
 
 ### The about page
 
@@ -586,9 +612,9 @@ leaves the wording to you.
 node tools/fix-pages.js
 ```
 
-Every link in the supplied mockups was `href="#"` — **500 of them across the
-fourteen pages, including the logo**, which made each page a dead end: you could
-click a tile but never get back. The tool points them at the destinations the
+Every link in the supplied mockups was `href="#"` — **hundreds of them across
+the seventeen pages, including the logo**, which made each page a dead end: you
+could click a tile but never get back. The tool points them at the destinations the
 homepage already knows, so a product page and the homepage cannot disagree
 about where "Contact us" goes. It is idempotent, so re-running after a page is
 replaced is safe; `--dry` reports without writing and `--verbose` shows which
@@ -598,9 +624,14 @@ rules fire.
 `products/*.html` and `solutions/*.html` are one level down, so "the homepage" is `index.html` from one and `../index.html` from
 the other, and a product link is `products/mimic.html` from one and
 `mimic.html` from the other. Every rule is built per page from its own depth.
-Getting this wrong would be silent — the link still exists, it just 404s — so
-the check at the end of every run resolves every local href against the
-filesystem.
+Getting this wrong is silent — the link still exists, it just 404s — so the
+check at the end of every run resolves every local `href`, `src` and `poster`
+against the filesystem and **exits non-zero** if one of them misses. `src` and
+`poster` are in there because a `<video>` with a missing source fails with no
+console error whatsoever, which is how all eleven product pages shipped
+pointing their demo reel at `products/assets/` instead of `assets/`. The
+demo-video files themselves are still to come and are reported separately as
+the marked placeholders they are.
 
 Where no destination exists — Leadership, Memberships, Careers, Terms,
 Security, AI Governance & Security — it **removes the `href`** rather than
@@ -613,14 +644,19 @@ exactly the entries the homepage marks "soon".
 The mockups shipped with **Caveat Brush** — the brush script the homepage used
 before it was deliberately replaced. Left alone, the homepage and the page one
 click away from it read as two different brands, so the tool applies the same
-swap: Caveat Brush comes out of the Google Fonts request (Inter stays), MESHED
-Display is added as a self-hosted `@font-face` from `../assets/fonts/`, and
-`.hand` moves to weight 700 with `line-height: 1.08` — the homepage's value.
+swap: Caveat Brush comes out of the Google Fonts request, **Bodoni Moda** goes
+in beside Inter, and `.hand` moves to weight 700 with `line-height: 1.08` — the
+homepage's value. Every rule matches **two** source states, Caveat Brush from a
+freshly dropped mockup and MESHED Display from the pages already converted by
+the previous version of the tool, so one pass converges from either and a
+second pass is a no-op.
 
-**The highlighter had to be re-aimed, as it did on the homepage.** `top: 26%;
-height: 74%` was tuned to Caveat Brush; against MESHED Display those numbers
-paint below the baseline and the mark reads as a thick underline. Two steps fix
-it:
+**The highlighter rules now match nothing** — `.mark-hl` was removed from every
+page — and their em values were derived against MESHED Display, whose metrics
+are nothing like Bodoni Moda's. They are kept only in case a re-dropped mockup
+brings the marker back, and would need re-deriving if it did. What they did:
+`top: 26%; height: 74%` was tuned to Caveat Brush and painted below the
+baseline against a serif, so two steps fixed it:
 
 1. **Crop the SVG's viewBox to its ink.** Measured with `getBBox()` in a
    browser, the path occupies y 24–52.6 of its `0 0 W 60` box on all eight
@@ -701,10 +737,17 @@ sees changes.
   Hanafiah Harunarashid and Levin Kesu Belani. The byline is stored as printed.
 - **`BLOG.show` in `home.js`** is `null`, meaning show all. Set it to a number
   to cap the grid; the rest stay behind the "all articles" link.
-- **Section heading** is still the mockup's *"From our blogs"*. These are columns
-  published by a masthead rather than posts on our own blog — each card is
-  attributed "· The Edge Malaysia" for that reason. If the heading should say
-  something like *"In the press"*, that is `COPY.blogHeading` in `home.js`.
+- **Section heading** is *"Thought Leadership & Media Coverage"* — no longer the
+  mockup's *"From our blogs"*. These are columns published by a masthead rather
+  than posts on our own blog, and the heading now says so; each card is also
+  attributed "· The Edge Malaysia" for the same reason. The heading is
+  `COPY.blogHeading` in `home.js`, split into `lead` + `squiggled` so the
+  squiggle annotates "Media Coverage".
+- **`COPY.blogLede`** is the editorial introduction between the heading and the
+  grid: who the byline belongs to and where it runs. It renders as
+  `.sec-lede.blog-lede` — `.sec-lede` is already in `scroll.js`'s reveal KIT, so
+  it inherits the standard lede rise, and `.blog-lede` only re-anchors it left
+  under `h2.hand.left` (the base class is centred for centred headings).
 - **Three placeholder cards were replaced.** Two were loose paraphrases of
   articles now shown verbatim (the "US$15.7 trillion" card was a rewrite of the
   real summary of "The algorithmic edge"). The third was a podcast episode

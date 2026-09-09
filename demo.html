@@ -12,11 +12,19 @@
 <meta property="og:description" content="Tell us which product you want to see and we will come back to you within one business day.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-<!-- the display face is self-hosted and used by the very first line of the
-     page, so it is preloaded rather than discovered late in the stylesheet -->
-<link rel="preload" href="assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/talbotiq.css?v=cd0095b3">
+<!-- ONE REQUEST FOR BOTH FACES. Bodoni Moda (display) and Inter (text) come
+     from the same stylesheet, so the browser makes one round trip instead of
+     two. opsz is requested across its full range because Bodoni Moda is a
+     Didone whose hairlines thin as the size grows, and font-optical-sizing
+     (auto by default) is what keeps the 76px hero from going wispy. Only
+     weight 700 of the display face is used, so only 700 is asked for.
+
+     The display face used to be self-hosted and preloaded here; it is served
+     by Google now, so the preload is gone with it — a preload pointing at a
+     versioned fonts.gstatic.com URL the stylesheet does not also carry would
+     just download the file twice. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/talbotiq.css?v=f1ca9d73">
 <!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
      that hides or moves anything is scoped to html.fx, so the class decides
      whether the page animates at all. A deferred script sets it too late: the
@@ -33,7 +41,7 @@
    that it is alive by adding fx-on, and if that has not happened within two
    seconds .fx comes off and the whole page resolves to its finished state. */
 setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx');}},2000);}}catch(e){}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"TalbotIQ","legalName":"Talbotiq Technologies Sdn Bhd [1313215-V]","url":"https://talbotiq.com","slogan":"Technology is a tool. Intelligence is the edge.","description":"Architecting the Intelligence Layer of Modern Businesses","telephone":"+603 20 111 320","email":"hello@talbotiq.com","address":{"@type":"PostalAddress","addressLocality":"Kuala Lumpur","addressCountry":"MY"},"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Video Interviewer","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Voice Interviewer","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Chat Interviewer","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"ATS","applicationCategory":"BusinessApplication","description":"Seven modules and one administration area, on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms who bill clients — the same product, with one module swapped."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"ERP","applicationCategory":"BusinessApplication","description":"Five lanes, one chain of records. A quotation becomes an order, an order becomes a delivery, a delivery becomes an invoice — and the money questions read off that same chain rather than a spreadsheet kept beside it."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"CRM","applicationCategory":"BusinessApplication","description":"The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"tasca","applicationCategory":"BusinessApplication","description":"Tasks created, prioritised and assigned across boards, calendars and Gantt views, with shared workspaces, in-task comments and file sharing. AI User Triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Lexer","applicationCategory":"BusinessApplication","description":"Reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local OCR as an automatic offline fallback. Bring in bank statements and reconcile what it extracted against them."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Recapr","applicationCategory":"BusinessApplication","description":"Recapr transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Private AI Engine","applicationCategory":"BusinessApplication","description":"One engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs PII before anything reaches a model, and answers from a knowledge base you load. Every product is metered through it."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"TalbotIQ","legalName":"Talbotiq Technologies Sdn Bhd [1313215-V]","url":"https://talbotiq.com","slogan":"Technology is a tool. Intelligence is the edge.","description":"Architecting the Intelligence Layer of Modern Businesses","telephone":"+603 20 111 320","email":"hello@talbotiq.com","address":{"@type":"PostalAddress","addressLocality":"Kuala Lumpur","addressCountry":"MY"},"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Video Interview","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Voice Interview","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Chat Interview","applicationCategory":"BusinessApplication","description":"Mimic interviews every applicant the day they apply — across chat, voice, AI video and a live round — and scores every answer against one rubric you define, with the passage that earned each number attached. It recommends. It never rejects anyone."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Intelligent Recruitment Software","applicationCategory":"BusinessApplication","description":"Seven modules and one administration area, on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms who bill clients — the same product, with one module swapped."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Business Management System","applicationCategory":"BusinessApplication","description":"Five lanes, one chain of records. A quotation becomes an order, an order becomes a delivery, a delivery becomes an invoice — and the money questions read off that same chain rather than a spreadsheet kept beside it."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Sales CRM","applicationCategory":"BusinessApplication","description":"The sales workspace: opportunities tracked by stage and by source, customers and contacts in one place, invoices raised against them, and an approvals queue — with rep targets and team performance on the dashboard."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Task & Productivity Manager","applicationCategory":"BusinessApplication","description":"Tasks created, prioritised and assigned across boards, calendars and Gantt views, with shared workspaces, in-task comments and file sharing. AI User Triage turns an incoming request into a structured brief, scores its priority and routes it to a team with capacity."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Intelligent Document Management","applicationCategory":"BusinessApplication","description":"Reads business cards and receipts in any language, pulls out every field, converts currencies and flags tampering — with local OCR as an automatic offline fallback. Bring in bank statements and reconcile what it extracted against them."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Intelligent Note Taker","applicationCategory":"BusinessApplication","description":"The Intelligent Note Taker transcribes as people speak, files the decisions, commitments and risks while the room is still talking, and remembers them afterwards. When someone contradicts a decision the team already made, it says so — and quotes both sides."}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Private AI Engine","applicationCategory":"BusinessApplication","description":"One engine serves the whole suite: it routes each request between a hosted frontier model and a local small model, scrubs PII before anything reaches a model, and answers from a knowledge base you load. Every product is metered through it."}}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -58,12 +66,10 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       <div class="navitem">
         <button type="button" class="navbtn" aria-expanded="false" aria-controls="panel-company" data-panel="company">Company<span class="car" aria-hidden="true">&#9660;</span></button>
       </div>
-      <a href="contact.html">Pricing</a>
-      <a href="contact.html">Support</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="hdr-right">
-      <a class="si" href="signin.html">Sign in</a>
-      <a class="btn btn-primary" href="demo.html">Book a demo</a>
+      <a class="btn btn-primary" href="contact.html">Get in touch</a>
       <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="drawer" aria-label="Menu"><i></i></button>
     </div>
   </div>
@@ -72,61 +78,61 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 <div class="panel" id="panel-products" hidden>
   <div class="wrap">
     <div class="pgrid pgrid--products">
-      <a class="pitem" href="products/mimic.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
+      <a class="pitem" href="products/video-interviewer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="2" y="12" width="38" height="30" rx="5" fill="#02A885"/>
       <path d="M42 22l14-8v26l-14-8z" fill="#027A5C"/>
       <circle cx="21" cy="24" r="5.4" fill="#fff"/>
       <path d="M11 37c2.4-6 17.6-6 20 0z" fill="#fff"/>
       <rect x="45" y="43" width="12" height="12" rx="3" fill="#F3E202"/>
       <path d="M48 49l2 2 4-4.4" stroke="#1F2430" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span class="ptx"><span class="pn">Video Interviewer</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
-      <a class="pitem" href="products/mimic.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
+      <span class="ptx"><span class="pn">Video Interview</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
+      <a class="pitem" href="products/voice-interviewer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="21" y="4" width="16" height="26" rx="8" fill="#02A885"/>
       <path d="M13 26a16 16 0 0 0 32 0" fill="none" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <path d="M29 42v8" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/>
       <g stroke="#F3E202" stroke-width="3.4" stroke-linecap="round"><path d="M6 50v-8"/><path d="M52 50v-8"/></g>
       <g stroke="#02A885" stroke-width="3.4" stroke-linecap="round"><path d="M14 52v-4"/><path d="M44 52v-4"/></g>
       <path d="M21 54h16" stroke="#027A5C" stroke-width="4" stroke-linecap="round"/></svg></span>
-      <span class="ptx"><span class="pn">Voice Interviewer</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
-      <a class="pitem" href="products/mimic.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
+      <span class="ptx"><span class="pn">Voice Interview</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
+      <a class="pitem" href="products/chat-interviewer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M6 8h34a6 6 0 0 1 6 6v18a6 6 0 0 1-6 6H22l-11 9v-9H6a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(4 2)" fill="#02A885"/>
       <rect x="16" y="19" width="22" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="27" width="15" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="42" y="40" width="15" height="15" rx="4" fill="#F3E202"/>
       <path d="M46 47.5h7M49.5 44v7" stroke="#1F2430" stroke-width="2" stroke-linecap="round"/></svg></span>
-      <span class="ptx"><span class="pn">Chat Interviewer</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
+      <span class="ptx"><span class="pn">Chat Interview</span><span class="pd">Screening intelligence, decided by humans</span></span></a>
       <a class="pitem" href="products/ats.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M4 6h50l-16 21v20l-18 9V27z" fill="#027A5C"/>
       <circle cx="45" cy="44" r="11" fill="#F3E202"/>
       <path d="M40 44l3.6 3.6 6.6-7.4" stroke="#1F2430" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span class="ptx"><span class="pn">ATS</span><span class="pd">Requisition to signed offer</span></span></a>
+      <span class="ptx"><span class="pn">Intelligent Recruitment Software</span><span class="pd">Requisition to signed offer</span></span></a>
       <a class="pitem" href="products/erp.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="3" y="16" width="52" height="32" rx="5" fill="#02A885"/>
       <path d="M3 26h52" stroke="#fff" stroke-width="2.6" opacity=".55"/>
       <rect x="10" y="34" width="15" height="4.4" rx="2.2" fill="#fff"/>
       <circle cx="45" cy="37" r="5.4" fill="#F3E202"/>
       <path d="M19 16v-5a5 5 0 0 1 5-5h10a5 5 0 0 1 5 5v5" fill="none" stroke="#027A5C" stroke-width="3.4"/></svg></span>
-      <span class="ptx"><span class="pn">ERP</span><span class="pd">Order to cash, purchase to pay</span></span></a>
+      <span class="ptx"><span class="pn">Business Management System</span><span class="pd">Order to cash, purchase to pay</span></span></a>
       <a class="pitem" href="products/nouscrm.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="33" width="10" height="19" rx="2.6" fill="#02A885"/>
       <rect x="20" y="24" width="10" height="28" rx="2.6" fill="#027A5C"/>
       <rect x="35" y="14" width="10" height="38" rx="2.6" fill="#02A885"/>
       <path d="M8 24L21 15l11 4L52 5" fill="none" stroke="#C48A00" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="52" cy="5" r="4.2" fill="#F3E202" stroke="#C48A00" stroke-width="2"/></svg></span>
-      <span class="ptx"><span class="pn">CRM</span><span class="pd">Opportunities, customers and what they owe</span></span></a>
+      <span class="ptx"><span class="pn">Sales CRM</span><span class="pd">Opportunities, customers and what they owe</span></span></a>
       <a class="pitem" href="products/tasca.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><rect x="5" y="5" width="21" height="21" rx="5" fill="#02A885"/>
       <rect x="32" y="5" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="5" y="32" width="21" height="21" rx="5" fill="#027A5C"/>
       <rect x="32" y="32" width="21" height="21" rx="5" fill="#F3E202"/>
       <path d="M10 15.5l4 4 7-8" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M37 42.5l4 4 7-8" stroke="#1F2430" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <span class="ptx"><span class="pn">tasca</span><span class="pd">Plan, track and execute</span></span></a>
+      <span class="ptx"><span class="pn">Task &amp; Productivity Manager</span><span class="pd">Plan, track and execute</span></span></a>
       <a class="pitem" href="products/lexer.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M9 3h24l16 16v34a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#02A885"/>
       <path d="M33 3l16 16H33z" fill="#027A5C"/>
       <rect x="16" y="26" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="34" width="24" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="16" y="42" width="14" height="3.6" rx="1.8" fill="#F3E202"/></svg></span>
-      <span class="ptx"><span class="pn">Lexer</span><span class="pd">Turn documents into structured data</span></span></a>
+      <span class="ptx"><span class="pn">Intelligent Document Management</span><span class="pd">Turn documents into structured data</span></span></a>
       <a class="pitem" href="products/recapr.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 58 58" aria-hidden="true" focusable="false"><path d="M5 8h34a6 6 0 0 1 6 6v17a6 6 0 0 1-6 6H21l-11 9v-9H5a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z" transform="translate(3 1)" fill="#02A885"/>
       <rect x="15" y="19" width="21" height="3.6" rx="1.8" fill="#fff"/>
       <rect x="15" y="27" width="14" height="3.6" rx="1.8" fill="#fff"/>
       <circle cx="45" cy="43" r="11" fill="#C48A00"/>
       <path d="M45 37v6.4l4 2.8" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></span>
-      <span class="ptx"><span class="pn">Recapr</span><span class="pd">The meeting, on the record</span></span></a>
+      <span class="ptx"><span class="pn">Intelligent Note Taker</span><span class="pd">The meeting, on the record</span></span></a>
       <a class="pitem" href="products/vawlt.html"><span class="pico"><svg width="26" height="26" viewBox="0 0 70 70" aria-hidden="true" focusable="false"><path d="M35 4l25 10v20c0 16-10 24-25 31C20 58 10 50 10 34V14z" fill="#027A5C"/>
       <rect x="24" y="30" width="22" height="17" rx="3.6" fill="#F3E202"/>
       <path d="M28.5 30v-5a6.5 6.5 0 0 1 13 0v5" fill="none" stroke="#F3E202" stroke-width="3.4"/>
@@ -136,7 +142,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
   </div>
   <div class="pfoot"><div class="wrap">
         <span>10 products, one engine underneath.</span>
-        <a href="https://talbotiq.com/products/" target="_blank" rel="noopener">View all products &rarr;</a>
+        <a href="index.html#products">View all products &rarr;</a>
   </div></div>
 </div>
 <div class="panel" id="panel-solutions" hidden>
@@ -166,22 +172,22 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
   </div>
   <div class="pfoot"><div class="wrap">
         <span>Talbotiq Technologies Sdn Bhd [1313215-V] &middot; Kuala Lumpur, Malaysia</span>
-        <a href="tel:+60320111320">+603 20 111 320</a>
+        <a href="contact.html">Talk to us &rarr;</a>
   </div></div>
 </div>
 
 <div class="drawer" id="drawer" data-open="false">
   <div class="dgrp">
     <h4>Products</h4>
-    <a href="products/mimic.html">Video Interviewer</a>
-    <a href="products/mimic.html">Voice Interviewer</a>
-    <a href="products/mimic.html">Chat Interviewer</a>
-    <a href="products/ats.html">ATS</a>
-    <a href="products/erp.html">ERP</a>
-    <a href="products/nouscrm.html">CRM</a>
-    <a href="products/tasca.html">tasca</a>
-    <a href="products/lexer.html">Lexer</a>
-    <a href="products/recapr.html">Recapr</a>
+    <a href="products/video-interviewer.html">Video Interview</a>
+    <a href="products/voice-interviewer.html">Voice Interview</a>
+    <a href="products/chat-interviewer.html">Chat Interview</a>
+    <a href="products/ats.html">Intelligent Recruitment Software</a>
+    <a href="products/erp.html">Business Management System</a>
+    <a href="products/nouscrm.html">Sales CRM</a>
+    <a href="products/tasca.html">Task &amp; Productivity Manager</a>
+    <a href="products/lexer.html">Intelligent Document Management</a>
+    <a href="products/recapr.html">Intelligent Note Taker</a>
     <a href="products/vawlt.html">Private AI Engine</a>
   </div>
   <div class="dgrp">
@@ -213,7 +219,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
 
     <div class="demoside">
       <p class="eyebrow">Contact us today</p>
-      <h1 class="hand">Ready to accelerate your business with AI?</h1>
+      <h1 class="hand">Ready to <span class="k-g">accelerate</span> your business with <span class="k-y">AI</span>?</h1>
       <p class="sec-lede">Tell us which product you want to see and we will come back to you within one business day.</p>
 
       <!-- The photograph and the gradient behind this whole page are the two
@@ -225,16 +231,23 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       <!-- THESE THREE WORK TODAY, which is why they are on this page and not
            buried on another one. Whatever happens to the form, a reader who
            wants a demo can always reach somebody from here. -->
+      <!-- THE NUMBERS ARE NOT PRINTED, THE PHONE STILL RINGS. Both of
+           CONTACTS held both numbers and both were listed here, as two rows
+           of digits. No
+           number is displayed anywhere on this site any more, by request — so
+           this is one row that DIALS the office without reading it out, which
+           is the same trade the contact page's own chip row already made
+           ("Call the office"). A reader on a phone taps it; a reader on a
+           desktop is not being asked to copy fourteen digits by hand. -->
       <ul class="demoreach">
         <li><span>Email</span><a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a></li>
-        <li><span>Phone</span><a href="tel:+60128177741">+60 12-817 7741</a></li>
-        <li><span>Phone</span><a href="tel:+60320111320">+603 20 111 320</a></li>
+        <li><span>Phone</span><a href="tel:+60320111320">Call the office</a></li>
         <li><span>Office</span>Kuala Lumpur, Malaysia</li>
       </ul>
     </div>
 
     <div class="demoform">
-      <form class="dform" novalidate>
+      <form class="dform" action="/api/demo" method="post" novalidate>
         <div class="ffgrid">
           
         <p class="ff">
@@ -266,15 +279,15 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
             <label for="product">Which product <span class="req" aria-hidden="true">*</span></label>
             <select id="product" name="product" required>
               <option value="">Select a product</option>
-              <option value="mimic">Video Interviewer</option>
-              <option value="mimic-voice-interviewer">Voice Interviewer</option>
-              <option value="mimic-chat-interviewer">Chat Interviewer</option>
-              <option value="ats">ATS</option>
-              <option value="erp">ERP</option>
-              <option value="nouscrm">CRM</option>
-              <option value="task-manager">tasca</option>
-              <option value="lexerai">Lexer</option>
-              <option value="recapr">Recapr</option>
+              <option value="mimic">Video Interview</option>
+              <option value="mimic-voice-interview">Voice Interview</option>
+              <option value="mimic-chat-interview">Chat Interview</option>
+              <option value="ats">Intelligent Recruitment Software</option>
+              <option value="erp">Business Management System</option>
+              <option value="nouscrm">Sales CRM</option>
+              <option value="task-manager">Task &amp; Productivity Manager</option>
+              <option value="lexerai">Intelligent Document Management</option>
+              <option value="recapr">Intelligent Note Taker</option>
               <option value="ai-engine">Private AI Engine</option>
               <option value="not-sure">Not sure yet — help me choose</option>
             </select>
@@ -290,14 +303,7 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
              human can see, and a submission that fills it is a bot. -->
         <p class="hp" aria-hidden="true"><label for="company_url">Do not fill this in</label><input id="company_url" name="company_url" type="text" tabindex="-1" autocomplete="off"></p>
 
-        <a class="btn btn-primary btn-lg dsubmit" href="https://talbotiq.com/inquiry-now/" target="_blank" rel="noopener">Request a demo &rarr;</a>
-        <!-- NOT WIRED YET. COMPANY.demoAction in products.js is null, so this
-             button is a link to the form on the old site, which does submit.
-             Set demoAction to an endpoint and the same markup above becomes a
-             real POST with no other change. The note below is deliberately
-             written for a customer, not for whoever maintains this: nobody
-             buying software should be told the name of a config field. -->
-        <p class="dnote">Prefer to talk to a person? hello@talbotiq.com or +60 12-817 7741.</p>
+        <button class="btn btn-primary btn-lg dsubmit" type="submit">Request a demo</button>
       </form>
     </div>
 
@@ -313,15 +319,15 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
     <a class="flogo" href="index.html" aria-label="TalbotIQ home"><img src="assets/brand/talbotiq-logo.png" alt="TalbotIQ" width="262" height="72"></a>
     <div class="fgrid">
       <div class="fcol"><h4>Products</h4>
-        <a href="products/mimic.html">Video Interviewer</a>
-        <a href="products/mimic.html">Voice Interviewer</a>
-        <a href="products/mimic.html">Chat Interviewer</a>
-        <a href="products/ats.html">ATS</a>
-        <a href="products/erp.html">ERP</a>
-        <a href="products/nouscrm.html">CRM</a>
-        <a href="products/tasca.html">tasca</a>
-        <a href="products/lexer.html">Lexer</a>
-        <a href="products/recapr.html">Recapr</a>
+        <a href="products/video-interviewer.html">Video Interview</a>
+        <a href="products/voice-interviewer.html">Voice Interview</a>
+        <a href="products/chat-interviewer.html">Chat Interview</a>
+        <a href="products/ats.html">Intelligent Recruitment Software</a>
+        <a href="products/erp.html">Business Management System</a>
+        <a href="products/nouscrm.html">Sales CRM</a>
+        <a href="products/tasca.html">Task &amp; Productivity Manager</a>
+        <a href="products/lexer.html">Intelligent Document Management</a>
+        <a href="products/recapr.html">Intelligent Note Taker</a>
         <a href="products/vawlt.html">Private AI Engine</a>
       </div>
       <div class="fcol"><h4>Solutions</h4>
@@ -344,10 +350,14 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
         <span class="soon">Support</span>
         <span class="soon">Release notes</span>
       </div>
+      <!-- THE PHONE NUMBERS ARE NOT IN THE FOOTER, by request. Both of
+           CONTACTS held both numbers and both sat under the address here, on
+           all 27 pages.
+           They are still on the contact page and in the demo aside, which is
+           where somebody looking for a number goes — the footer offered them to
+           everybody scrolling past instead. -->
       <div class="fcol"><h4>Get in touch</h4>
         <a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a>
-        <a href="tel:+60128177741">+60 12-817 7741</a>
-        <a href="tel:+60320111320">+603 20 111 320</a>
         <a class="book" href="demo.html">Book a demo &rarr;</a>
       </div>
     </div>
@@ -362,21 +372,36 @@ setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx'
       </div>
     </div>
 
+    <!-- PRIVACY POLICY · TERMS · SECURITY ARE GONE, by request. All three were
+         unlinked text: there is no privacy page, no terms page and no security
+         page on this site, so the row named three documents a reader could not
+         open. Removed rather than re-pointed — the old site's policy is not
+         this site's policy. Write the pages, then put the row back. -->
     <div class="legal">
       <span>Copyright &copy; 2026, Talbotiq Technologies Sdn Bhd [1313215-V]. All rights reserved.</span>
-      <span><a href="https://talbotiq.com/privacy-policy/" target="_blank" rel="noopener">Privacy Policy</a> &middot; <span class="soon">Terms</span> &middot; <span class="soon">Security</span></span>
     </div>
   </div>
 </footer>
 
-<script src="assets/js/app.js?v=c0051961" defer></script>
+<script src="assets/js/app.js?v=7c271fc4" defer></script>
 
 <!-- THE SCROLL CHOREOGRAPHY. Progressive enhancement, top to bottom: this file
      only adds classes and one custom property, and every animation is CSS. The
      page above is complete without it — no content lives inside a transition,
      nothing is ever covered, and under prefers-reduced-motion the reveals
      resolve instantly instead of moving. -->
-<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interviewer","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"ATS","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"ERP","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"tasca","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Lexer","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Recapr","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
-<script defer src="assets/js/scroll.js?v=e2775d39"></script>
+<script type="application/json" id="stage-data">{"center":{"slug":"ai-engine","name":"Private AI Engine","cat":"intelligence","live":true,"pending":false,"arc":["Request","Redact","Route","Answer"],"accent":"#2E9E86"},"nodes":[{"slug":"mimic","name":"Video Interview","cat":"people","live":true,"pending":false,"arc":["Invite","Interview","Score","Shortlist"],"accent":"#0F7C93"},{"slug":"ats","name":"Intelligent Recruitment Software","cat":"people","live":false,"pending":false,"arc":null,"accent":"#12857A"},{"slug":"erp","name":"Business Management System","cat":"revenue","live":true,"pending":false,"arc":null,"accent":"#69787E"},{"slug":"nouscrm","name":"Sales CRM","cat":"revenue","live":false,"pending":false,"arc":["Opportunity","Customer","Invoice","Approval"],"accent":"#5A54B8"},{"slug":"task-manager","name":"Task & Productivity Manager","cat":"knowledge","live":false,"pending":false,"arc":["Triage","Plan","Execute","Close"],"accent":"#7B54BE"},{"slug":"lexerai","name":"Intelligent Document Management","cat":"knowledge","live":false,"pending":false,"arc":["Capture","Extract","Convert","Reconcile"],"accent":"#B2560C"},{"slug":"recapr","name":"Intelligent Note Taker","cat":"knowledge","live":true,"pending":false,"arc":["Capture","Understand","Decipher","Act"],"accent":"#3559C7"}],"palette":{"teal":"#02A885","green":"#027A5C","yellow":"#F3E202","amber":"#C48A00","blue":"#1B7FC4","ink":"#1F2430","band":"#F3F4F6"}}</script>
+<script defer src="assets/js/scroll.js?v=574d5163"></script>
+
+<!-- THE WEBSITE ASSISTANT. One line, and the same line on all twenty pages,
+     including the eighteen standalone ones — which is why the src is
+     root-absolute rather than depth-relative like everything else here. The
+     widget posts to /api/chat, so it already requires the site to be served
+     from the domain root; making the script path match adds no new constraint
+     and removes the need for a ../ that differs by directory. It carries its
+     own stylesheet, so there is no second <link> to place. Unstamped, so the
+     eighteen pages that have no stamp() can use the identical line. -->
+<script defer src="/assets/js/demoform.js"></script>
+<script defer src="/assets/js/chat.js"></script>
 </body>
 </html>
