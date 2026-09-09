@@ -307,14 +307,25 @@ test('a non-JSON content type is refused, which is what blocks cross-origin abus
   assert.strictEqual(ok.code, 200);
 });
 
-test('thinking is switched off and the output budget has real headroom', async () => {
+test('no thinkingConfig is sent, and the output budget has real headroom', async () => {
   stubFetch(TEXT('ok'));
   await handler(mkReq(), mkRes());
   const cfg = sent.body.generationConfig;
-  /* 700 with thinking on returned a candidate with no text at all, which the
-     handler then reported as an off-topic refusal */
-  assert.strictEqual(cfg.thinkingConfig.thinkingBudget, 0);
+  /* The pinned model 400s on thinkingConfig and reports thoughtsTokenCount 0
+     without it, so sending the field bought an extra round trip and nothing
+     else. The headroom is what actually guards the trap it was added for:
+     700 output tokens with a thinking model returned a candidate with no text,
+     which the handler then reported as an off-topic refusal. */
+  assert.ok(!('thinkingConfig' in cfg), 'thinkingConfig is back');
   assert.ok(cfg.maxOutputTokens >= 1024, 'maxOutputTokens is back under the old trap');
+});
+
+test('the pinned model is the one the behaviour battery vetted', async () => {
+  stubFetch(TEXT('ok'));
+  await handler(mkReq(), mkRes());
+  /* 16/16 held on this one. A change here without re-running
+     tools/chat.live.js --model <id> is a change nobody has checked. */
+  assert.ok(sent.url.includes('gemini-3.5-flash-lite'), sent.url);
 });
 
 test('running out of output room says so, instead of claiming the question was off-topic', async () => {

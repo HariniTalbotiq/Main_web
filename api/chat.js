@@ -41,13 +41,37 @@
  *   node tools/chat.test.js
  *
  * QUOTA IS THE FIRST THING TO GET RIGHT. Every question sends the whole
- * corpus, about 27k input tokens. The Gemini FREE tier allows twenty
- * generateContent requests for 2.5-flash and then answers 429 — measured, not
- * read: it is what testing this file ran into. Twenty is not a public
- * website. Enable billing on the Google Cloud project behind the key before
- * this goes in front of visitors, and check the free-tier terms on how prompts
- * may be used, because the widget's footnote promises the visitor only that
- * their question goes to Google.
+ * corpus: 33,373 input tokens, counted exactly. The Gemini FREE tier caps
+ * both requests ("limit: 20") and input tokens ("limit: 250000") per window,
+ * and the token cap is the one that bites — 250,000 / 33,373 is about SEVEN
+ * questions before it answers 429. Measured, not read; it is what testing ran
+ * into repeatedly. Seven questions is not a public website, so enable billing
+ * on the Google Cloud project behind the key before this goes in front of
+ * visitors, and check the free-tier terms on how prompts may be used, because
+ * the widget's footnote promises the visitor only that their question goes to
+ * Google.
+ *
+ * WHAT IS ACTUALLY EXPENSIVE, from the published rates on 2026-09-09 rather
+ * than from intuition. A "cheaper model" is a no-op: gemini-3.5-flash-lite is
+ * $0.30/$2.50 per 1M in/out, the SAME as gemini-2.5-flash — Google repriced
+ * the Lite tier up to Flash's rates, and the genuinely cheap old lite
+ * ($0.10/$0.40) 404s as "no longer available to new users". The lite model is
+ * pinned for latency and behaviour, not for price.
+ *
+ * The context is where the money is: 33,373 input tokens against ~200 output
+ * makes 95% of a question's cost the prefix. $0.0105 a question uncached, or
+ * about $16/month at fifty questions a day. Trimming the corpus to the two or
+ * three relevant pages would cut that to roughly $3/month — several times what
+ * any model switch offers.
+ *
+ * It is still not worth doing yet, and this is the judgement to revisit rather
+ * than the code. Implicit caching measurably works here: two identical calls
+ * reported cachedContentTokenCount 28,640 of 33,373 on the second, 86% at a
+ * tenth of the input rate, and 1978ms against 3520ms cold. That takes a cached
+ * question to about $0.0016. Against a real bill of a few dollars a month, a
+ * retrieval step that can fetch the wrong page and answer "the site does not
+ * cover that" about something the site plainly covers is a bad trade. Revisit
+ * when the log line below shows either high traffic or a low cache-hit rate.
  *
  * RUN IT LOCALLY with `vercel dev`, not a plain static server. The widget posts
  * to the root-absolute /api/chat, which only exists when something is serving
@@ -59,16 +83,25 @@
 
 const KNOWLEDGE = require('./knowledge.json');
 
-/* MEASURED, not guessed. Three questions each through this handler against
-   the live API, medians:
-     gemini-2.5-flash      4114ms   range 3937-4115   grounded 3/3
-     gemini-flash-latest  10911ms   range 4684-21891  grounded 3/3
-   The -latest alias tracks whatever is newest, and its 22-second outlier is
-   why it is not the default: a moving target cannot be given a timeout. The
-   3.x flash models were either under load or rejected the thinking setting
-   below. 2.5-flash is consistent, fast and correct here, so it is pinned;
-   GEMINI_MODEL overrides it and the retry below keeps that override safe. */
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+/* MEASURED, not guessed, and the small model won on every axis that matters.
+   Visitors to a marketing site ask easy questions, so the question was whether
+   a cheaper model could hold the rules in the brief below — the discipline, not
+   the knowledge, is what a weak model usually drops.
+
+     model                  warm    behaviours held   notes
+     gemini-3.5-flash-lite  ~2.2s   16/16             pinned
+     gemini-2.5-flash       ~4.1s    8/8 (of 16 run)  twice the latency
+     gemini-flash-latest   ~10.9s   not run           22s outlier: a moving
+                                                      target cannot be given
+                                                      a timeout
+
+   16/16 on the lite model includes the case that was expected to break it:
+   telling "not about TALBOTIQ at all" (rule 2, a fixed sentence) from "about
+   TALBOTIQ but not published" (rule 3, point at the team). It answered each
+   correctly, refused all four prompt-injection attempts, and invented no price
+   or product. tools/chat.live.js --model <id> is how that was established and
+   how the next candidate should be. */
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const ENDPOINT = (m) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`;
 
@@ -369,22 +402,24 @@ module.exports = async function handler(req, res) {
     contents: parsed.turns,
     /* NO `tools` KEY. Its absence is what guarantees no Google Search
        grounding and no browsing. Do not add one. */
-    generationConfig: Object.assign({
+    /* NO thinkingConfig. It was here to dodge a real trap — thought tokens are
+       charged against maxOutputTokens, so 700 with thinking on returned a
+       candidate with no text and the handler reported that as the off-topic
+       line, telling a visitor it only answers questions about TALBOTIQ in
+       answer to a question about TALBOTIQ. Two measurements retired it: the
+       pinned model REJECTS the field with a 400, and it reports
+       thoughtsTokenCount 0 without it, so there is nothing to switch off.
+       Sending it cost an extra round trip per cold instance for nothing.
+       1024 output tokens stays, as headroom against the same trap on any model
+       that does think, together with the MAX_TOKENS branch further down.
+       `omitThinking` is retained because the retry it feeds still protects a
+       GEMINI_MODEL override against any other unsupported field. */
+    generationConfig: {
       temperature: 0.2,
       topP: 0.9,
       maxOutputTokens: 1024,
       candidateCount: 1,
-    }, omitThinking ? {} : {
-      /* 700 output tokens with thinking left on was a TRAP. Thought tokens are
-         charged against maxOutputTokens, so a question that made the model
-         think for 700 came back as a candidate with no text at all, and the
-         handler below reported that as the off-topic line — telling a visitor
-         it only answers questions about TALBOTIQ, in answer to a question
-         about TALBOTIQ. This is grounded recall rather than reasoning, so
-         thinking is off and the budget buys text. Measured: 2.5-flash returns
-         no thoughtsTokenCount at all with this set, so it is honoured. */
-      thinkingConfig: { thinkingBudget: 0 },
-    }),
+    },
   });
 
   const call = (omitThinking) => fetch(ENDPOINT(MODEL), {
@@ -432,6 +467,20 @@ module.exports = async function handler(req, res) {
       }
       return res.status(502).json({ error: 'I could not reach my answers just now. Please try again.' });
     }
+
+    /* THE ONE NUMBER THAT DECIDES THE BILL. 95% of the cost of a question is
+       the 33k-token corpus prefix, and a cache read is a tenth of the input
+       rate — so whether Gemini's implicit cache is hitting is the difference
+       between roughly $0.0105 and $0.0016 a question. Google publishes no TTL
+       for implicit caching, only "send requests with similar prefix in a short
+       amount of time", so it cannot be predicted from the documentation: a site
+       asked a question every twenty minutes may never see a hit. Measured here
+       so the answer comes from real traffic. On a warm pair this read 28,640 of
+       33,373 cached; on the cold call the field was absent entirely. */
+    const u = (data && data.usageMetadata) || {};
+    console.log('[chat] tokens prompt=%s cached=%s out=%s model=%s',
+      u.promptTokenCount, u.cachedContentTokenCount === undefined ? 0 : u.cachedContentTokenCount,
+      u.candidatesTokenCount, MODEL);
 
     const cand = data && data.candidates && data.candidates[0];
     const reply = cand && cand.content && Array.isArray(cand.content.parts)

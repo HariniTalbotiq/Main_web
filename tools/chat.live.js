@@ -27,7 +27,13 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 process.env.GEMINI_API_KEY = (fs.readFileSync(path.join(ROOT, '.env.local'), 'utf8')
   .match(/^GEMINI_API_KEY=(.*)$/m) || [])[1].trim();
-delete process.env.GEMINI_MODEL;              /* the shipped default */
+/* Defaults to whatever api/chat.js ships. `--model <id>` runs the battery
+   against a candidate instead, which is how a cheaper model gets vetted before
+   it becomes the default rather than after. */
+var mi = process.argv.indexOf('--model');
+if (mi > -1 && process.argv[mi + 1]) process.env.GEMINI_MODEL = process.argv[mi + 1];
+else delete process.env.GEMINI_MODEL;
+console.log('model under test: ' + (process.env.GEMINI_MODEL || 'the shipped default'));
 
 const handler = require(path.join(ROOT, 'api', 'chat.js'));
 
@@ -128,7 +134,9 @@ function mkRes() {
   return r;
 }
 
-const ONLY = process.argv.slice(2);
+const ONLY = process.argv.slice(2).filter(function (a, i, all) {
+  return a !== '--model' && all[i - 1] !== '--model';
+});
 const SELECTED = ONLY.length
   ? CASES.filter((c) => ONLY.some((f) => c[0].indexOf(f) >= 0))
   : CASES;
