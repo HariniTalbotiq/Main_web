@@ -514,8 +514,19 @@
 
   /* ------------------------------------------------------------- messages */
 
-  var GREETING = 'Hello! Ask me anything about TALBOTIQ’s products or this website. '
-    + 'What can I help you with?';
+  /* SAYS WHAT IT IS BEFORE IT SAYS HELLO. The opening bubble is the one moment
+     every visitor reads, so the disclosure belongs here rather than in small
+     print under the composer, where it used to sit and where it was removed
+     from.
+
+     "our team" is a link because the sentence asks the reader to do something
+     and otherwise gives them no way to do it. It also puts back the one
+     always-visible route to /contact inside the widget, which went with the
+     footnote. row() passes model text through rich(), so both the markdown
+     link and the newline render. */
+  var GREETING = 'You’re chatting with the TalbotIQ AI Assistant, not a human.\n'
+    + 'I can help you with information from the TalbotIQ website. '
+    + 'For anything else, please [reach out to our team](/contact).';
 
   function row(role, text, at) {
     var mine = role === 'user';
