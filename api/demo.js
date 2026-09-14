@@ -13,6 +13,11 @@
  *   DEMO_WEBHOOK_URL   a URL that accepts a JSON POST. Slack and Teams
  *                      incoming webhooks, Zapier, Make, n8n — all of them take
  *                      this shape. Simplest thing that works.
+ *   SMTP_HOST          + SMTP_USER, SMTP_PASS and DEMO_TO_EMAIL, optionally
+ *                      SMTP_PORT (587) and DEMO_FROM_EMAIL. Sends the lead
+ *                      through an ordinary mailbox over STARTTLS. Office 365
+ *                      needs SMTP AUTH enabled on the account, which Microsoft
+ *                      turns OFF by default on tenants created since 2020.
  *   RESEND_API_KEY     + DEMO_TO_EMAIL, and optionally DEMO_FROM_EMAIL
  *                      (defaults to onboarding@resend.dev, which Resend allows
  *                      before you have verified a domain). Sends the lead as
@@ -105,6 +110,33 @@ async function deliver(lead) {
     return 'webhook';
   }
 
+  /* SMTP — an ordinary mailbox, which is what most companies already have.
+     Office 365, Google Workspace and any host with submission on 587 work the
+     same way. Set SMTP_HOST, SMTP_USER, SMTP_PASS and DEMO_TO_EMAIL; the
+     envelope sender defaults to SMTP_USER because Microsoft rejects a MAIL
+     FROM that the authenticated account is not allowed to send as.
+
+     Reply-To carries the enquirer's address, so hitting reply in the inbox
+     answers the customer rather than the website. */
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+      && process.env.DEMO_TO_EMAIL) {
+    const { sendMail } = require('../lib/smtp.js');
+    await sendMail({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+      from: process.env.DEMO_FROM_EMAIL || process.env.SMTP_USER,
+      fromName: 'TalbotIQ website',
+      to: process.env.DEMO_TO_EMAIL,
+      replyTo: lead.email,
+      subject: `Demo request — ${lead.first_name} ${lead.last_name}`
+        + (lead.company ? ` (${lead.company})` : ''),
+      text: summary(lead),
+    });
+    return 'smtp';
+  }
+
   if (process.env.RESEND_API_KEY && process.env.DEMO_TO_EMAIL) {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -155,7 +187,7 @@ a{color:#027A5C;font-weight:600}</style>
   /* No digits printed anywhere on this site, including on the page a reader
      lands on when the form did not work — but this is the ONE place a phone
      number earns its place, so the link dials it. */
-  : 'Please email <a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a> or <a href="tel:+60320111320">call the office</a> and we will pick it up from there.'}</p>
+  : 'Please email <a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a> or call <a href="tel:+60320111320">+603 20 111 320</a> and we will pick it up from there.'}</p>
 <p><a href="/">Back to talbotiq.com</a></p></main>`;
 
 module.exports = async function handler(req, res) {
@@ -217,8 +249,9 @@ module.exports = async function handler(req, res) {
       /* Loud in the log, vague to the visitor — the same split api/chat.js
          makes for a missing key. The lead itself is in the log because the
          alternative is dropping it on the floor. */
-      console.error('[demo] no destination configured — set DEMO_WEBHOOK_URL or '
-        + 'RESEND_API_KEY + DEMO_TO_EMAIL. Lead follows so it is not lost:\n' + summary(lead));
+      console.error('[demo] no destination configured — set DEMO_WEBHOOK_URL, or '
+        + 'SMTP_HOST + SMTP_USER + SMTP_PASS + DEMO_TO_EMAIL, or RESEND_API_KEY '
+        + '+ DEMO_TO_EMAIL. Lead follows so it is not lost:\n' + summary(lead));
       return fail(503, 'We could not file that just now. Please email hello@talbotiq.com and we will pick it up.');
     }
     console.log('[demo] enquiry delivered via ' + via);

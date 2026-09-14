@@ -26,8 +26,59 @@
     '.dmsg[hidden]{display:none}',
     '.dmsg.ok{background:rgba(255,255,255,.14);color:#EAFFF7;border:1px solid rgba(255,255,255,.28)}',
     '.dmsg.bad{background:rgba(192,57,43,.16);color:#FFD9D4;border:1px solid rgba(192,57,43,.5)}',
-    '.dform.sending .dsubmit{opacity:.6;pointer-events:none}'
+    '.dform.sending .dsubmit{opacity:.6;pointer-events:none}',
+    /* THE ACKNOWLEDGEMENT. A native <dialog>, so the focus trap, the Escape
+       key, the backdrop and the top layer are the browser's job rather than
+       three hundred lines of mine. Every colour is stated outright: this is
+       appended to <body> and has to look the same on the demo page, which
+       loads the shared stylesheet, and on the contact page, which carries its
+       own copy. */
+    '.dack{border:0;padding:0;background:transparent;max-width:min(440px,calc(100vw - 32px))}',
+    '.dack::backdrop{background:rgba(6,32,28,.62)}',
+    '.dackbox{background:#fff;border-radius:16px;padding:30px 30px 26px;text-align:center;'
+      + 'box-shadow:0 24px 60px rgba(9,40,36,.28);font-family:inherit;color:#1F2430}',
+    '.dackmark{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px}',
+    '.dackmark svg{width:28px;height:28px;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}',
+    '.dack.ok .dackmark{background:#E4F6EF}.dack.ok .dackmark svg{stroke:#027A5C}',
+    '.dack.bad .dackmark{background:#FBE6E3}.dack.bad .dackmark svg{stroke:#C0392B}',
+    '.dackbox h2{margin:0 0 8px;font-size:21px;line-height:1.25;font-weight:700;color:#1F2430}',
+    '.dackbox p{margin:0 0 6px;font-size:15px;line-height:1.6;color:#4C5A57}',
+    '.dackbox .dacksub{font-size:13.5px;color:#6B7770;margin-top:12px}',
+    '.dackbox .dacksub a{color:#027A5C;font-weight:600;text-decoration:none}',
+    '.dackbox .dacksub a:hover{text-decoration:underline}',
+    '.dackclose{margin-top:20px;width:100%;border:0;border-radius:10px;cursor:pointer;'
+      + 'background:#02A885;color:#fff;font:inherit;font-size:16px;font-weight:700;padding:12px 20px}',
+    '.dackclose:hover{background:#027A5C}'
   ].join('\n');
+
+  var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.6 9.2 18 20 6.6"/></svg>';
+  var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+  /* Built once and reused, so a second submit cannot stack two dialogs. */
+  var dlg;
+  function acknowledge(ok, heading, body, sub) {
+    if (!window.HTMLDialogElement) return false;   /* caller falls back inline */
+    if (!dlg) {
+      dlg = document.createElement('dialog');
+      dlg.innerHTML = '<div class="dackbox">'
+        + '<div class="dackmark"></div><h2></h2><p class="dackbody"></p>'
+        + '<p class="dacksub"></p>'
+        + '<button type="button" class="dackclose">Close</button></div>';
+      document.body.appendChild(dlg);
+      dlg.querySelector('.dackclose').addEventListener('click', function () { dlg.close(); });
+    }
+    dlg.className = 'dack ' + (ok ? 'ok' : 'bad');
+    dlg.querySelector('.dackmark').innerHTML = ok ? TICK : CROSS;
+    dlg.querySelector('h2').textContent = heading;
+    dlg.querySelector('.dackbody').textContent = body;
+    dlg.querySelector('.dacksub').innerHTML = sub;
+    dlg.showModal();
+    dlg.querySelector('.dackclose').focus();
+    return true;
+  }
+
+  var REACH = 'Or reach us at <a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a>'
+    + ' or <a href="tel:+60320111320">+603 20 111 320</a>.';
 
   function enhance(form) {
     var btn = form.querySelector('.dsubmit');
@@ -84,15 +135,36 @@
         })
         .then(function (r) {
           if (!r.ok) {
-            say(r.body.error || 'That did not send. Please email hello@talbotiq.com.', false);
+            var msg = r.body.error || 'That did not send.';
+            /* The dialog for a delivery failure too, not just for success: it
+               is the one outcome where the reader has to be given another way
+               to reach us, and an inline line under a long form is easy to
+               submit-and-scroll straight past. Field-level validation stays
+               inline above, because that points at a specific input. */
+            if (!acknowledge(false, 'That did not send', msg, REACH)) say(msg, false);
             return;
           }
+          /* Read before the reset, so the acknowledgement can say the name and
+             the product back — which is what makes it read as a receipt rather
+             than as a generic toast. */
+          var who = (data.first_name || '').trim();
+          var sel = form.querySelector('[name="product"]');
+          var what = sel && sel.selectedIndex > -1 ? sel.options[sel.selectedIndex].text : '';
           form.reset();
           form.classList.remove('tried');
-          say('Thank you — we have it. An engineer will come back to you within one business day.', true);
+          if (!acknowledge(true,
+                'Request received',
+                (who ? 'Thank you, ' + who + '. ' : 'Thank you. ')
+                  + 'We have your demo request' + (what ? ' for ' + what : '') + '.'
+                  + ' An engineer will come back to you within one business day'
+                  + (data.email ? ' at ' + data.email : '') + '.',
+                REACH)) {
+            say('Thank you — we have it. An engineer will come back to you within one business day.', true);
+          }
         })
         .catch(function () {
-          say('That did not send — you may be offline. Please try again, or email hello@talbotiq.com.', false);
+          var off = 'That did not send — you may be offline. Please try again.';
+          if (!acknowledge(false, 'That did not send', off, REACH)) say(off, false);
         })
         .then(function () {
           form.classList.remove('sending');
