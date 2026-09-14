@@ -1,4 +1,62 @@
+# talbotiq.com — who may crawl what.
+#
+# THIS FILE DOES NOT AFFECT RANKING. robots.txt grants or withholds access; it
+# is not a signal Google or any assistant scores a site on, and no wording here
+# moves a position. The most it can do for a ranking is fail to block you, which
+# is exactly what it is set up to do. What actually moves position lives in the
+# pages — title, headings, the answer text itself, schema.org, internal links,
+# the sitemap, and speed — and that work is already done. So this file's whole
+# job is to stay out of the way, and to be right about it.
+#
+# WHY THERE IS ONLY ONE GROUP. A crawler obeys exactly ONE group: the most
+# specific one naming it. Groups do not inherit (RFC 9309 §2.2.1). So a stanza
+# like
+#     User-agent: GPTBot
+#     Allow: /
+# does not read as "GPTBot, in addition to the rules above". It reads as "for
+# GPTBot, these are the only rules", which silently drops the /api/ disallow for
+# that crawler. And it buys nothing in return, because a crawler with no group
+# of its own already falls through to `*` and is already allowed. Per-bot
+# "Allow: /" stanzas are no-ops with a footgun attached, so there are none.
+#
+# EXPLICITLY WELCOME — all of these are allowed by the `*` group below and need
+# no stanza of their own:
+#   Search        Googlebot · bingbot · DuckDuckBot · Applebot · YandexBot
+#   AI search     OAI-SearchBot · Claude-SearchBot · PerplexityBot · DuckAssistBot
+#   AI browsing   ChatGPT-User · Claude-User · Perplexity-User · MistralAI-User
+#   AI training   GPTBot · ClaudeBot · Google-Extended · Applebot-Extended ·
+#                 meta-externalagent · CCBot · Amazonbot · Bytespider · cohere-ai
+#   Link previews facebookexternalhit · WhatsApp · Twitterbot · LinkedInBot ·
+#                 Slackbot · TelegramBot · Discordbot
+#
+# THE PREVIEW FETCHERS ARE THE REASON NOTHING ELSE IS BLOCKED. They read the
+# share card, and a blanket block on an unfamiliar agent is how a link silently
+# stops showing a thumbnail in WhatsApp.
+#
+# NOT BLOCKED, ON PURPOSE: /admin/, /dashboard/ and /config/ do not exist on
+# this host — all three 404 — and listing private-sounding paths in a public
+# file hands a stranger a map of what to go looking for. /signin does exist and
+# carries <meta name="robots" content="noindex,follow"> instead, which is the
+# correct tool: a disallowed page can still be indexed from an inbound link,
+# because the crawler is forbidden to fetch it and so never sees the noindex.
+#
+# THERE IS NO `Allow: /`, AND THAT IS THE FIX, NOT AN OMISSION. Absence of a
+# matching Disallow already means allowed, so `Allow: /` was only ever
+# restating the default — but it sat ABOVE `Disallow: /api/`, and a parser that
+# resolves by FIRST match rather than by longest match (Python's
+# urllib.robotparser among them) stopped at the `Allow` and handed out /api/.
+# Checked, not assumed: with `Allow: /` present that parser returns True for
+# /api/chat; with it removed it returns False, and /products/* stays True.
+# Dropping the line makes the file mean the same thing under both resolution
+# orders instead of only under Google's.
+#
+# ALSO CHECK THE VERCEL FIREWALL / bot-protection settings. A rule there blocks
+# these user agents with no trace in this file.
+
 User-agent: *
-Allow: /
+Disallow: /api/
 
 Sitemap: https://talbotiq.com/sitemap.xml
+
+# Plain-prose index of the same content, cheaper for an assistant to read:
+# https://talbotiq.com/llms.txt

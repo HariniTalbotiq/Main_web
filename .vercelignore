@@ -48,3 +48,9 @@ package.json
 site.config.json
 scripts
 DOMAIN-CUTOVER.md
+
+# SEO paperwork and the source data behind generated blocks. seo/meta.json and
+# seo/faq/*.json are inputs to tools/seo-pass.js; docs/ is documentation. The
+# IndexNow key file at the root is NOT listed: it has to be served.
+docs
+seo

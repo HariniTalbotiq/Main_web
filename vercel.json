@@ -5,9 +5,72 @@
   "functions": {
     "api/chat.js": {
       "maxDuration": 30
+    },
+    "api/demo.js": {
+      "maxDuration": 30
     }
   },
   "redirects": [
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/products/index",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/solutions/index",
+      "destination": "/solutions",
+      "permanent": true
+    },
+    {
+      "source": "/ecosystem",
+      "destination": "/products",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/inquiry-now",
+      "destination": "/demo",
+      "permanent": true
+    },
+    {
+      "source": "/services",
+      "destination": "/solutions",
+      "permanent": true
+    },
+    {
+      "source": "/services/ai-strategy-consulting",
+      "destination": "/solutions/ai-strategy-consulting",
+      "permanent": true
+    },
+    {
+      "source": "/services/ai-agent-bot-development",
+      "destination": "/solutions/ai-agent-bot-development",
+      "permanent": true
+    },
+    {
+      "source": "/services/embedded-systems-edge-intelligence",
+      "destination": "/solutions/embedded-edge-ai",
+      "permanent": true
+    },
+    {
+      "source": "/services/full-stack-development-ai-integration",
+      "destination": "/solutions/full-stack-ai-integration",
+      "permanent": true
+    },
+    {
+      "source": "/products/task-management-system",
+      "destination": "/products/task-manager",
+      "permanent": true
+    },
     {
       "source": "/products/ats",
       "destination": "/products/recruitment-software",
@@ -120,6 +183,25 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/assets/og/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/assets/og/talbotiq-default.png",
+      "destination": "/assets/og/talbotiq-card.png"
+    },
+    {
+      "source": "/assets/og/talbotiq-card-894c03478e.png",
+      "destination": "/assets/og/talbotiq-card.png"
     }
   ]
 }

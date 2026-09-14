@@ -1,6 +1,8 @@
 {
   "siteUrl": "https://talbotiq.com",
   "siteName": "TalbotIQ",
-  "defaultOgImage": "/assets/og/talbotiq-default.png",
-  "twitterHandle": "@talbotiq"
+  "defaultOgImage": "/assets/og/talbotiq-card.png",
+  "twitterHandle": "@talbotiq",
+  "sameAs": [],
+  "indexNowKey": "f5491c2985f40edbf117c48120be2490"
 }

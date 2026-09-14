@@ -1,0 +1,42 @@
+# TalbotIQ
+
+> AI interview software, recruitment software (ATS), a sales CRM, an ERP for SMEs, document and meeting-notes tools, all running on one private AI engine.
+
+TalbotIQ (Talbotiq Technologies Sdn Bhd, Kuala Lumpur, Malaysia) builds AI interview and recruitment software, a sales CRM, an ERP for SMEs, document and meeting-notes tools, and a private AI engine the products run on. Pricing is quote-based; there is no public price list. Facts on these pages are written from the running products and each page states what the product does not do.
+
+## Interview and hiring software
+- [All Products: Interview Formats Compared](https://talbotiq.com/products): Nine interview formats in one table (live or async, who asks, how answers are scored, camera needed) plus TalbotIQ's recruitment, CRM, ERP and AI tools.
+- [Conversational AI Avatar Interview Software](https://talbotiq.com/products/ai-avatar-interview): An AI avatar conducts the interview and asks the fortieth candidate what it asked the first: no fatigue, no rapport bias, one rubric for every answer.
+- [Chat Interview Software: Blind Text Assessments](https://talbotiq.com/products/chat-interview): Behavioural questions answered in text and assessed with no name, face or accent attached, with AI-generated answers detected as they arrive.
+- [Conversational Chatbot Interview Software](https://talbotiq.com/products/conversational-chat-interview): An open-ended written interview with no clock and no answer key: a thin answer draws a follow-up, and how a candidate writes under a prompt is assessed.
+- [MCQ Interview Software for Screening Rounds](https://talbotiq.com/products/mcq-rounds): Multiple-choice interview rounds with a declared answer set, so scoring is arithmetic rather than judgement, drawn from your own question banks.
+- [Mimic: AI Interview Software for Every Candidate](https://talbotiq.com/products/mimic): Mimic interviews every applicant the day they apply, across chat, voice, AI video and a live round, and scores each answer on one rubric with evidence.
+- [Recorded Video Interview Software (Asynchronous)](https://talbotiq.com/products/recorded-video-interview): Set the questions once and every applicant answers the same ones, in their own time. No calendars, no time zones, no forty-slot scheduling exercise.
+- [Recruitment Software (ATS) for Teams & Agencies](https://talbotiq.com/products/recruitment-software): Recruitment software: seven modules on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms billing clients.
+- [Timed Q&A Interview Software](https://talbotiq.com/products/timed-qa): Timed Q&A interview rounds with a visible per-question limit, so you measure what a candidate knows and how they structure it under pressure.
+- [Two-Way Live Interview Software](https://talbotiq.com/products/two-way-interview): Your interviewer, the candidate, and the rubric on screen. Recorded, transcribed and scored against the same criteria as the async rounds.
+- [Video Interview Software for Hiring Teams](https://talbotiq.com/products/video-interview): Video interview software: a recorded round every applicant can take the day they apply, scored on one rubric, each score linked to the moment it came from.
+- [Voice Interview Software, No Camera Needed](https://talbotiq.com/products/voice-interview): Voice interviews any candidate can take on the phone they already have: no camera, no download, transcribed live and scored on one rubric like every round.
+
+## Business software
+- [Business Management System (ERP) for SMEs](https://talbotiq.com/products/business-management-system): An ERP built around how an SME runs: quotation to order, delivery and invoice on one chain of records, with the money questions read off that same chain.
+- [Intelligent Document Management & Parsing](https://talbotiq.com/products/document-management): AI extraction reads business cards and receipts in any language, pulls every field, converts currencies and flags tampering, with a person confirming each.
+- [AI Meeting Notes & Minute Taker Software](https://talbotiq.com/products/note-taker): Live transcript with real names, a recap the moment you stop, and every open promise carried into the next meeting. Nothing joins your call.
+- [Sales CRM: Pipeline, Invoices & Approvals](https://talbotiq.com/products/sales-crm): A sales CRM for the desk and the road: cards, receipts and meetings captured as photos and audio, a configurable pipeline, quote-to-cash and receivables.
+- [Task & Productivity Manager with AI Triage](https://talbotiq.com/products/task-manager): Paste the meeting notes and the task manager finds every commitment, creates the task, assigns the owner and sets the date, then reports whether it landed.
+- [Vawlt: Private AI Engine with PII Scrubbing](https://talbotiq.com/products/vawlt): The private AI engine behind TalbotIQ products: 27 of 33 AI tasks run on purpose-trained models on our own hardware, each declaring its data handling.
+
+## Services
+- [AI Consulting & Development Services](https://talbotiq.com/solutions): TalbotIQ's engagements: AI strategy and consulting, AI agent and bot development, embedded edge AI, and full stack development with AI integration.
+- [AI Agent & Bot Development Services](https://talbotiq.com/solutions/ai-agent-bot-development): AI agent and bot development: agents that decompose a request, plan the steps, call the tools and hand back the decisions a person should make.
+- [AI Strategy & Consulting Services](https://talbotiq.com/solutions/ai-strategy-consulting): Bridging the gap between speculative AI trends and measurable ROI by replacing manual workflows with autonomous, high-impact agentic systems.
+- [Embedded Edge AI Development](https://talbotiq.com/solutions/embedded-edge-ai): Embedded edge AI: vision and sensor fusion deployed on existing hardware for real-time operational intelligence, including agricultural use.
+- [Full Stack Development & AI Integration](https://talbotiq.com/solutions/full-stack-ai-integration): Full stack development and AI integration: scalable systems that connect modern applications with existing infrastructure, built for speed and reliability.
+
+## Company
+- [About TalbotIQ | AI Software Company in Kuala Lumpur](https://talbotiq.com/about): Talbotiq Technologies builds AI software from Kuala Lumpur: interview and recruitment tools, CRM, ERP, document and meeting tools, plus custom development.
+- [Contact TalbotIQ | Book a Demo or Talk to the Team](https://talbotiq.com/contact): Tell us about your goals and bottlenecks and our engineers come back with a roadmap, not a brochure. Kuala Lumpur based, reply within one business day.
+- [Ready to accelerate your business with AI?](https://talbotiq.com/demo): Tell us which product you want to see and we will come back to you within one business day.
+
+## Optional
+- [Sitemap](https://talbotiq.com/sitemap.xml)

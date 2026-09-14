@@ -106,6 +106,11 @@ lose the ability to review a branch before merging. Requests already on
 
 ## 7 · Redirect the WordPress URLs you are replacing
 
+> **Already in `vercel.json`** (added with the SEO pass, 9 September 2026): `/ecosystem`,
+> `/contact-us`, `/inquiry-now`, `/services` and the four `/services/*` pages,
+> `/products/task-management-system`. Still missing on purpose: `/privacy-policy` — there is no
+> privacy page to send it to. Write one before cutover; the demo form collects personal data.
+
 The seven paths at the top of this file are live and possibly indexed. Add a
 redirect for each so they land somewhere real instead of 404ing:
 
@@ -128,6 +133,9 @@ Before shipping these, crawl the WordPress site for its full URL list. Seven is
 what *this repo* links to, not what that site publishes.
 
 ## 8 · Search Console
+
+Then Bing Webmaster Tools (import from Search Console) and `npm run indexnow`, which refuses to
+run until `https://talbotiq.com/<indexNowKey>.txt` is served — see `docs/seo/04-measurement-setup.md`.
 
 Verify `https://talbotiq.com` only, and submit `https://talbotiq.com/sitemap.xml`.
 
