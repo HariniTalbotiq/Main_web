@@ -361,8 +361,8 @@
     + '<button type="submit" class="tq-c-send" aria-label="Send">'
     + '<svg width="15" height="15" viewBox="0 0 18 18" fill="none" aria-hidden="true">'
     + '<path d="M3 15 15.5 9 3 3l2.4 6L3 15Z" fill="currentColor"/></svg></button></form>'
-    + '<p class="tq-c-foot">Answers come from this website only, and your question goes to '
-    + 'Google Gemini. Anything else, <a href="/contact">talk to the team</a>.</p>';
+    + '<p class="tq-c-foot">The TalbotIQ assistant answers from this website only. '
+    + 'Anything else, <a href="/contact">talk to the team</a>.</p>';
 
   document.body.appendChild(btn);
   document.body.appendChild(win);
