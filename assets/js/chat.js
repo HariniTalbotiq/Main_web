@@ -152,9 +152,6 @@
     '.tq-c-send:hover:not(:disabled){background:#016B50}',
     '.tq-c-send:disabled{background:#C9D0D8;cursor:default}',
     '.tq-c-send:focus-visible{outline:2px solid ' + INK + ';outline-offset:2px}',
-    '.tq-c-foot{flex:none;margin:0;padding:0 12px 9px;background:#fff;color:#5A6472;',
-    'font-size:10.5px;line-height:1.45}',
-    '.tq-c-foot a{color:' + GREEN + '}',
     '.tq-c-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;',
     'clip:rect(0 0 0 0);white-space:nowrap;border:0}',
 
@@ -169,8 +166,8 @@
          viewport's bottom, so the keyboard covers the composer — you type
          blind. --tq-vh and the transform below are driven from visualViewport
          so the sheet rides above it.
-       - the home indicator. env(safe-area-inset-bottom) keeps the last line of
-         text and the footnote off the gesture bar.
+       - the home indicator. env(safe-area-inset-bottom) keeps the composer,
+         which is the lowest thing in the sheet, off the gesture bar.
        - touch targets. 26px header icons are a desktop size; fingers need ~44.
        - dragging is meaningless on a sheet that spans the screen, so the bar
          stops advertising a grab cursor. */
@@ -182,10 +179,13 @@
     'height:min(86dvh,calc(var(--tq-vh,100dvh) - 14px))}',
     '.tq-c-bar{cursor:default;padding:11px 9px 11px 12px}',
     '.tq-c-ic{width:36px;height:36px;font-size:17px}',
-    '.tq-c-form{padding:10px 11px}',
+    /* The composer is the last element in the sheet now that the footnote is
+       gone, so it is what the home indicator would otherwise sit on top of.
+       This inset used to live on .tq-c-foot; deleting that without moving it
+       would put the send button under the gesture bar. */
+    '.tq-c-form{padding:10px 11px calc(10px + env(safe-area-inset-bottom))}',
     '.tq-c-form textarea{font-size:16px;min-height:42px;border-radius:21px}',
     '.tq-c-send{width:44px;height:44px}',
-    '.tq-c-foot{padding:0 14px calc(10px + env(safe-area-inset-bottom))}',
     '.tq-c-log{padding:12px 12px 6px}',
     '.tq-c-msg{font-size:15px}',
     '.tq-c-chips button{padding:11px 12px;font-size:14px}',
@@ -360,9 +360,7 @@
     + '<textarea id="tq-c-in" rows="1" maxlength="' + MAX_CHARS + '" placeholder="Say something&hellip;"></textarea>'
     + '<button type="submit" class="tq-c-send" aria-label="Send">'
     + '<svg width="15" height="15" viewBox="0 0 18 18" fill="none" aria-hidden="true">'
-    + '<path d="M3 15 15.5 9 3 3l2.4 6L3 15Z" fill="currentColor"/></svg></button></form>'
-    + '<p class="tq-c-foot">The TalbotIQ assistant answers from this website only. '
-    + 'Anything else, <a href="/contact">talk to the team</a>.</p>';
+    + '<path d="M3 15 15.5 9 3 3l2.4 6L3 15Z" fill="currentColor"/></svg></button></form>';
 
   document.body.appendChild(btn);
   document.body.appendChild(win);
