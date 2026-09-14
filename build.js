@@ -1737,10 +1737,11 @@ ${footer}
      widget posts to /api/chat, so it already requires the site to be served
      from the domain root; making the script path match adds no new constraint
      and removes the need for a ../ that differs by directory. It carries its
-     own stylesheet, so there is no second <link> to place. Unstamped, so the
-     eighteen pages that have no stamp() can use the identical line. -->
-<script defer src="/assets/js/demoform.js"></script>
-<script defer src="/assets/js/chat.js"></script>
+     own stylesheet, so there is no second <link> to place. Stamped like the
+     rest now: tools/fix-pages.js computes the same hash, so the pages it fixes
+     and the pages this writes agree on the URL. -->
+<script defer src="${stamp('assets/js/demoform.js')}"></script>
+<script defer src="${stamp('assets/js/chat.js')}"></script>
 </body>
 </html>
 `;

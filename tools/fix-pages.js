@@ -42,6 +42,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const { COMPANY } = require('../products.js');
 const { SOLUTIONS } = require('../home.js');
@@ -256,6 +257,34 @@ function rules(rel) {
      of the solutions page, where no such file exists. Only a page already
      inside products/ can use the bare sibling name. */
   const productPage = (slug) => live('/products/' + slug);
+
+  /* ---- SCRIPT URLS CARRY A CONTENT HASH ------------------------------
+     /assets/ used to be served `immutable, max-age=1 year`. immutable tells a
+     browser never to revalidate, not even on an ordinary reload, so an
+     unversioned script is frozen in every returning visitor's cache and no
+     header change evicts it -- only a different URL does. The header
+     revalidates now, but the browsers poisoned before that still need the URL
+     to move once, and afterwards the hash keeps every future edit honest for
+     nothing.
+
+     THE SAME sha1-8 build.js stamp() USES, deliberately. products/index.html
+     and solutions/index.html are written by build.js AND fixed by this script,
+     so the two have to agree on the URL or each undoes the other on every run.
+     That was already happening to texttype.js, quietly, in both directions. */
+  const ver = (rel) => {
+    try {
+      return '?v=' + crypto.createHash('sha1')
+        .update(fs.readFileSync(path.join(ROOT, rel))).digest('hex').slice(0, 8);
+    } catch { return ''; }
+  };
+  const SRC = {
+    chat: '/assets/js/chat.js' + ver('assets/js/chat.js'),
+    nav: '/assets/js/nav.js' + ver('assets/js/nav.js'),
+    tt: '/assets/js/texttype.js' + ver('assets/js/texttype.js'),
+    df: '/assets/js/demoform.js' + ver('assets/js/demoform.js'),
+  };
+  /* the hash is hex so it needs no escaping, but the path's dots and the ? do */
+  const rx = (t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const r = [];
   const ext = (url) => `href="${url}" target="_blank" rel="noopener"`;
@@ -544,9 +573,16 @@ function rules(rel) {
     add('demo form: real submit',
       /<a class="btn btn-primary btn-lg dsubmit" href="[^"]*">([^<]*?)(?:\s*&rarr;)?<\/a>/g,
       '<button class="btn btn-primary btn-lg dsubmit" type="submit">$1</button>');
+    /* DROP A STALE ONE FIRST. The other three script rules come in pairs; this
+       one did not, and the moment the URL gained a hash that asymmetry showed:
+       the insert rule added the new tag while the old unversioned tag stayed,
+       so demoform.js loaded twice and the form got two submit handlers, which
+       is one enquiry sent twice. */
+    add('demo form: drop a wrong include',
+      new RegExp('[ \\t]*<script[^>]*\\bsrc="(?!' + rx(SRC.df) + '")[^"]*\\bdemoform\\.js(?:\\?[^"]*)?"[^>]*></script>\\n?', 'g'), '');
     add('demo form: the enhancement script, once',
-      /(?<!<script defer src="\/assets\/js\/demoform\.js"><\/script>\n)<\/head>(?=[\s\S]*<form class="dform")/,
-      '<script defer src="/assets/js/demoform.js"></script>\n</head>');
+      new RegExp('(?<!<script defer src="' + rx(SRC.df) + '"></script>\\n)</head>(?=[\\s\\S]*<form class="dform")'),
+      '<script defer src="' + SRC.df + '"></script>\n</head>');
   }
 
   add('header CTA -> the contact page',
@@ -1211,10 +1247,10 @@ function rules(rel) {
      leaving a correct one alone; the second adds one only where the line is
      not already immediately above </body>. */
   add('assistant: drop a wrong include',
-    /[ \t]*<script[^>]*\bsrc="(?!\/assets\/js\/chat\.js")[^"]*\bchat\.js(?:\?[^"]*)?"[^>]*><\/script>\n?/g, '');
+    new RegExp('[ \\t]*<script[^>]*\\bsrc="(?!' + rx(SRC.chat) + '")[^"]*\\bchat\\.js(?:\\?[^"]*)?"[^>]*></script>\\n?', 'g'), '');
   add('assistant: one include, just before </body>',
-    /(?<!<script defer src="\/assets\/js\/chat\.js"><\/script>\n)<\/body>/,
-    '<script defer src="/assets/js/chat.js"></script>\n</body>');
+    new RegExp('(?<!<script defer src="' + rx(SRC.chat) + '"></script>\\n)</body>'),
+    '<script defer src="' + SRC.chat + '"></script>\n</body>');
 
   /* ---- 13b · the nav shelves ---------------------------------------
      These pages had no dropdowns: follow a link out of the homepage's Products
@@ -1230,10 +1266,10 @@ function rules(rel) {
      that line and leaves it exactly where it was. Same negative lookbehind, so
      a re-run is a no-op here too. */
   add('nav shelves: drop a wrong include',
-    /[ \t]*<script[^>]*\bsrc="(?!\/assets\/js\/nav\.js")[^"]*\bnav\.js(?:\?[^"]*)?"[^>]*><\/script>\n?/g, '');
+    new RegExp('[ \\t]*<script[^>]*\\bsrc="(?!' + rx(SRC.nav) + '")[^"]*\\bnav\\.js(?:\\?[^"]*)?"[^>]*></script>\\n?', 'g'), '');
   add('nav shelves: one include, above the assistant',
-    /(?<!<script defer src="\/assets\/js\/nav\.js"><\/script>\n)(<script defer src="\/assets\/js\/chat\.js"><\/script>)/,
-    '<script defer src="/assets/js/nav.js"></script>\n$1');
+    new RegExp('(?<!<script defer src="' + rx(SRC.nav) + '"></script>\\n)(<script defer src="' + rx(SRC.chat) + '"></script>)'),
+    '<script defer src="' + SRC.nav + '"></script>\n$1');
 
   /* ---- 13c · the typewriter ----------------------------------------
      Every .hand heading types itself in, requested for "every heading of this
@@ -1253,10 +1289,36 @@ function rules(rel) {
      their markup — so a page that never gets the script, or gets it and
      404s, is exactly as it is today. */
   add('typewriter: drop a wrong include',
-    /[ \t]*<script[^>]*\bsrc="(?!\/assets\/js\/texttype\.js")[^"]*\btexttype\.js(?:\?[^"]*)?"[^>]*><\/script>\n?/g, '');
+    new RegExp('[ \\t]*<script[^>]*\\bsrc="(?!' + rx(SRC.tt) + '")[^"]*\\btexttype\\.js(?:\\?[^"]*)?"[^>]*></script>\\n?', 'g'), '');
   add('typewriter: one include, above the nav shelves',
-    /(?<!<script defer src="\/assets\/js\/texttype\.js"><\/script>\n)(<script defer src="\/assets\/js\/nav\.js"><\/script>)/,
-    '<script defer src="/assets/js/texttype.js"></script>\n$1');
+    new RegExp('(?<!<script defer src="' + rx(SRC.tt) + '"></script>\\n)(<script defer src="' + rx(SRC.nav) + '"></script>)'),
+    '<script defer src="' + SRC.tt + '"></script>\n$1');
+
+    /* ---- ONE TAG EACH, EVEN WHEN BOTH COPIES ARE CORRECT ---------------
+       The drop rules above spare a canonical include, which is right until two
+       of them exist. build.js writes products/index.html and solutions/index.html
+       and puts its script block in its own place; this script then inserts one
+       in the position it wants. While the two disagreed on the URL the drop rule
+       removed build.js's copy and the count stayed at one by accident. Now that
+       they agree, both survive, and the typewriter ran twice.
+
+       Each rule drops a canonical tag only when another canonical tag follows it,
+       so the LAST one wins -- which is the one this script placed, in the order
+       it intends. Idempotent: with a single tag left the lookahead cannot match.
+       These must run after the inserts above, or they would tidy up before the
+       duplicate exists. */
+    add('assistant: one tag, not two',
+      new RegExp('[ \\t]*<script defer src="' + rx(SRC.chat) + '"></script>\\n'
+        + '(?=[\\s\\S]*<script defer src="' + rx(SRC.chat) + '">)', 'g'), '');
+    add('nav shelves: one tag, not two',
+      new RegExp('[ \\t]*<script defer src="' + rx(SRC.nav) + '"></script>\\n'
+        + '(?=[\\s\\S]*<script defer src="' + rx(SRC.nav) + '">)', 'g'), '');
+    add('typewriter: one tag, not two',
+      new RegExp('[ \\t]*<script defer src="' + rx(SRC.tt) + '"></script>\\n'
+        + '(?=[\\s\\S]*<script defer src="' + rx(SRC.tt) + '">)', 'g'), '');
+    add('demo form: one tag, not two',
+      new RegExp('[ \\t]*<script defer src="' + rx(SRC.df) + '"></script>\\n'
+        + '(?=[\\s\\S]*<script defer src="' + rx(SRC.df) + '">)', 'g'), '');
 
   /* Its four rules, inline, because these pages do not link talbotiq.css and
      so cannot see section 31 of it. Trimmed to what applies here: the
