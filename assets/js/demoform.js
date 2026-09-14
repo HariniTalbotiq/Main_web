@@ -26,7 +26,14 @@
     '.dmsg[hidden]{display:none}',
     '.dmsg.ok{background:rgba(255,255,255,.14);color:#EAFFF7;border:1px solid rgba(255,255,255,.28)}',
     '.dmsg.bad{background:rgba(192,57,43,.16);color:#FFD9D4;border:1px solid rgba(192,57,43,.5)}',
-    '.dform.sending .dsubmit{opacity:.6;pointer-events:none}',
+    /* THE BUTTON SAYS WHAT IT IS DOING. Delivery goes through Office 365 and
+       takes five to seven seconds, which is long enough that a button which
+       only dims reads as broken and gets clicked again. */
+    '.dform.sending .dsubmit{pointer-events:none;opacity:.85}',
+    '.dform.sending .dsubmit::after{content:"";display:inline-block;width:15px;height:15px;'
+      + 'margin-left:11px;vertical-align:-2px;border-radius:50%;border:2px solid rgba(255,255,255,.4);'
+      + 'border-top-color:#fff;animation:dspin .7s linear infinite}',
+    '@keyframes dspin{to{transform:rotate(360deg)}}',
     /* THE ACKNOWLEDGEMENT. A native <dialog>, so the focus trap, the Escape
        key, the backdrop and the top layer are the browser's job rather than
        three hundred lines of mine. Every colour is stated outright: this is
@@ -37,10 +44,41 @@
     '.dack::backdrop{background:rgba(6,32,28,.62)}',
     '.dackbox{background:#fff;border-radius:16px;padding:30px 30px 26px;text-align:center;'
       + 'box-shadow:0 24px 60px rgba(9,40,36,.28);font-family:inherit;color:#1F2430}',
-    '.dackmark{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;margin:0 auto 16px}',
-    '.dackmark svg{width:28px;height:28px;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}',
-    '.dack.ok .dackmark{background:#E4F6EF}.dack.ok .dackmark svg{stroke:#027A5C}',
-    '.dack.bad .dackmark{background:#FBE6E3}.dack.bad .dackmark svg{stroke:#C0392B}',
+    /* THE ACKNOWLEDGEMENT MARK, DRAWN RATHER THAN DROPPED IN. The disc pops,
+       the ring draws itself round, and only then does the tick stroke on --
+       which is what makes it read as "that completed" instead of "here is a
+       picture of a tick". It is three CSS animations on one inline SVG: no
+       library, nothing to load, and it cannot delay the message.
+
+       transform-box:fill-box is load-bearing. An SVG transform-origin defaults
+       to the VIEWBOX corner, so `scale(0)` without it collapses the disc
+       towards the top-left of the box rather than towards its own centre. */
+    '.dackmark{width:76px;height:76px;margin:0 auto 18px}',
+    '.dackmark svg{width:76px;height:76px;display:block;fill:none;stroke-width:2.4;'
+      + 'stroke-linecap:round;stroke-linejoin:round}',
+    '.dfill{stroke:none;transform-box:fill-box;transform-origin:center;transform:scale(0);'
+      + 'animation:dpop .42s cubic-bezier(.34,1.56,.64,1) .06s forwards}',
+    '.dring{stroke-dasharray:157;stroke-dashoffset:157;'
+      + 'animation:ddraw .55s cubic-bezier(.65,0,.35,1) .1s forwards}',
+    '.dmark{stroke-dasharray:44;stroke-dashoffset:44;'
+      + 'animation:ddraw .34s cubic-bezier(.65,0,.35,1) .46s forwards}',
+    '@keyframes ddraw{to{stroke-dashoffset:0}}',
+    '@keyframes dpop{to{transform:scale(1)}}',
+    '.dack.ok .dfill{fill:#E4F6EF}.dack.ok .dring{stroke:#02A885}.dack.ok .dmark{stroke:#027A5C}',
+    '.dack.bad .dfill{fill:#FBE6E3}.dack.bad .dring{stroke:#C0392B}.dack.bad .dmark{stroke:#C0392B}',
+    /* The words follow the mark in, but only on success -- an error has to be
+       readable the instant it appears, not choreographed. */
+    '.dack.ok .dackbox h2,.dack.ok .dackbox .dackbody,.dack.ok .dackbox .dacksub,'
+      + '.dack.ok .dackclose{animation:drise .38s ease-out backwards}',
+    '.dack.ok .dackbox h2{animation-delay:.52s}.dack.ok .dackbox .dackbody{animation-delay:.60s}',
+    '.dack.ok .dackbox .dacksub{animation-delay:.68s}.dack.ok .dackclose{animation-delay:.74s}',
+    '@keyframes drise{from{opacity:0;transform:translateY(7px)}}',
+    /* Asked not to be animated: show the finished state at once. */
+    '@media (prefers-reduced-motion:reduce){'
+      + '.dfill,.dring,.dmark,.dack.ok .dackbox h2,.dack.ok .dackbox .dackbody,'
+      + '.dack.ok .dackbox .dacksub,.dack.ok .dackclose{animation:none}'
+      + '.dfill{transform:none}.dring,.dmark{stroke-dashoffset:0}'
+      + '.dform.sending .dsubmit::after{animation:none}}',
     '.dackbox h2{margin:0 0 8px;font-size:21px;line-height:1.25;font-weight:700;color:#1F2430}',
     '.dackbox p{margin:0 0 6px;font-size:15px;line-height:1.6;color:#4C5A57}',
     '.dackbox .dacksub{font-size:13.5px;color:#6B7770;margin-top:12px}',
@@ -51,8 +89,14 @@
     '.dackclose:hover{background:#027A5C}'
   ].join('\n');
 
-  var TICK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.6 9.2 18 20 6.6"/></svg>';
-  var CROSS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  /* r=25 gives a circumference of 157, which is the stroke-dasharray above;
+     change one and the ring stops drawing cleanly. */
+  var RING = '<circle class="dfill" cx="26" cy="26" r="25"/>'
+    + '<circle class="dring" cx="26" cy="26" r="25"/>';
+  var TICK = '<svg viewBox="0 0 52 52" aria-hidden="true">' + RING
+    + '<path class="dmark" d="M15 27.2 22.6 34.8 37.4 19"/></svg>';
+  var CROSS = '<svg viewBox="0 0 52 52" aria-hidden="true">' + RING
+    + '<path class="dmark" d="M19 19 33 33M33 19 19 33"/></svg>';
 
   /* Built once and reused, so a second submit cannot stack two dialogs. */
   var dlg;
@@ -118,7 +162,11 @@
 
       e.preventDefault();
       form.classList.add('sending');
-      if (btn) btn.setAttribute('aria-busy', 'true');
+      if (btn) {
+        btn.setAttribute('aria-busy', 'true');
+        btn.dataset.label = btn.textContent;
+        btn.textContent = 'Sending';
+      }
 
       var data = {};
       new FormData(form).forEach(function (v, k) { data[k] = v; });
@@ -152,14 +200,20 @@
           var what = sel && sel.selectedIndex > -1 ? sel.options[sel.selectedIndex].text : '';
           form.reset();
           form.classList.remove('tried');
+          /* THANKS THEM BY NAME AND REPEATS THE PRODUCT BACK, because a receipt
+             that quotes your own answers proves the thing arrived, where a
+             generic "success" only claims it. "Soon" is paired with the one
+             business day the rest of the site already promises: the warm line
+             is what they want to hear, the concrete one is what they can hold
+             us to. */
           if (!acknowledge(true,
-                'Request received',
-                (who ? 'Thank you, ' + who + '. ' : 'Thank you. ')
-                  + 'We have your demo request' + (what ? ' for ' + what : '') + '.'
-                  + ' An engineer will come back to you within one business day'
-                  + (data.email ? ' at ' + data.email : '') + '.',
+                who ? 'Thank you, ' + who + '!' : 'Thank you!',
+                'We have your' + (what ? ' ' + what : '') + ' demo request.'
+                  + ' Our team will reach out to you soon — within one business day'
+                  + (data.email ? ', at ' + data.email : '') + '.',
                 REACH)) {
-            say('Thank you — we have it. An engineer will come back to you within one business day.', true);
+            say('Thank you — we have it. Our team will reach out to you soon, '
+              + 'within one business day.', true);
           }
         })
         .catch(function () {
@@ -168,7 +222,10 @@
         })
         .then(function () {
           form.classList.remove('sending');
-          if (btn) btn.removeAttribute('aria-busy');
+          if (btn) {
+            btn.removeAttribute('aria-busy');
+            if (btn.dataset.label) btn.textContent = btn.dataset.label;
+          }
         });
     });
   }
