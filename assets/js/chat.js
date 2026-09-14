@@ -368,7 +368,7 @@
     + '<p class="tq-c-foot">You’re chatting with the TalbotIQ AI Assistant, '
     + 'not a human.<br>I can help you with information from the TalbotIQ '
     + 'website. For anything else, please '
-    + '<a href="/contact">reach out to our team</a>.</p>';
+    + '<a href="/demo">reach out to our team</a>.</p>';
 
   document.body.appendChild(btn);
   document.body.appendChild(win);
