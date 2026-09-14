@@ -1774,8 +1774,11 @@ function rules(rel) {
      "what they are for" — true while the local block looked like a form, wrong
      now that it is established it never was one.
 
-     PRODUCT PAGES ONLY, which is the scope of the request. The four solutions
-     pages carry the identical dead block and are knowingly left alone.
+     THE SOLUTIONS PAGES TOO, now. They were left out when this was scoped to
+     the product pages, and carried the identical dead block for as long as that
+     held: four more pages where an enquiry could be typed and thrown away.
+     Checked before widening -- same shape, same zero `name` attributes, and the
+     deletion regex agrees with a depth counter on all four.
 
      BOTH ARE IDEMPOTENT BY CONSTRUCTION. The first is a deletion, so a second
      run finds no block; the second removes the only `#form` on the page, so a
@@ -1783,11 +1786,23 @@ function rules(rel) {
      of it closes the OUTER div — every div inside the block is indented, so
      the non-greedy run cannot stop early. Same argument as the newsletter band
      above, and checked against a depth counter on all seventeen pages. */
-  if (dir === 'products') {
+  if (dir === 'products' || dir === 'solutions') {
     add('product page: the mockup demo form -> removed',
       /\n<div class="formsec" id="form">[\s\S]*?\n<\/div>\n/g, '');
     add('product page: Book a demo -> the real form on /demo',
       /href="#form"/g, `href="${DEMO}"`);
+    /* THE HEADER BUTTON IS NOT A DEMO BUTTON. The rule above rewrites every
+       #form on the page, and on the solutions pages the header and mobile-bar
+       button already read "Get in touch" while still pointing at the local
+       mockup -- so it came out aimed at /demo, while the identical button on a
+       product page goes to /contact. One label, two destinations, for no
+       reason. This puts it back on /contact everywhere, and matches whatever
+       href it currently carries so it corrects the divergence rather than only
+       preventing it. about.html and contact.html are untouched: their buttons
+       are same-page anchors and are right as they are. */
+    add('header + mobile bar: Get in touch -> the contact page',
+      /<a class="btn btn-primary" href="(?!\/contact")[^"]*">Get in touch<\/a>/g,
+      `<a class="btn btn-primary" href="${CONTACT}">Get in touch</a>`);
   }
 
   /* ---- LAST RULE IN THE FILE: STRIP HTML COMMENTS ------------------------

@@ -501,6 +501,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="stamp rv">Published 7 September 2026 &middot; Updated 14 September 2026 &middot; Written by the TalbotIQ team</p>
   </div>
 </section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="rv"><h2 class="hand">Frequently asked <span class="k-g">questions</span></h2></div>
+    <div class="acc rv">
+      <details><summary>Does our data leave TalbotIQ's servers when Vawlt runs an AI task?<span class="pm">+</span></summary><div class="ab">For 27 of the 33 tasks, no: they are answered by models that never leave TalbotIQ's own servers, each one trained separately for its single job. Six tasks go to outside models because they were measured as beyond what the in-house models do faithfully, and the catalogue states exactly which ones.</div></details>
+      <details><summary>How does Vawlt handle names, salaries and other personal data in the text we send?<span class="pm">+</span></summary><div class="ab">Each task declares one of two policies. Under 'redacted', names, emails, phones, salaries and similar are replaced with typed placeholders before the model is called; under 'as sent', the input reaches the model unchanged, because for that task the entity data is the input. Every response reports which policy applied on that call.</div></details>
+      <details><summary>Can we use Vawlt as a chatbot or general-purpose AI assistant?<span class="pm">+</span></summary><div class="ab">No. Vawlt is single-turn only, with no conversation history, no system prompt from the caller and no streaming. It runs a fixed catalogue of tasks, and an unknown task name is a hard error.</div></details>
+      <details><summary>Does Vawlt check the AI's output before it reaches our system?<span class="pm">+</span></summary><div class="ab">For the ten tasks that declare a closed set of legal answers, such as a six-label classifier and a fourteen-action planner, the engine checks the model's answer and returns an error rather than passing an illegal value to your code. Nine of the ten are currently callable.</div></details>
+      <details><summary>Does Vawlt learn from or train on the data we send it?<span class="pm">+</span></summary><div class="ab">Not today. Corrections are captured and scrubbed as future training data, but the retraining step is deliberately switched off, so nothing improves on its own.</div></details>
+      <details><summary>How do we get access to Vawlt - is there self-service sign-up or an API key portal?<span class="pm">+</span></summary><div class="ab">There is no self-service: an administrator mints a key per calling application. The raw key is returned exactly once and cannot be recovered because only its hash is stored, and keys can be listed as non-reversible fingerprints and deactivated.</div></details>
+    </div>
+    <p class="stamp rv">Published 7 September 2026 &middot; Updated 14 September 2026 &middot; Written by the TalbotIQ team</p>
+  </div>
+</section>
 </main>
 
 <div class="cta">
