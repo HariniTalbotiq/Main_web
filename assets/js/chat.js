@@ -152,6 +152,9 @@
     '.tq-c-send:hover:not(:disabled){background:#016B50}',
     '.tq-c-send:disabled{background:#C9D0D8;cursor:default}',
     '.tq-c-send:focus-visible{outline:2px solid ' + INK + ';outline-offset:2px}',
+    '.tq-c-foot{flex:none;margin:0;padding:0 12px 9px;background:#fff;color:#5A6472;',
+    'font-size:10.5px;line-height:1.45}',
+    '.tq-c-foot a{color:' + GREEN + '}',
     '.tq-c-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;',
     'clip:rect(0 0 0 0);white-space:nowrap;border:0}',
 
@@ -166,8 +169,8 @@
          viewport's bottom, so the keyboard covers the composer — you type
          blind. --tq-vh and the transform below are driven from visualViewport
          so the sheet rides above it.
-       - the home indicator. env(safe-area-inset-bottom) keeps the composer,
-         which is the lowest thing in the sheet, off the gesture bar.
+       - the home indicator. env(safe-area-inset-bottom) keeps the last line of
+         text and the footnote off the gesture bar.
        - touch targets. 26px header icons are a desktop size; fingers need ~44.
        - dragging is meaningless on a sheet that spans the screen, so the bar
          stops advertising a grab cursor. */
@@ -179,13 +182,10 @@
     'height:min(86dvh,calc(var(--tq-vh,100dvh) - 14px))}',
     '.tq-c-bar{cursor:default;padding:11px 9px 11px 12px}',
     '.tq-c-ic{width:36px;height:36px;font-size:17px}',
-    /* The composer is the last element in the sheet now that the footnote is
-       gone, so it is what the home indicator would otherwise sit on top of.
-       This inset used to live on .tq-c-foot; deleting that without moving it
-       would put the send button under the gesture bar. */
-    '.tq-c-form{padding:10px 11px calc(10px + env(safe-area-inset-bottom))}',
+    '.tq-c-form{padding:10px 11px}',
     '.tq-c-form textarea{font-size:16px;min-height:42px;border-radius:21px}',
     '.tq-c-send{width:44px;height:44px}',
+    '.tq-c-foot{padding:0 14px calc(10px + env(safe-area-inset-bottom))}',
     '.tq-c-log{padding:12px 12px 6px}',
     '.tq-c-msg{font-size:15px}',
     '.tq-c-chips button{padding:11px 12px;font-size:14px}',
@@ -360,7 +360,15 @@
     + '<textarea id="tq-c-in" rows="1" maxlength="' + MAX_CHARS + '" placeholder="Say something&hellip;"></textarea>'
     + '<button type="submit" class="tq-c-send" aria-label="Send">'
     + '<svg width="15" height="15" viewBox="0 0 18 18" fill="none" aria-hidden="true">'
-    + '<path d="M3 15 15.5 9 3 3l2.4 6L3 15Z" fill="currentColor"/></svg></button></form>';
+    + '<path d="M3 15 15.5 9 3 3l2.4 6L3 15Z" fill="currentColor"/></svg></button></form>'
+    /* The <br> keeps the two sentences on their own lines, which is how this
+       was written and how it reads: what you are talking to, then what it can
+       do about it. "our team" is the link because that is the half of the
+       sentence asking the reader to act. */
+    + '<p class="tq-c-foot">You’re chatting with the TalbotIQ AI Assistant, '
+    + 'not a human.<br>I can help you with information from the TalbotIQ '
+    + 'website. For anything else, please '
+    + '<a href="/contact">reach out to our team</a>.</p>';
 
   document.body.appendChild(btn);
   document.body.appendChild(win);
@@ -514,19 +522,8 @@
 
   /* ------------------------------------------------------------- messages */
 
-  /* SAYS WHAT IT IS BEFORE IT SAYS HELLO. The opening bubble is the one moment
-     every visitor reads, so the disclosure belongs here rather than in small
-     print under the composer, where it used to sit and where it was removed
-     from.
-
-     "our team" is a link because the sentence asks the reader to do something
-     and otherwise gives them no way to do it. It also puts back the one
-     always-visible route to /contact inside the widget, which went with the
-     footnote. row() passes model text through rich(), so both the markdown
-     link and the newline render. */
-  var GREETING = 'You’re chatting with the TalbotIQ AI Assistant, not a human.\n'
-    + 'I can help you with information from the TalbotIQ website. '
-    + 'For anything else, please [reach out to our team](/contact).';
+  var GREETING = 'Hello! Ask me anything about TALBOTIQ’s products or this website. '
+    + 'What can I help you with?';
 
   function row(role, text, at) {
     var mine = role === 'user';
