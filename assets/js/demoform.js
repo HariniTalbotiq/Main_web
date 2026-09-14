@@ -209,15 +209,15 @@
           if (!acknowledge(true,
                 who ? 'Thank you, ' + who + '!' : 'Thank you!',
                 'We have your' + (what ? ' ' + what : '') + ' demo request.'
-                  + ' Our team will reach out to you soon — within one business day'
-                  + (data.email ? ', at ' + data.email : '') + '.',
+                  + ' Our team will reach out to you soon, within one business day'
+                  + (data.email ? ' at ' + data.email : '') + '.',
                 REACH)) {
-            say('Thank you — we have it. Our team will reach out to you soon, '
+            say('Thank you, we have it. Our team will reach out to you soon, '
               + 'within one business day.', true);
           }
         })
         .catch(function () {
-          var off = 'That did not send — you may be offline. Please try again.';
+          var off = 'That did not send. You may be offline. Please try again.';
           if (!acknowledge(false, 'That did not send', off, REACH)) say(off, false);
         })
         .then(function () {
