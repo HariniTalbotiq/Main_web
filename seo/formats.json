@@ -1,0 +1,83 @@
+[
+  {
+    "slug": "video-interview",
+    "name": "Video Interview",
+    "delivery": "Asynchronous, or live in the two-way mode",
+    "interviewer": "Recorded prompts, an AI avatar, or your own team live",
+    "scoring": "AI, against your rubric; a human makes every call",
+    "camera": "required",
+    "best_for": "First-round screening of every applicant, at volume"
+  },
+  {
+    "slug": "recorded-video-interview",
+    "name": "Recorded Video Interview",
+    "delivery": "Asynchronous",
+    "interviewer": "Preset question sets you configure; nobody in the room",
+    "scoring": "AI, against your rubric; the panel rates on weighted scorecards",
+    "camera": "required",
+    "best_for": "High-volume screening where scheduling is the bottleneck"
+  },
+  {
+    "slug": "ai-avatar-interview",
+    "name": "Conversational AI Avatar Interview",
+    "delivery": "not stated",
+    "interviewer": "An AI avatar following your script, with follow-ups drawn from your question set",
+    "scoring": "AI, against your rubric; hiring managers also rate the recording",
+    "camera": "required",
+    "best_for": "Volume screening where every candidate must get identical questions"
+  },
+  {
+    "slug": "two-way-interview",
+    "name": "2-Way Interview",
+    "delivery": "Live, on a scheduled call",
+    "interviewer": "Your own team, live",
+    "scoring": "Two or three interviewers score independently; the AI scores beside them without overruling",
+    "camera": "not stated",
+    "best_for": "Final-stage rounds run live by your own team"
+  },
+  {
+    "slug": "voice-interview",
+    "name": "Voice Interview",
+    "delivery": "Asynchronous",
+    "interviewer": "An automated spoken round from your question sets, with follow-ups",
+    "scoring": "AI, against your rubric; a human makes every call",
+    "camera": "not required",
+    "best_for": "High-volume, frontline and shift-based hiring"
+  },
+  {
+    "slug": "chat-interview",
+    "name": "Chat Interview",
+    "delivery": "Asynchronous",
+    "interviewer": "Text chat from your question sets, with adaptive follow-ups",
+    "scoring": "AI, against your rubric; AI-written answers flagged to a reviewer",
+    "camera": "not required",
+    "best_for": "Roles where writing is the job; candidates who freeze on camera"
+  },
+  {
+    "slug": "conversational-chat-interview",
+    "name": "Conversational Chat Interview",
+    "delivery": "not stated",
+    "interviewer": "A written back-and-forth from your question set; follow-ups when an answer is thin",
+    "scoring": "AI, against your rubric; flags go to a human reviewer",
+    "camera": "not stated",
+    "best_for": "Assessing written work rather than recall, with no clock"
+  },
+  {
+    "slug": "mcq-rounds",
+    "name": "MCQ Rounds",
+    "delivery": "Asynchronous",
+    "interviewer": "Multiple-choice items from your own question banks",
+    "scoring": "Auto-marked against the declared answers; no model involved",
+    "camera": "not stated",
+    "best_for": "Threshold knowledge checks with a real pass floor"
+  },
+  {
+    "slug": "timed-qa",
+    "name": "Timed Q&A",
+    "delivery": "not stated",
+    "interviewer": "Timed written questions from your question sets",
+    "scoring": "AI, against your rubric; a partial answer is scored on what is there",
+    "camera": "not stated",
+    "best_for": "What candidates know, and how they write under time pressure"
+  }
+]

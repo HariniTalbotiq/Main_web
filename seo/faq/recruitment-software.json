@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Is this applicant tracking system for an in-house hiring team or for a staffing agency?",
+    "answer": "Both, from the same product. It has seven modules and one administration area on one licence and one database. Hire Mode is for internal talent teams and Agency Mode is for staffing firms filling roles for clients; the only difference between them is that one module swaps (Manpower Requisitions in Hire Mode, Customer Management in Agency Mode). Both run on the same tenant, so switching is a setting rather than a migration.",
+    "evidence": "Seven modules and one administration area, on one licence and one database. Hire Mode for internal talent teams. Agency Mode for staffing firms filling roles for clients. Same product — one module swaps."
+  },
+  {
+    "question": "How does the AI resume parser work, and how many CVs can I upload at once?",
+    "answer": "You upload up to ten files a batch, with the limit shown on screen and a counter for the room left. Each file runs through six named stages: uploading, extracting text, detecting sections, extracting fields, normalising and scoring, then matching candidates. A file that fails points at the stage it failed on. Nothing is auto-imported: results are reviewed first, and creating the candidate is a separate, deliberate action.",
+    "evidence": "Ten files a batch, with the limit stated on screen and a counter for the room left. Six named stages: uploading, extracting text, detecting sections, extracting fields, normalising and scoring, then matching candidates."
+  },
+  {
+    "question": "Does the AI reject candidates or make hiring decisions on its own?",
+    "answer": "No. The AI ranks, parses and drafts, but it does not reject anyone and it does not create a record. Advancing a candidate, approving a requisition and signing an offer are all actions a named person takes, stamped with who did it and when.",
+    "evidence": "The AI ranks, parses and drafts — it does not reject anyone, and it does not create a record. Advancing a candidate, approving a requisition and signing an offer are all actions a named person takes, stamped with who and when."
+  },
+  {
+    "question": "How does the candidate matching score work, and can I see why someone ranked low?",
+    "answer": "Matching uses five criteria - skills, job title, experience, education and location - each switched on independently and contributing nothing until it is, with a slider setting how much weight each one carries. Selecting a job loads its own skills, experience band and location as the starting criteria. The score is printed on every candidate row and the whole database is ranked rather than cut off at a top five, so a low match can be judged on its merits rather than being hidden from view.",
+    "evidence": "Five criteria — skills, job title, experience, education, location — each switching on independently and contributing nothing until it does, with a slider deciding how hard each one pulls. The score is printed on every row, so a low match can be judged on its merits rather than quietly hidden."
+  },
+  {
+    "question": "Can offer letters be signed inside the recruitment software?",
+    "answer": "Yes. Offer letters are executed on the document itself and carry nineteen placeable field types in four groups: fields that execute the letter (signature, initial, stamp, data sign), text elements (text, number, checkbox, radio, dropdown, date, table), personal data pulled from the candidate record, and extend elements including image, attachment, approve and decline. Approve, decline and reset live on the letter, and the outcome lands on the candidate's offer tab and the job's pipeline.",
+    "evidence": "Nineteen placeable field types in four groups: the ones that execute the letter (signature, initial, stamp, data sign), text elements (text, number, checkbox, radio, dropdown, date, table), personal data pulled from the record, and extend elements including image, attachment, approve and decline."
+  },
+  {
+    "question": "Will the AI matching find new candidates from job boards or other outside sources?",
+    "answer": "No. Matching scores the candidate database you already have; it does not source candidates you do not have.",
+    "evidence": "Matching scores the database you have; it does not source candidates you do not."
+  }
+]

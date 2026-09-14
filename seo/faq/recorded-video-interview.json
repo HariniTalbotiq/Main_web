@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Do candidates need to install an app to record a video interview?",
+    "answer": "No. The round runs in the browser with nothing to install. Before recording, each candidate runs a short check on their camera, microphone and connection, and identity and document collection is handled in chat first, so you only review people who were validated and ready.",
+    "evidence": "the candidate runs a short check on camera, microphone and connection, and identity and document collection is handled in chat first. Nobody loses a round to a broken headset, and you only review people who were validated and ready. It all happens in the browser, with nothing to install."
+  },
+  {
+    "question": "Can candidates re-record their answers, and can I control how long they get to think?",
+    "answer": "Yes. Both the number of takes and the think time are set by you, per question. One take tests composure and gives you something close to a live answer; three takes tests thinking and shows what somebody produces when they can gather themselves. Think time works the same way: thirty seconds is a pressure test, two minutes is a reasoning test.",
+    "evidence": "Both are yours to set, per question. One take tests composure and gives you something close to a live answer. Three takes tests thinking, and tells you what somebody produces when they can gather themselves."
+  },
+  {
+    "question": "How are recorded interview answers scored, and can my panel check the AI's reasoning?",
+    "answer": "Answers are scored against your own rubric by a model tier reserved for scoring, with output validated against a fixed schema rather than accepted as free text. Every score links back to the transcript excerpt and the moment of video it came from, so a panel that disagrees can settle it by watching the clip.",
+    "evidence": "Answers are scored against your rubric by a model tier reserved for scoring, validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt and the moment of video it came from — which is what lets a panel settle a disagreement by watching"
+  },
+  {
+    "question": "How accurate is the AI scoring, and can body-language analysis alone screen a candidate out?",
+    "answer": "TalbotIQ publishes no accuracy figure for the scoring. Body language and sentiment are treated as one input among several, and TalbotIQ states that this signal should never on its own be the reason somebody is passed over.",
+    "evidence": "We publish no accuracy figure for the scoring. And sentiment or body-language signal should never on its own be the reason somebody is passed over."
+  },
+  {
+    "question": "When is a recorded video interview the wrong format to use?",
+    "answer": "It is a screening instrument, not a conversation: the candidate cannot ask you anything, which works against you on a senior or competitive hire, and that is what the 2-Way round is for. It also needs a camera, a microphone and somewhere passable to sit, so the Voice and Chat rounds exist for candidates who have none of those.",
+    "evidence": "the candidate cannot ask you anything, and for a senior or a competitive hire that asymmetry is a real cost, which is what the 2-Way round is for. It also needs a camera, a microphone and somewhere passable to sit, so the Voice and Chat rounds exist for candidates who have none of those."
+  },
+  {
+    "question": "Where are candidate video recordings stored, and are they kept forever?",
+    "answer": "Recordings sit in private storage and are reached only through short-lived signed URLs. Lifecycle rules expire the media on a schedule rather than keeping it indefinitely; the schedule itself is not stated on this page.",
+    "evidence": "Recordings sit in private storage reached only through short-lived signed URLs, with lifecycle rules that expire media on a schedule."
+  }
+]

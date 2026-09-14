@@ -78,11 +78,18 @@ function discover() {
       /* `/` is the root index, and it is resolved BEFORE the join — not by
          renaming it to "index" first, which makes it look relative and lands
          it in whatever directory the linking page happens to sit in. */
-      const next = href === '/'
+      let next = href === '/'
         ? ENTRY
         : path
             .normalize(path.join(href.charAt(0) === '/' ? '.' : from, href.replace(/^\//, '')))
             .split(path.sep).join('/') + '.html';
+      /* /products and /solutions are directories with an index.html — the two
+         hub pages build.js generates — not products.html. Same rule the host
+         applies under cleanUrls. */
+      if (!fs.existsSync(path.join(ROOT, next))) {
+        const idx = next.replace(/\.html$/, '/index.html');
+        if (fs.existsSync(path.join(ROOT, idx))) next = idx;
+      }
       /* nothing outside the served tree, and none of the reference material */
       if (next.startsWith('..') || /^(?:design|archive|\.archive|research)\//.test(next)) continue;
       if (!seen.has(next)) { seen.add(next); queue.push(next); }
@@ -175,6 +182,19 @@ const pick = (html, re) => { const m = html.match(re); return m ? unent(m[1]).tr
 const docs = [];
 const problems = [];
 
+/* the first SoftwareApplication or Service node in the page's JSON-LD, or null */
+function ldName(html) {
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    try {
+      const j = JSON.parse(m[1]);
+      const nodes = j['@graph'] || [j];
+      const hit = nodes.find((n) => n && (n['@type'] === 'SoftwareApplication' || n['@type'] === 'Service') && n.name);
+      if (hit) return String(hit.name);
+    } catch { /* a page with broken JSON-LD still gets its text indexed */ }
+  }
+  return null;
+}
+
 for (const rel of PAGES) {
   const file = path.join(ROOT, rel);
   if (!fs.existsSync(file)) { problems.push(`${rel}: file is missing`); continue; }
@@ -192,8 +212,15 @@ for (const rel of PAGES) {
   docs.push({
     /* the path a visitor would type, which is also the path the assistant
        cites — so the citation is always a link that actually resolves */
-    url: '/' + rel,
+    /* the URL the host serves, not the file: cleanUrls drops .html and an
+       index.html is its directory. The assistant quotes these to readers. */
+    url: rel === 'index.html' ? '/' : '/' + rel.replace(/\/index\.html$/, '').replace(/\.html$/, ''),
     title: pick(html, /<title[^>]*>([\s\S]*?)<\/title>/i),
+    /* the product or service's proper name, from the page's own JSON-LD. The
+       <title> is written for search now ("Recruitment Software (ATS) for Teams
+       & Agencies | TalbotIQ") and the assistant should still say "Intelligent
+       Recruitment Software", which is what the page calls the product. */
+    name: ldName(html),
     summary: pick(html, /<meta\s+name=["']description["']\s+content=["']([^"']*)["']/i),
     text,
   });

@@ -1,0 +1,132 @@
+{
+  "_readme": [
+    "Copy for the two generated hub pages, /products and /solutions. build.js reads this",
+    "the way it reads home.js: prose lives here, structure lives in the generator. Headings",
+    "are {text, keys}: `keys` names the one or two words that carry colour (g = green,",
+    "y = yellow), same as home.js. intro / tldr / how / FAQ answers may contain <a>, <b>.",
+    "Every claim here must already be made on a product page or in products.js; the",
+    "comparison table itself is built from seo/formats.json, not from this file.",
+    "Two FAQs (camera, install) are derived from the table by build.js and are not here."
+  ],
+  "products": {
+    "title": "All Products: Interview Formats Compared | TalbotIQ",
+    "description": "Nine interview formats in one table (live or async, who asks, how answers are scored, camera needed) plus TalbotIQ's recruitment, CRM, ERP and AI tools.",
+    "published": "2026-09-09",
+    "h1": {
+      "text": "Nine ways to interview a candidate, and the rest of the suite.",
+      "keys": [
+        [
+          "interview",
+          "g"
+        ],
+        [
+          "suite",
+          "y"
+        ]
+      ]
+    },
+    "intro": [
+      "TalbotIQ makes <b>nine interview formats</b>, the <a href=\"/products/recruitment-software\">recruitment software</a> that turns a scorecard into a pipeline stage, and six business tools: a <a href=\"/products/sales-crm\">sales CRM</a>, a <a href=\"/products/business-management-system\">business management system (ERP)</a> for SMEs, a <a href=\"/products/task-manager\">task and productivity manager</a>, <a href=\"/products/document-management\">document management</a>, a <a href=\"/products/note-taker\">meeting note taker</a>, and the <a href=\"/products/vawlt\">private AI engine</a> every product runs on.",
+      "The interview formats run on <a href=\"/products/mimic\">Mimic</a>, the interview platform: you define one rubric, candidates take their round in a browser or on the phone they already have, and the platform recommends. It never rejects anyone; a named person makes every decision."
+    ],
+    "tldr": [
+      "<b>Nine interview formats</b>, compared below: live or asynchronous, who asks the questions, how answers are scored, and whether a camera is needed.",
+      "<b>One rubric</b> across the scored formats, with each score linked to the transcript or moment it came from, so a first-round score and a final-round score sit on the same axis.",
+      "<b>Nobody is rejected by a model.</b> The platform does the arithmetic; the shortlist is a recommendation and a named person takes every decision.",
+      "<b>One private AI engine</b> under every product, scrubbing personal data before anything reaches a model.",
+      "<b>Pricing is quote-based.</b> There is no public price list; <a href=\"/demo\">book a demo</a> and we quote for your volume."
+    ],
+    "tableHeading": {
+      "text": "How the nine interview formats compare",
+      "keys": [
+        [
+          "compare",
+          "g"
+        ]
+      ]
+    },
+    "tableIntro": "Every cell is taken from the product page it links to. A dash means that page does not state it, and we would rather show a dash than guess.",
+    "tableCaption": "TalbotIQ interview formats compared",
+    "tableNote": "Scroll sideways on a small screen. Each format name links to its own page, which states what the round does and, just as plainly, what it does not.",
+    "restHeading": {
+      "text": "The rest of the suite",
+      "keys": [
+        [
+          "suite",
+          "y"
+        ]
+      ]
+    },
+    "restIntro": "Seven more products, on the same engine. Each page below is written from the running application and names what is not built yet.",
+    "faq": [
+      {
+        "q": "Can I combine several interview formats in one hiring process?",
+        "a": "Yes. Mimic runs interview pipelines, so a role can chain rounds in different formats, with candidates advanced by drag or by score threshold, and every scored round uses the same rubric, so scores from different rounds are comparable."
+      },
+      {
+        "q": "Does the AI decide who gets hired?",
+        "a": "No. The platform scores answers against the rubric you defined and links each score to the evidence it came from, but it only recommends. Mimic never rejects anyone, and in the recruitment software advancing a candidate, approving a requisition and signing an offer are actions a named person takes."
+      },
+      {
+        "q": "Is TalbotIQ an applicant tracking system (ATS)?",
+        "a": "The <a href=\"/products/recruitment-software\">Intelligent Recruitment Software</a> is the ATS: seven modules and one administration area on one licence and one database, with a Hire Mode for internal talent teams and an Agency Mode for staffing firms that bill clients. The interview formats feed it, but each can also be used on its own."
+      },
+      {
+        "q": "How much does TalbotIQ cost?",
+        "a": "Pricing is quote-based and depends on volume and the products you take; there is no public price list. <a href=\"/demo\">Book a demo</a> and we quote for your team."
+      },
+      {
+        "q": "Where does candidate and customer data go?",
+        "a": "Every product runs on the same private AI engine, which scrubs personal data before any request reaches a model and records which model served each request. The <a href=\"/products/vawlt\">Vawlt</a> page lists, task by task, which run on our own hardware and which do not."
+      }
+    ],
+    "alsoList": [
+      "mimic"
+    ]
+  },
+  "solutions": {
+    "title": "AI Consulting & Development Services | TalbotIQ",
+    "description": "TalbotIQ's engagements: AI strategy and consulting, AI agent and bot development, embedded edge AI, and full stack development with AI integration.",
+    "published": "2026-09-09",
+    "h1": {
+      "text": "Engagements, not seats.",
+      "keys": [
+        [
+          "Engagements",
+          "g"
+        ]
+      ]
+    },
+    "intro": [
+      "The products are what TalbotIQ sells you a seat in. These are what TalbotIQ does <b>for</b> you: four engagements, each with its own page, and a fifth being written up.",
+      "All of them are built by the team that builds the products, on the same private AI engine, in the same register: plain about what will work, and plain about what will not."
+    ],
+    "howHeading": {
+      "text": "How an engagement starts",
+      "keys": [
+        [
+          "starts",
+          "y"
+        ]
+      ]
+    },
+    "how": [
+      "It starts with a conversation about your bottlenecks, not a brochure. <a href=\"/contact\">Tell us</a> what the work is and where it stalls, and our engineers come back with a roadmap: what to automate, in what order, and what it is worth.",
+      "If a product already does the job, we will say so and point you at it. If it needs building, the engagement scopes it."
+    ],
+    "faq": [
+      {
+        "q": "What is the difference between a TalbotIQ product and a TalbotIQ solution?",
+        "a": "A product is software you take a seat in: the interview formats, the recruitment software, the CRM, the ERP and the other tools on the <a href=\"/products\">products page</a>. A solution is an engagement, where the team designs or builds something for your business."
+      },
+      {
+        "q": "Do you only work with companies that use your products?",
+        "a": "No. The four engagements stand on their own. Where one of the products already does the job, we will say so rather than build it again."
+      },
+      {
+        "q": "Where is TalbotIQ based?",
+        "a": "Kuala Lumpur, Malaysia. The <a href=\"/contact\">contact page</a> has the office address, phone and email."
+      }
+    ]
+  }
+}

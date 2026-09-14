@@ -1,0 +1,32 @@
+[
+  {
+    "question": "How does the Task & Productivity Manager turn meeting notes into assigned tasks?",
+    "answer": "You paste the text of your meeting notes and one click writes a summary and pulls out every commitment as a structured action item with an owner, a date and a priority, ready to become real tasks. Owners are matched to real teammates; where no owner matches, the item is flagged for you to assign manually.",
+    "evidence": "One click over your notes writes the summary and pulls out every commitment as a structured action item — owner, date and priority — ready to become real tasks."
+  },
+  {
+    "question": "Does it record or transcribe my meetings, and how do people sign in?",
+    "answer": "No. Nothing listens to a call — there is no recording or transcription; you paste the text yourself. Sign-in is email and password only (no Google or single sign-on, and no email verification on signup); status and priority sets are fixed rather than user-defined, and there is no bulk importer yet.",
+    "evidence": "Nothing listens to a call: there is no recording or transcription, you paste the text. Sign-in is email and password — no Google or single sign-on — and there is no email verification on signup. Status and priority sets are fixed rather than user-defined. There is no bulk importer yet."
+  },
+  {
+    "question": "Can a task be held for sign-off before it moves forward, and who approves it?",
+    "answer": "Yes. An approval request attaches to a task and gates it: while it is pending, or its latest decision is a rejection, the task cannot move to In Progress or Complete. There are five kinds of approval (general, budget, scope change, release or deploy, and proof of concept) and four modes: one named approver, sequential where only the current person can act, parallel where everyone must approve, or parallel where the first approval closes it.",
+    "evidence": "An approval request attaches to a task and gates it: while one is pending, or its latest decision is a rejection, the task cannot move to In Progress or Complete. Five kinds — general, budget, scope change, release or deploy, and proof of concept — and four modes"
+  },
+  {
+    "question": "How does it track whether people actually delivered what they committed to?",
+    "answer": "Any task with both an owner and a due date counts as a commitment, and the ledger classifies each one as kept, late or missed from the task's status history rather than today's date, so a task completed on time three weeks ago still reads as kept. Per-person scorecards show the kept, late and missed split with an on-time rate.",
+    "evidence": "Any task with both an owner and a due date is a commitment, and the ledger classifies each one from the task's status history rather than today's date — so something completed on time three weeks ago still reads as kept. Per-person scorecards show the kept, late and missed split with an on-time rate"
+  },
+  {
+    "question": "How does it measure team workload, if not by counting tickets?",
+    "answer": "Each task gets a weight from its estimated hours where set (otherwise derived from how much structure it carries), multiplied by priority and discounted by progress, so a task at 80% counts for a fifth of its weight. Summed across a person's open work, with overdue work counting twice, this produces a band: light, balanced, heavy or overloaded.",
+    "evidence": "its estimated hours where set, otherwise derived from how much structure it carries, then multiplied by priority and discounted by progress, so a task at 80% counts for a fifth of its weight. Summed across someone's open work, with overdue work counting twice toward strain, that produces a band"
+  },
+  {
+    "question": "Is there a mobile app, and can I do everything from my phone?",
+    "answer": "There is an Android app only; there is no iOS app. The mobile app is a deliberate subset of the web version, so approvals, reports, the ledger, team management and settings are web-only.",
+    "evidence": "Android only — there is no iOS app, and the mobile app is a deliberate subset of the web rather than all of it, so approvals, reports, the ledger, team management and settings are web-only."
+  }
+]

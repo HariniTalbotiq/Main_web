@@ -255,8 +255,8 @@ test('the whole site is in the system instruction, and the question is not', asy
   await handler(mkReq({ body: { messages: [{ role: 'user', text: question }] } }), mkRes());
   const sys = sent.body.systemInstruction.parts[0].text;
   assert.ok(sys.includes('KNOWLEDGE'), 'no KNOWLEDGE section');
-  assert.ok(sys.includes('<page url="/index.html"'), 'the homepage is missing from the corpus');
-  assert.ok(sys.includes('<page url="/products/recapr.html"'), 'a product page is missing from the corpus');
+  assert.ok(sys.includes('<page url="/"'), 'the homepage is missing from the corpus');
+  assert.ok(sys.includes('<page url="/products/note-taker"'), 'a product page is missing from the corpus');
   assert.ok(sys.length > 100000, 'corpus looks truncated: ' + sys.length + ' chars');
   /* the visitor's words are a separate turn, never spliced into the brief */
   assert.ok(!sys.includes(question), 'user text was concatenated into the system instruction');
@@ -280,7 +280,7 @@ test('the brief tells the model to deflect off-topic questions with the set line
   /* an on-topic question the site does not answer is a DIFFERENT reply, and both
      must be present or the model will collapse them into one */
   assert.ok(/not something the site covers/.test(sys), 'the not-covered reply is missing');
-  assert.ok(/\/contact\.html/.test(sys), 'nothing points the visitor at the team');
+  assert.ok(/\/contact\b/.test(sys), 'nothing points the visitor at the team');
 });
 
 test('the brief refuses to describe its own configuration', async () => {
@@ -389,12 +389,14 @@ test('the brief lists every real page, and the names come from the pages', async
      Scoped to the sitemap block: the demo page's headline appears legitimately
      further down, inside its own page text in KNOWLEDGE. */
   const map = sys.slice(sys.indexOf('WHAT THIS SITE COVERS'), sys.indexOf('A product or page not'));
-  assert.ok(map.includes('Home (/index.html)'), 'the homepage is titled, not named');
-  assert.ok(map.includes('Book a demo (/demo.html)'), map);
+  assert.ok(map.includes('Home (/)'), 'the homepage is titled, not named');
+  assert.ok(map.includes('Book a demo (/demo)'), map);
+  /* the two generated hubs are pages too, named from their path */
+  assert.ok(map.includes('(/products)') && map.includes('(/solutions)'), 'a hub page is missing from the sitemap: ' + map);
   assert.ok(!/Ready to accelerate/.test(map), 'a page headline leaked in as a name: ' + map);
   assert.ok(!/undefined/.test(map), 'a page produced no name: ' + map);
   /* every url in the corpus is in the map, and nothing else is */
-  const listed = (map.match(/\((\/[^)]+)\)/g) || []).map((x) => x.slice(1, -1)).sort();
+  const listed = (map.match(/\((\/[^)]*)\)/g) || []).map((x) => x.slice(1, -1)).sort();   /* `(/)` is the homepage */
   const real = require('../api/knowledge.json').map((d) => d.url).sort();
   assert.deepStrictEqual(listed, real, 'the sitemap and the corpus disagree');
 });
@@ -421,11 +423,11 @@ test('a real page becomes context, in a part after the cached brief', async () =
   stubFetch(TEXT('ok'));
   await handler(mkReq({ body: {
     messages: [{ role: 'user', text: 'what is this page about?' }],
-    page: '/products/ats.html',
+    page: '/products/recruitment-software',
   } }), mkRes());
   const parts = sent.body.systemInstruction.parts;
   assert.strictEqual(parts.length, 2, 'the page note should be its own part');
-  assert.ok(parts[1].text.includes('/products/ats.html'), parts[1].text);
+  assert.ok(parts[1].text.includes('/products/recruitment-software'), parts[1].text);
   assert.ok(parts[1].text.includes('Intelligent Recruitment Software'), parts[1].text);
   /* part 0 must stay byte-identical so the long prefix still caches */
   const withPage = parts[0].text;

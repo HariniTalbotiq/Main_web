@@ -1,0 +1,32 @@
+[
+  {
+    "question": "What does a candidate need to take a video interview, and do they have to install an app?",
+    "answer": "Nothing to install: the candidate does all of it in a browser. They need a working camera, microphone and connection, and before recording anything they run a short check on all three, with identity and document collection handled in chat first, so nobody loses a round to a broken headset and you only review people who were validated and ready.",
+    "evidence": "check on camera, microphone and connection — and identity and document collection is handled in chat first. Two consequences: nobody loses a round to a broken headset, and you only ever review people who were validated and ready. The candidate does all of it in a browser, with nothing to install."
+  },
+  {
+    "question": "How are the answers in a video interview scored?",
+    "answer": "Every answer is scored against your own rubric by a model tier reserved for scoring, and the output is validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt and the moment of video it came from, so a rating can always be traced to something the candidate actually said.",
+    "evidence": "scored against your rubric by a model tier reserved for scoring, and validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt and the moment of video it came from — so a rating can always be traced to something the candidate actually said"
+  },
+  {
+    "question": "Does the video interview analyse body language, and can that decide the outcome on its own?",
+    "answer": "It reads emotional tone and confidence (posture, eye contact, gestures and composure) and turns them into structured, reviewable signal. That signal is presented as one input among several rather than a verdict, and a human still makes every call.",
+    "evidence": "Emotional tone and confidence — posture, eye contact, gestures, composure — are turned into structured, reviewable signal. This is the analysis only a video round can produce, and it is presented as one input among several rather than a verdict. A human still makes every call."
+  },
+  {
+    "question": "Can I run a live two-way interview or an avatar-led interview as well as the recorded round?",
+    "answer": "Yes. Besides the recorded async round there is an avatar assessor that runs the identical script for every candidate, and a two-way live round that puts your own team in a real conversation. Both are scored against the same rubric as the async round, so a live score and a recorded score sit on the same axis.",
+    "evidence": "An avatar assessor is a composed, bias-free interviewer that runs the identical script for every candidate, which removes the variance between a first interview and a fortieth. A two-way live round puts your own team in a real conversation. Both are scored against the same rubric as the async round"
+  },
+  {
+    "question": "Where are candidate video recordings stored, and are they kept indefinitely?",
+    "answer": "Recordings sit in private storage that is reached only through short-lived signed URLs. Lifecycle rules expire the media on a schedule rather than keeping it indefinitely.",
+    "evidence": "Recordings sit in private storage reached only through short-lived signed URLs, with lifecycle rules that expire media on a schedule rather than keeping it indefinitely."
+  },
+  {
+    "question": "When is a video interview the wrong choice, and how accurate is the scoring?",
+    "answer": "For candidates and roles where a camera is the wrong ask, TalbotIQ's Voice and Chat rounds exist instead of the video round. TalbotIQ publishes no accuracy figure for the scoring; the measure it points to is how often a human changed a score in your own pipeline.",
+    "evidence": "the Voice and Chat rounds exist for candidates and roles where a camera is the wrong ask. We publish no accuracy figure for the scoring, because the honest measure is how often a human changed a score in your own pipeline"
+  }
+]

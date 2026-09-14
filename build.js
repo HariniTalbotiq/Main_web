@@ -12,7 +12,7 @@
      #why          why lead with TALBOTIQ — three claims, text only
      #insights     every published column, from articles.js
      cta           the closing offer, in teal
-     footer        five columns · newsletter · legal
+     footer        five columns · legal
 
    TWO SOURCES, ONE JOIN. `products.js` owns what each product IS and is
    unchanged by this design; `home.js` owns how the page is COMPOSED and joins
@@ -129,7 +129,14 @@ const pageFile = (href) => {
   for (const h of keyedHeadings(H)) {
     for (const [word, tone] of h.keys) {
       if (!h.text.includes(word)) bad.push(`keyword "${word}" does not occur in heading "${h.text}"`);
-      if (tone !== 'g' && tone !== 'y') bad.push(`keyword "${word}" has unknown tone "${tone}" — it is 'g' or 'y'`);
+      /* 'brush' is the third role and the only one that draws a shape: a
+         marker swash behind the word, in the manner of a highlighter. It is
+         listed here rather than allowed implicitly so that a typo in a tone
+         still fails the build. */
+      if (!['g', 'y', 'brush', 'brush-y'].includes(tone)) {
+        bad.push(`keyword "${word}" has unknown tone "${tone}" — `
+          + `it is 'g', 'y', 'brush' or 'brush-y'`);
+      }
     }
     if (!h.keys.length) bad.push(`heading "${h.text}" has no keywords`);
     if (h.keys.length > 2) bad.push(`heading "${h.text}" has ${h.keys.length} keywords — the device is one or two`);
@@ -243,16 +250,19 @@ const GO = {
 
      `talk` is the LOCAL contact page: its phone, email and WhatsApp links are
      live, so it is useful even though its own form is not wired. */
+  home: '/',
   demo: '/demo',
   talk: '/contact',
   signin: '/signin',
   products: '#products',
-  /* THE SHELF'S OWN FOOTER LINK. It pointed at the old site's /products/
-     index, so the one link under a shelf listing ten local product pages left
-     the site. `index.html#products` rather than the bare '#products' that the
-     hero uses, because this shelf is in the header of demo.html too, where a
-     bare fragment would be a dead anchor. */
-  allProducts: '/#products',
+  /* THE SHELF'S OWN FOOTER LINK, and the footer's, and the drawer's. It pointed
+     at the old site's /products/ index, then at the homepage tile grid; it now
+     points at the generated /products hub, which is the one page that lists
+     all seventeen product pages and compares the interview formats in a
+     table. Six of those pages were reachable only from their sibling formats
+     before this; the hub puts every one of them two clicks from the homepage. */
+  allProducts: '/products',
+  allSolutions: '/solutions',
 };
 
 /* A tile's destination. The local product page under products/ wins: it is a
@@ -306,7 +316,11 @@ function maybeLink(name, url, cls) {
     : `<span class="soon">${esc(name)}</span>`;
 }
 
-const LOGO = 'assets/brand/talbotiq-logo.png';
+/* ROOT-ABSOLUTE, like every asset path this shell emits. The shell is also
+   served from /products and /solutions now, where a relative `assets/...`
+   would resolve to /products/assets/... and 404. It also fixes the 404 page,
+   which Vercel renders at whatever nested path was requested. */
+const LOGO = '/assets/brand/talbotiq-logo.png';
 
 /* CACHE-BUST BY CONTENT. `?v=<hash of the file>` on the stylesheet and the two
    scripts. The hash only changes when the file does, so a browser keeps its
@@ -314,16 +328,18 @@ const LOGO = 'assets/brand/talbotiq-logo.png';
    invisible behind a stale cache, which is otherwise a very convincing way to
    waste an afternoon debugging a rule that was right all along.
 
-   Fonts are not stamped because they are no longer ours to stamp: both faces
-   come from Google Fonts, whose URLs already carry their own version. */
+   The font is deliberately NOT stamped: its URL lives inside the stylesheet,
+   and a hash here that the CSS did not also carry would make the <link
+   rel=preload> point at a different URL than the @font-face — two downloads
+   of the same file instead of one. */
 function stamp(rel) {
   try {
     const h = crypto.createHash('sha1')
       .update(fs.readFileSync(path.join(__dirname, rel)))
       .digest('hex').slice(0, 8);
-    return `${rel}?v=${h}`;
+    return `/${rel}?v=${h}`;
   } catch {
-    return rel;   // missing file: emit the plain path and let the 404 be obvious
+    return '/' + rel;   // missing file: emit the plain path and let the 404 be obvious
   }
 }
 
@@ -408,7 +424,7 @@ const PANELS = {
     }).join('\n      '),
     cols: 'solutions',
     foot: `<span>Engagements, not seats.</span>
-        <a ${link(GO.talk)}>Talk to us &rarr;</a>`,
+        <a ${link(GO.allSolutions)}>All solutions &rarr;</a>`,
   },
   company: {
     grid: H.COMPANY_LINKS.map((c) => {
@@ -456,6 +472,11 @@ const panelMarkup = Object.entries(PANELS).map(([key, p]) => `
    centre nav and the panels are both gone. */
 const drawer = `
 <div class="drawer" id="drawer" data-open="false">
+  <!-- Home, in its own group so it takes .dgrp's separator rule rather than
+       needing one of its own. No <h4>: the link is its own label. -->
+  <div class="dgrp">
+    <a ${link(GO.home)}>Home</a>
+  </div>
   <div class="dgrp">
     <h4>Products</h4>
     ${H.TILES.map((t) => {
@@ -464,10 +485,12 @@ const drawer = `
         ? `<a href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>${esc(t.name)}</a>`
         : `<span class="${marked(t) ? 'soon' : 'nolink'}">${esc(t.name)}</span>`;
     }).join('\n    ')}
+    <a ${link(GO.allProducts)}>All products &rarr;</a>
   </div>
   <div class="dgrp">
     <h4>Solutions</h4>
     ${H.SOLUTIONS.map((s) => maybeLink(s.name, s.local || s.url)).join('\n    ')}
+    <a ${link(GO.allSolutions)}>All solutions &rarr;</a>
   </div>
   <div class="dgrp">
     <h4>Company</h4>
@@ -535,6 +558,22 @@ const STAGE = {
 
 const hero = `
 <div class="hero">
+  <!-- THE HINGE PANEL. .hero is the 3D stage (it holds the perspective and the
+       camera position); this is the thing that swings. It exists as a real
+       element for two reasons that are not style choices.
+
+       A transform makes an element the containing block for its absolutely
+       positioned descendants. The aside is one of those, and it is anchored to
+       the BOTTOM edge of the hero box — so whatever carries the transform has
+       to be a box with the same bottom edge, or the aside re-anchors to the
+       content and falls out through the clip. That is why the hero's padding
+       moved onto this element in the stylesheet: this panel IS the old hero
+       box, and .hero is now only the stage around it.
+
+       Second, the stage cannot also be the panel. perspective applies to an
+       element's CHILDREN, not to itself, so an element cannot be viewed in its
+       own perspective. Two elements is the minimum. -->
+  <div class="wake">
   <div class="wrap">
     <h1 class="hand">${keyed(H.COPY.hero.heading)}</h1>
 
@@ -544,6 +583,55 @@ const hero = `
       <a class="btn btn-primary btn-lg" ${link(GO.demo)}>${esc(H.COPY.hero.primary)}</a>
       <a class="btn btn-ghost btn-lg" href="${esc(GO.products)}">${esc(H.COPY.hero.secondary)}</a>
     </div>
+
+    <!-- The pencilled aside, out to the right of the buttons with an arrow
+         back at them. Requested, in the manner of the reference's "580.00 Rs
+         / month for ALL apps". The words are real information and stay in the
+         accessibility tree; the arrow is decoration and does not.
+
+         It sits INSIDE .wrap so that the narrow layout can simply stop
+         positioning it and let it fall into flow under the buttons -- see the
+         media query in section 3 of the stylesheet. Read the note beside
+         COPY.hero.aside in home.js before touching the wording: the claim has
+         a history. -->
+    <div class="aside-note">
+      <p>
+        <!-- THE RING IS DRAWN, NOT BORDERED. A border-radius pill would give a
+             machined ellipse; this is one unbroken pen stroke that starts at
+             the top right, goes round, and runs a little past where it began,
+             which is what a hand actually does when it circles something.
+
+             preserveAspectRatio="none" lets it stretch to whatever box the two
+             lines of type need, at any width, so the ring can never be too
+             tight or too loose for its words. vector-effect keeps the stroke
+             an even weight while that happens — without it the horizontal
+             scaling thins the sides and fattens the top. -->
+        <svg class="aside-ring" viewBox="0 0 200 84" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="M148 5C180 9 197 26 193 45 189 65 158 78 106 80 54 82 12 71 5 51 -1 33 17 13 55 6 84 1 122 1 160 8"/>
+        </svg>
+        <span>${H.COPY.hero.aside.map(esc).join('<br>')}</span>
+      </p>
+      <!-- THE ARROW POINTS DOWN AT THE PRODUCTS, and it comes AFTER the words
+           for that reason. It used to sit above them and curve up-left, which
+           aimed it at the lede — the reference it was copied from points at a
+           tagline, so that was faithful but wrong here. The note is about the
+           ten applications, and those are directly below in the grid, so the
+           words are read first and the arrow then leads the eye into them.
+           Putting it after the text is also what makes the phone layout work
+           without a second arrow: the note is centred under the buttons there,
+           and the grid is still the next thing down. -->
+      <!-- ONE SHALLOW DIAGONAL, LEAVING THE RING'S LEFT EDGE. The previous
+           version dropped straight down from under the ring before turning,
+           which read as a hook or a candy cane. In the reference the stroke
+           starts at the side of the oval and runs to the bottom left in a
+           single sweep, bowing only slightly, and the head sits at the far end
+           pointing the same way the stroke was already going. -->
+      <svg class="aside-arrow" viewBox="0 0 80 70" aria-hidden="true" focusable="false">
+        <path d="M74 6C57 13 35 25 15 53"/>
+        <path class="head" d="M10 60 22.4 52.9 13.2 46.2Z"/>
+      </svg>
+    </div>
+  </div>
   </div>
 </div>`;
 
@@ -571,13 +659,10 @@ const hero = `
    separate the groups now, which is what they were for.
    ========================================================================== */
 
-/* The engine is not a fourth row, it is the floor — so its group renders as one
-   centred tile with the note underneath rather than as a row of one. Which
-   group that is comes from CENTER_SLUG, the same product every other diagram on
-   this page orbits, rather than from a hardcoded group id. */
-const ENGINE_GROUP = (H.GROUPS.find((g) =>
-  H.TILES.some((t) => t.group === g.id && t.slug === CENTER_SLUG)) || {}).id;
-
+/* REMOVED WITH THE BAND LABELS: `ENGINE_GROUP`. The engine tile used to render
+   alone and larger in `.pengine`, keyed off whichever group holds CENTER_SLUG.
+   It is an ordinary tile in the flat grid now, so nothing needs to know which
+   group it is in. */
 const groupTiles = (g) => H.TILES.filter((t) => t.group === g.id);
 
 /* THE BRANCH UNDER A TILE THAT HAS MODES. Video and Chat rounds each come in
@@ -611,7 +696,10 @@ const modeTree = (stem) => `<svg class="tree" viewBox="0 0 352 44" aria-hidden="
    knowledge crawler both read it - it is simply not spent on an href here.
    A span also keeps them out of the tab order, and off the pile of duplicate
    destinations a screen reader would otherwise announce twice. */
-const modeBranch = (t, first) => `<div class="branch ${first ? 'b-left' : 'b-mid'}">
+const modeId = (t) => 'modes-' + String(t.slug || t.name).toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const modeBranch = (t, first) => `<div class="branch ${first ? 'b-left' : 'b-mid'}" id="${modeId(t)}">
         ${modeTree(first ? 155 : 176)}
         <div class="minis">
           ${t.modes.map((m) => `<span class="mini">
@@ -634,14 +722,32 @@ function productTile(t, big, first) {
   const kin = t.kin
     ? `\n        <span class="kin kin-${esc(String(t.kin).toLowerCase().replace(/\s+/g, '-'))}">${esc(t.kin)}</span>`
     : '';
+  /* THE PILL IS A BUTTON, AND IT SITS OUTSIDE THE TILE LINK. It used to be a
+     <span> inside the <a>, which was fine while the panel opened on hover —
+     but below 1080px there is nothing to hover with, so the pill has to be the
+     control that opens it, and a tap on a span inside a link just follows the
+     link. A real <button> also carries aria-expanded and works from the
+     keyboard, which a hijacked span cannot. It stays inside `.cell`, so the
+     desktop `.cell:hover .branch` reveal is untouched. */
   const modes = t.modes
-    ? `\n        <span class="modes">${t.modes.length} modes
-          <svg width="9" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
-        </span>`
+    ? `\n      <button class="modes" type="button" aria-expanded="false" aria-controls="${modeId(t)}">${t.modes.length} modes
+        <svg width="9" height="6" viewBox="0 0 10 6" aria-hidden="true" focusable="false"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+      </button>`
     : '';
-  const inner = `<span class="card">${icon(t, big ? 70 : 58)}</span>
-        <span class="nm">${esc(t.name)}</span>
-        <span class="ds">${esc(t.tagline)}</span>${kin}${modes}`;
+  /* TWO HALVES OF THE NAME, so the phone grid can put each on its own line and
+     every caption in a row starts at the same height — see nameBreak in
+     home.js and the rule in the 460px block. The halves are separated by a
+     single space and are inline by default, so on desktop this renders exactly
+     as `esc(t.name)` did; only the phone stylesheet makes them blocks.
+     A tile with no nameBreak (the lone Private AI Engine) is untouched. */
+  const words = String(t.name).split(' ');
+  const nm = t.nameBreak && t.nameBreak > 0 && t.nameBreak < words.length
+    ? `<span class="nm-a">${esc(words.slice(0, t.nameBreak).join(' '))}</span> `
+      + `<span class="nm-b">${esc(words.slice(t.nameBreak).join(' '))}</span>`
+    : esc(t.name);
+  const inner = `<span class="card">${icon(t, big ? 70 : 40)}</span>
+        <span class="nm">${nm}</span>
+        <span class="ds">${esc(t.tagline)}</span>${kin}`;
   const tile = href
     ? `<a class="tile" href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>
         ${inner}
@@ -652,37 +758,55 @@ function productTile(t, big, first) {
         ${inner}
       </div>`;
   return `<div class="cell">
-      ${tile}${t.modes ? '\n      ' + modeBranch(t, first) : ''}
+      ${tile}${modes}${t.modes ? '\n      ' + modeBranch(t, first) : ''}
     </div>`;
 }
 
-/* The label over each band: the name, a rule that fades out, and the count of
-   what is in the band. The count is DERIVED from the band, like every other
-   number on this page, so a tile added to a group cannot leave the label
-   lying. */
-function groupLabel(g, n) {
-  return `<div class="glabel ${esc(g.tone)}">
-        <span class="t">${esc(g.label)}</span><span class="r"></span><span class="c">${n} product${n === 1 ? '' : 's'}</span>
-      </div>`;
+
+/* ONE GRID, TWO ROWS, NO BAND LABELS — by request.
+
+   This used to render three bands, each with its own `.glabel` header
+   ("Hiring & interviewing · 4 products", "Business management software · 5
+   products", "The layer underneath · 1 product") and its own row: four
+   across, then five, then the lone engine tile in `.pengine` at a larger
+   size. The labels are gone and the ten tiles are one field of five and
+   five.
+
+   GROUPS IS STILL THE DATA MODEL. It is not deleted — it orders the tiles
+   (hiring, then business, then the engine), and build.js validates every
+   tile's `group` against it, so a typo is still caught. What changed is
+   only that the grouping is no longer *drawn*. `groupLabel` and the engine's
+   own branch are unused now and go with it.
+
+   FIVE PER ROW BECAUSE THERE ARE TEN TILES. Derived, not typed: the row
+   size is the tile count halved, so adding an eleventh product breaks the
+   build's own check rather than silently leaving a hole in row two.
+
+   `i === 0` still marks the first tile in each row, which is what gives its
+   mode branch `b-left` instead of the centred `b-mid` offset — a branch
+   opening from the leftmost cell has no room to centre. */
+const allTiles = H.GROUPS.flatMap(groupTiles);
+const PER_ROW = allTiles.length / 2;
+if (!Number.isInteger(PER_ROW)) {
+  throw new Error(`the product grid is two even rows, so the tile count must be even — got ${allTiles.length}`);
 }
+/* ONE GRID ELEMENT, NOT TWO ROW DIVS, and the reason is how it wraps. Two
+   `.prow-5` divs give two clean rows of five at desktop — but each div wraps
+   on its own, so at the three-column step each became 3+2 and the band
+   rendered 3,2,3,2: four ragged rows where two were asked for. A single grid
+   of ten wraps as one field, and ten divides evenly by both column counts
+   the band uses (5x2 and 2x5), so no width leaves a half-empty row.
 
-const productGroups = H.GROUPS.map((g) => {
-  const ts = groupTiles(g);
-  if (g.id === ENGINE_GROUP) {
-    return `${groupLabel(g, ts.length)}
+   PER_ROW is still derived and still checked above, because it is what makes
+   the desktop layout two rows rather than a number someone typed.
 
-      <div class="pengine">
-        ${ts.map((t) => productTile(t, true)).join('\n        ')}
+   `i === 0` marks the leftmost tile for its mode branch's `b-left` offset.
+   Index 0 is column one at five-across; below 1080px the branches stop being
+   hover panels and become inline disclosures, where the offset is reset
+   anyway (§17), so the narrower steps need nothing here. */
+const productGroups = `<div class="prow pgrid" style="--per-row:${PER_ROW}">
+        ${allTiles.map((t, i) => productTile(t, false, i === 0)).join('\n        ')}
       </div>`;
-  }
-  /* The column count is the number of tiles in the band — four then five —
-     which is why the class carries it rather than the stylesheet assuming it. */
-  return `${groupLabel(g, ts.length)}
-
-      <div class="prow prow-${ts.length}">
-        ${ts.map((t, i) => productTile(t, false, i === 0)).join('\n        ')}
-      </div>`;
-}).join('\n\n      ');
 
 const productBand = `
 <div class="band" id="products">
@@ -878,6 +1002,7 @@ const ecosystem = `
       <div class="ecowell">
         ${ecoVisual}
       </div>
+      <p class="ecotag">${esc(H.COPY.ecosystem.tagline)}</p>
     </div>
   </div>
 </div>`;
@@ -1151,9 +1276,11 @@ const footer = `
             ? `<a href="${esc(href)}"${isExternal(href) ? ' target="_blank" rel="noopener"' : ''}>${esc(t.name)}</a>`
             : `<span class="${marked(t) ? 'soon' : 'nolink'}">${esc(t.name)}</span>`;
         }).join('\n        ')}
+        <a class="all" ${link(GO.allProducts)}>All products &rarr;</a>
       </div>
       <div class="fcol"><h4>Solutions</h4>
         ${H.SOLUTIONS.map((s) => maybeLink(s.name, s.local || s.url)).join('\n        ')}
+        <a class="all" ${link(GO.allSolutions)}>All solutions &rarr;</a>
       </div>
       <div class="fcol"><h4>Company</h4>
         ${H.COMPANY_LINKS.map((c) => maybeLink(c.name, c.url)).join('\n        ')}
@@ -1173,19 +1300,11 @@ const footer = `
       </div>
     </div>
 
-    <div class="news">
-      <p><b>${esc(H.NEWSLETTER.title)}</b>${esc(H.NEWSLETTER.body)}</p>
-      ${H.NEWSLETTER.action ? `<form class="newsform" method="post" action="${esc(H.NEWSLETTER.action)}">
-        <label class="skip" for="nl">Email address</label>
-        <input id="nl" name="email" type="email" placeholder="Your email" required>
-        <button class="btn btn-primary" type="submit">${esc(H.NEWSLETTER.cta)}</button>
-      </form>` : `<div class="newsform">
-        <label class="skip" for="nl">Email address</label>
-        <input id="nl" type="email" placeholder="Your email" disabled aria-describedby="nlwhy">
-        <span class="btn btn-primary" aria-disabled="true">${esc(H.NEWSLETTER.cta)}</span>
-        <span id="nlwhy" class="soon" style="padding:0">Not wired up yet</span>
-      </div>`}
-    </div>
+    <!-- THE NEWSLETTER SIGN-UP IS GONE, by request. It had no endpoint, so it
+         rendered as a disabled field captioned "Not wired up yet" — an inert
+         control that asked for an address it could not accept. Removed rather
+         than left sitting there. Wire up a list first, then put it back: the
+         markup and its NEWSLETTER copy block are in this file's history. -->
 
     <!-- PRIVACY POLICY · TERMS · SECURITY ARE GONE, by request. All three were
          unlinked text: there is no privacy page, no terms page and no security
@@ -1257,15 +1376,15 @@ const demoBody = `
            wants a demo can always reach somebody from here. -->
       <!-- THE NUMBERS ARE NOT PRINTED, THE PHONE STILL RINGS. Both of
            CONTACTS held both numbers and both were listed here, as two rows
-           of digits. No
-           number is displayed anywhere on this site any more, by request — so
-           this is one row that DIALS the office without reading it out, which
-           is the same trade the contact page's own chip row already made
-           ("Call the office"). A reader on a phone taps it; a reader on a
-           desktop is not being asked to copy fourteen digits by hand. -->
+           of digits. THE NUMBER IS PRINTED AGAIN, by request: it was hidden
+           behind the words "Call the office", and a reader who wants to dial
+           from a desk phone, save the contact, or simply check that a real
+           company is on the other end could not see it. It is still a tel:
+           link, so a phone still taps it — the digits are additional, not a
+           replacement. -->
       <ul class="demoreach">
         <li><span>Email</span><a href="mailto:${esc(H.CONTACTS.email)}">${esc(H.CONTACTS.email)}</a></li>
-        <li><span>Phone</span><a href="tel:${esc(H.CONTACTS.office.replace(/[\s-]/g, ''))}">Call the office</a></li>
+        <li><span>Phone</span><a href="tel:${esc(H.CONTACTS.office.replace(/[\s-]/g, ''))}">${esc(H.CONTACTS.office)}</a></li>
         <li><span>Office</span>${esc(COMPANY.base)}</li>
       </ul>
     </div>
@@ -1323,7 +1442,7 @@ const demoBody = `
              deliberately written for a customer, not for whoever maintains
              this: nobody buying software should be told the name of a config
              field. -->
-        <p class="dnote">Prefer to talk to a person? ${esc(H.CONTACTS.email)} or <a href="tel:${esc(H.CONTACTS.office.replace(/[\s-]/g, ''))}">call the office</a>.</p>`}
+        <p class="dnote">Prefer to talk to a person? <a href="mailto:${esc(H.CONTACTS.email)}">${esc(H.CONTACTS.email)}</a> or <a href="tel:${esc(H.CONTACTS.office.replace(/[\s-]/g, ''))}">${esc(H.CONTACTS.office)}</a>.</p>`}
       </form>
     </div>
 
@@ -1333,33 +1452,70 @@ const demoBody = `
 /* =============================================================================
    THE DOCUMENT
    ========================================================================== */
-const DESC = `${H.COPY.hero.lede.strong} ${H.COPY.hero.lede.rest} `
-  + H.TILES.map((t) => t.name).join(', ') + '.';
+/* <title> and description are copy in home.js now (COPY.meta), with the two
+   limits Google truncates at enforced here rather than remembered. */
+const DESC = H.COPY.meta.description;
+if (H.COPY.meta.title.length > 60) throw new Error(`homepage title is ${H.COPY.meta.title.length} chars (limit 60)`);
+if (DESC.length > 155) throw new Error(`homepage description is ${DESC.length} chars (limit 155)`);
 
-const jsonld = {
-  '@context': 'https://schema.org',
+/* THE ORGANIZATION, ONCE, WITH AN @id EVERY OTHER PAGE CAN POINT AT.
+   about.html and contact.html already reference https://talbotiq.com/#org and
+   tools/seo-pass.js makes every hand-written page's WebPage node do the same,
+   so this is the node they all resolve to. `sameAs` is read from
+   site.config.json and omitted while the list is empty: an entity graph with
+   no profile links is thin, but one with invented links is wrong. Add the
+   LinkedIn page, Crunchbase, G2 and Capterra URLs there as they exist. */
+const ORG_ID = abs('/') + '#org';
+const SITE_ID = abs('/') + '#website';
+const organization = {
   '@type': 'Organization',
+  '@id': ORG_ID,
   name: COMPANY.name,
+  alternateName: 'TALBOTIQ',
   legalName: COMPANY.legal,
-  url: COMPANY.site,
+  url: abs('/'),
+  logo: { '@type': 'ImageObject', url: abs(LOGO), width: 262, height: 72 },
+  image: abs(SITE.defaultOgImage),
   slogan: COMPANY.creed,
   description: COMPANY.positioning,
   telephone: COMPANY.phone,
   email: H.CONTACTS.email,
-  address: { '@type': 'PostalAddress', addressLocality: 'Kuala Lumpur', addressCountry: 'MY' },
+  founder: { '@type': 'Person', name: COMPANY.founder.name, jobTitle: COMPANY.founder.jobTitle },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: `${COMPANY.address.line1}, ${COMPANY.address.line2}`,
+    addressLocality: COMPANY.address.city,
+    postalCode: COMPANY.address.postcode,
+    addressRegion: COMPANY.address.state,
+    addressCountry: 'MY',
+  },
+  contactPoint: [{ '@type': 'ContactPoint', telephone: COMPANY.phone, email: H.CONTACTS.email, contactType: 'sales', areaServed: 'MY', availableLanguage: ['en'] }],
+  ...(Array.isArray(SITE.sameAs) && SITE.sameAs.length ? { sameAs: SITE.sameAs } : {}),
   makesOffer: H.TILES.map((t) => {
     const p = BY_SLUG.get(t.slug);
+    const href = tileHref(t);
     return {
       '@type': 'Offer',
       itemOffered: {
         '@type': 'SoftwareApplication',
         name: t.name,
         applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
         description: (p && p.description) || t.tagline,
+        ...(href && !isExternal(href) ? { url: abs(href) } : {}),
       },
     };
   }),
 };
+const website = {
+  '@type': 'WebSite',
+  '@id': SITE_ID,
+  url: abs('/'),
+  name: COMPANY.name,
+  inLanguage: 'en',
+  publisher: { '@id': ORG_ID },
+};
+const jsonld = { '@context': 'https://schema.org', '@graph': [organization, website] };
 
 /* ONE DOCUMENT SHELL, TWO PAGES. Everything outside <main> — the head, the
    sticky header, the three nav panels, the drawer, the footer and the scripts —
@@ -1367,14 +1523,87 @@ const jsonld = {
    takes the body as an argument. The alternative is what `products/*.html` and
    `about.html` already are: standalone copies that drift, and that tools/
    fix-pages.js exists to keep in line. Anything generated should not need that. */
-const page = ({ title, ogTitle, desc, body, path: pagePath, noindex }) => `<!DOCTYPE html>
+/* ---- GOOGLE TAG MANAGER, container GTM-T4ZK68F -------------------------
+   Supplied by the marketing side and pasted VERBATIM: the container snippet
+   is Google's own and is not ours to reformat, so it goes in byte for byte,
+   including its line breaks. The two halves are kept as constants here rather
+   than inline so the generated pages and the twenty-four hand-written ones
+   (see tools/fix-pages.js) provably carry the same text.
+
+   PLACEMENT. Google asks for the loader "as high in the head as possible" and
+   the noscript "immediately after the opening body tag", and that is where
+   these land -- the loader goes directly after the charset, which has to stay
+   first because a meta charset is only honoured inside the first 1024 bytes.
+
+   IT DOES NOT DISPLACE THE PRE-PAINT FLAG. The script that sets html.js and
+   html.fx still sits at the end of the head where it was; the GTM loader above
+   it is a few hundred bytes of synchronous code that only injects an async
+   script tag, so it costs the flag nothing measurable.
+
+   WHAT IT COSTS, HONESTLY: this is the first third-party request on a site
+   that self-hosts its fonts specifically to avoid one. gtm.js is async so it
+   does not block render, but it can inject further tags at runtime, and
+   whatever those load is outside this repo's control. Measured before and
+   after -- the numbers are in the reply that shipped it.
+
+   NO CSP TO WIDEN: vercel.json sets no Content-Security-Policy, so nothing
+   here needs an allowlist entry. If one is ever added, googletagmanager.com
+   needs script-src and frame-src. */
+const GTM_HEAD = `<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-T4ZK68F');</script>
+<!-- End Google Tag Manager -->`;
+
+const GTM_BODY = `<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T4ZK68F"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->`;
+
+const pageRaw = ({ title, ogTitle, desc, body, path: pagePath, noindex, extraLd = [] }) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
+${GTM_HEAD}
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="${H.PALETTE.teal}">
+<!-- THE SITE ICON, WHICH IS NOT THE SHARE CARD. The 1200x630 card below is the
+     big picture in an unfurl; this is the small square badge NEXT to it — and
+     the site had neither a favicon nor an apple-touch-icon, so /favicon.ico
+     answered 404. Slack, Teams, Telegram and Discord all draw that badge from
+     the favicon, so every link shared into them carried a blank square, and
+     every browser tab showed a generic page glyph.
+
+     THE MARK, NOT THE LOCKUP. The wordmark is unreadable below about 60px, so
+     the icon is the chevron alone, cut from the 420px lockup and centred on a
+     square canvas — square because a non-square source stretched to a square
+     slot is exactly the bug that started all of this.
+
+     FOUR LINES COVER EVERY PLATFORM THAT ASKS. favicon.ico is a real
+     multi-image container (16, 32, 48) and is what Windows reads and what
+     browsers and several link-preview tools fetch automatically whatever the
+     page declares; the 32px PNG is the crisper hint modern browsers prefer for
+     a tab; apple-touch-icon is iOS and macOS; and the manifest carries the
+     192, 512 and maskable Android icons rather than listing them here.
+
+     apple-touch-icon is OPAQUE on purpose: iOS composites it onto black, so a
+     transparent PNG comes out as a dark tile. It is padded 14% because iOS
+     rounds the corners and clips anything that runs to the edge. The maskable
+     Android icon is padded 22% for the same reason -- a launcher crops it to a
+     circle inscribed in the middle 80%. tools/build-icons.mjs makes them all.
+
+     NOT DECLARED, DELIBERATELY: mask-icon (Safari pinned tab) needs a
+     monochrome vector of the mark and there is no vector art for this logo in
+     the repo, and browserconfig/mstile are read only by IE11 and Edge Legacy,
+     both end-of-life. -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/brand/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
 ${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<link rel="canonical" href="${esc(abs(pagePath))}">
 <meta property="og:url" content="${esc(abs(pagePath))}">
 <meta property="og:type" content="website">
@@ -1382,34 +1611,59 @@ ${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<link rel="c
 <meta property="og:title" content="${esc(ogTitle || title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:image" content="${esc(abs(SITE.defaultOgImage))}">
+<!-- THE CARD'S EXACT PIXELS, DECLARED. A consumer that is not told the size
+     has to fetch the image before it can lay anything out, and several of them
+     guess an aspect ratio in the meantime and letterbox or crop to it — which
+     is how a correctly proportioned card still arrives looking squashed in one
+     client and trimmed in another. 1200x630 is the 1.91:1 that WhatsApp,
+     Slack, LinkedIn, iMessage, Outlook and Twitter all render without
+     resampling. secure_url is what older Outlook and some mail gateways read
+     instead of og:image; type saves them a sniff. -->
+<meta property="og:image:secure_url" content="${esc(abs(SITE.defaultOgImage))}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(SITE.siteName)} — Every workflow, running on intelligence.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="${esc(SITE.twitterHandle)}">
 <meta name="twitter:title" content="${esc(ogTitle || title)}">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${esc(abs(SITE.defaultOgImage))}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- ONE REQUEST FOR BOTH FACES. Bodoni Moda (display) and Inter (text) come
-     from the same stylesheet, so the browser makes one round trip instead of
-     two. opsz is requested across its full range because Bodoni Moda is a
-     Didone whose hairlines thin as the size grows, and font-optical-sizing
-     (auto by default) is what keeps the 76px hero from going wispy. Only
-     weight 700 of the display face is used, so only 700 is asked for.
-
-     The display face used to be self-hosted and preloaded here; it is served
-     by Google now, so the preload is gone with it — a preload pointing at a
-     versioned fonts.gstatic.com URL the stylesheet does not also carry would
-     just download the file twice. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,700&family=Inter:wght@400;500;600;700&display=swap">
+<meta name="twitter:image:alt" content="${esc(SITE.siteName)} — Every workflow, running on intelligence.">
+<!-- BOTH FACES ARE SELF-HOSTED. Inter came from Google Fonts until the SEO pass:
+     a render-blocking stylesheet from a third origin in front of every first
+     paint, 1.3-2.0s of the mobile LCP in Lighthouse. Same face, same weights,
+     one latin variable file (§30 of the stylesheet declares it). Both files are
+     preloaded because the hero uses both before the stylesheet has been read. -->
+<link rel="preload" href="/assets/fonts/inter/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/MeshedDisplay-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="${stamp('assets/css/talbotiq.css')}">
 <!-- THIS ONE LINE HAS TO BE INLINE AND IT HAS TO BE HERE. Every rule in §18
      that hides or moves anything is scoped to html.fx, so the class decides
      whether the page animates at all. A deferred script sets it too late: the
      browser would paint the finished drawing, then the class would arrive and
      snap it back to the start. Setting it before the body is parsed means there
-     is nothing to flash. JS off, reduced motion, or a phone -> no class, and
-     none of §18 applies. -->
-<script>try{var m=window.matchMedia,d=document.documentElement;if(m&&!m('(prefers-reduced-motion: reduce)').matches&&!m('(max-width: 820px)').matches){d.className+=' fx';
+     is nothing to flash. JS off or reduced motion -> no class, and none of
+     §18 applies.
+
+     A PHONE USED TO BE ON THAT LIST, and it was the reported bug: this gate
+     also tested max-width 820px, so on a phone the fx class was never set
+     and the whole of §18 and §25-26 sat inert. The hero arrived without its
+     entrance and all 31 reveals resolved before they could run, while every
+     hand-written page on the site animated on the same device — they gate
+     their own reveal class on reduced-motion alone. Screen width is not a
+     motion preference, so it is no longer treated as one.
+
+     NO BACKTICKS IN THIS COMMENT, DELIBERATELY. It sits inside the page's
+     own template literal, so one backtick here ends the literal and the
+     build dies with a syntax error thirty lines away. -->
+<script>try{var m=window.matchMedia,d=document.documentElement;d.className+=' js';/* The js flag is separate from fx and is set unconditionally: fx is withheld
+   under reduced motion, but the mode panels below 1080px
+   collapse and need a flag that is present exactly when script is. Scoping
+   the collapse to it means a blocked or broken app.js leaves the panels open
+   - the state they were in before they were collapsible - rather than hiding
+   the mode names behind a button nothing can work. Set before the body is
+   parsed, so there is nothing to flash. */if(m&&!m('(prefers-reduced-motion: reduce)').matches){d.className+=' fx';
 /* THE DEAD-MAN'S SWITCH. Everything §18-24 hides is scoped to .fx, and .fx is
    set here, BEFORE scroll.js has loaded. If that file 404s, is blocked, or
    throws, nothing would ever add the classes that unhide it — and the page
@@ -1418,9 +1672,10 @@ ${noindex ? '<meta name="robots" content="noindex, follow">\n' : ''}<link rel="c
    that it is alive by adding fx-on, and if that has not happened within two
    seconds .fx comes off and the whole page resolves to its finished state. */
 setTimeout(function(){if(!d.classList.contains('fx-on')){d.classList.remove('fx');}},2000);}}catch(e){}</script>
-<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>
+<script type="application/ld+json">${JSON.stringify({ ...jsonld, '@graph': [...jsonld['@graph'], ...extraLd] }).replace(/</g, '\\u003c')}</script>
 </head>
 <body>
+${GTM_BODY}
 <a class="skip" href="#main">Skip to content</a>
 
 <header id="hdr">
@@ -1460,6 +1715,22 @@ ${footer}
 <script type="application/json" id="stage-data">${JSON.stringify(STAGE).replace(/</g, '\\u003c')}</script>
 <script defer src="${stamp('assets/js/scroll.js')}"></script>
 
+<!-- THE ECOSYSTEM BAND'S BACKGROUND MOTION. Deferred and entirely optional:
+     the file finds .eco itself and does nothing if the section is not on the
+     page, which is why the same tag is harmless on the demo page. Nothing in
+     the band depends on it — the words, the pipeline and the diagram are all
+     painted before it runs and none of them are inside it. -->
+<script defer src="${stamp('assets/js/ecofx.js')}"></script>
+
+<!-- THE TYPEWRITER. Deferred, and it only ever animates text that is already
+     in the markup above — so if this tag never resolves, every heading on the
+     page is exactly as it is now. It finds its own targets, the .hand
+     headings, which is why the same tag is correct on the demo page and on
+     the seventeen product pages that tools/fix-pages.js writes it into.
+     NO BACKTICKS IN THIS COMMENT, DELIBERATELY: this string is inside a
+     build.js template literal and a backtick ends the literal. Third time. -->
+<script defer src="${stamp('assets/js/texttype.js')}"></script>
+
 <!-- THE WEBSITE ASSISTANT. One line, and the same line on all twenty pages,
      including the eighteen standalone ones — which is why the src is
      root-absolute rather than depth-relative like everything else here. The
@@ -1474,12 +1745,41 @@ ${footer}
 </html>
 `;
 
+/* ---- COMMENTS ARE FOR THE SOURCE, NOT FOR THE READER --------------------
+   This generator documents itself heavily and every one of those notes was
+   landing in the shipped HTML: about 12kB on the homepage alone, and roughly
+   45kB across the five pages it makes. Requested for production, and the trade
+   costs nothing -- the notes stay exactly where they are useful, in build.js,
+   and stop being served to people viewing source.
+
+   THE ASSERTION IS THE POINT. A blanket sweep for a comment delimiter is only
+   safe while no script or style body contains one; today none does, across the
+   whole tree, and this refuses to run rather than quietly corrupting an inline
+   script the day somebody writes a string with an arrow in it. Failing the
+   build is the correct outcome there.
+
+   GTM's four marker comments are kept: marketing supplied that snippet to be
+   pasted verbatim, viewing source for them is how a container gets confirmed,
+   and they are about 120 bytes. tools/fix-pages.js keeps the same exception
+   for the twenty-four hand-written pages. */
+function stripHtmlComments(html) {
+  for (const m of html.matchAll(/<(script|style)\b[^>]*>([\s\S]*?)<\/\1>/g)) {
+    if (m[2].includes('<!--') || m[2].includes('-->')) {
+      throw new Error(`stripHtmlComments: a <${m[1]}> body contains an HTML comment `
+        + 'delimiter, so a blanket sweep would corrupt it. Refusing to strip.');
+    }
+  }
+  return html.replace(/[ \t]*<!--(?!\s*(?:End\s+)?Google Tag Manager)[\s\S]*?-->[ \t]*\n?/g, '');
+}
+
+const page = (opts) => stripHtmlComments(pageRaw(opts));
+
 const html = page({
   path: '/',
   /* `hero.lead` + `hero.marked` until the hero copy became a {text, keys}
      heading like the others; the two old fields no longer exist, so this was
      emitting "TalbotIQ — undefined undefined" as the page title. */
-  title: `${COMPANY.name} — ${H.COPY.hero.heading.text}`,
+  title: H.COPY.meta.title,
   /* The share card has always led with the promise rather than the headline,
      and that is a deliberate difference from <title>, not an oversight. */
   ogTitle: `${COMPANY.name} — ${H.COPY.hero.lede.strong} ${H.COPY.hero.lede.rest}`,
@@ -1719,7 +2019,7 @@ const notFoundBody = `
     <p class="lede">The link you followed is out of date, or the address has a typo in it. Everything the site can do is still one click away.</p>
     <div class="cta-pair">
       <a class="btn btn-primary btn-lg" href="/">Back to the homepage</a>
-      <a class="btn btn-ghost btn-lg" href="/#products">Browse the products</a>
+      <a class="btn btn-ghost btn-lg" ${link(GO.allProducts)}>Browse the products</a>
     </div>
   </div>
 </div>`;
@@ -1732,6 +2032,209 @@ const notFoundHtml = page({
   body: notFoundBody,
 });
 fs.writeFileSync(path.join(__dirname, '404.html'), notFoundHtml, 'utf8');
+
+/* =============================================================================
+   THE TWO HUB PAGES — /products and /solutions
+   -----------------------------------------------------------------------------
+   Both were destinations before they were pages. Every product page's
+   BreadcrumbList named https://talbotiq.com/products and every solution page's
+   named /solutions, and both returned a 404 — a breadcrumb trail with a hole in
+   it, in the one markup search engines read literally. Six of the seventeen
+   product pages (avatar, recorded, two-way, conversational chat, MCQ, timed
+   Q&A) were also reachable only from their sibling formats: two clicks from
+   the homepage at best, and from nothing the homepage itself links.
+
+   GENERATED, from the same shell as the homepage, because a hub is the page
+   most likely to drift: one product renamed and a hand-written list is wrong.
+   The copy lives in seo/hub.json (like home.js, prose a non-developer can
+   edit); the comparison table's rows live in seo/formats.json, every cell of
+   which was extracted from the product page it links to and checked against
+   it, "not stated" and all. A cell the page does not support is drawn as a
+   dash, not guessed. The build REFUSES to run without either file — a hub with
+   no table is exactly the thin category page Google's scaled-content policy
+   is written about, and it is better to have no hub than that one.
+
+   THE TABLE IS A REAL <table>. It is the only one on the site. A CSS grid
+   dressed as a table is not parsed as one by anything that reads structured
+   data, and the whole point of the page is to be read that way. */
+const { execFileSync } = require('child_process');
+const TODAY = new Date().toISOString().slice(0, 10);
+const readJson = (rel) => {
+  const f = path.join(__dirname, rel);
+  if (!fs.existsSync(f)) throw new Error(`${rel} is missing — the hub pages are built from it; see the note above the hub code in build.js`);
+  return JSON.parse(fs.readFileSync(f, 'utf8'));
+};
+/* last commit that touched the file, or today while it has uncommitted changes —
+   the same rule tools/seo-pass.js and scripts/generate-sitemap.mjs use */
+const gitDate = (rel) => {
+  const g = (args) => { try { return execFileSync('git', args, { cwd: __dirname, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { return ''; } };
+  if (g(['status', '--porcelain', '--', rel])) return TODAY;
+  return g(['log', '-1', '--format=%cs', '--', rel]) || TODAY;
+};
+const HUB = readJson('seo/hub.json');
+const FORMATS = readJson('seo/formats.json');
+const HUB_MODIFIED = [gitDate('seo/hub.json'), gitDate('seo/formats.json')].sort().pop();
+
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const human = (iso) => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const stampLine = (published, modified) =>
+  `<p class="stamp">Published ${human(published)} &middot; Updated ${human(modified)} &middot; Written by the ${esc(COMPANY.name)} team</p>`;
+const plain = (html) => String(html).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&rarr;/g, '→').replace(/&mdash;/g, '—');
+const faqAcc = (faqs) => `<div class="acc">
+      ${faqs.map((f) => `<details><summary>${esc(f.q)}<span class="pm">+</span></summary><div class="ab">${f.a}</div></details>`).join('\n      ')}
+    </div>`;
+const faqLd = (url, faqs) => ({
+  '@type': 'FAQPage', '@id': `${url}#faq`,
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: plain(f.a) } })),
+});
+const crumbsLd = (url, name) => ({
+  '@type': 'BreadcrumbList', '@id': `${url}#breadcrumb`,
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: abs('/') },
+    { '@type': 'ListItem', position: 2, name, item: url },
+  ],
+});
+const pageLd = (url, { title, description, published }) => ({
+  '@type': 'CollectionPage', '@id': `${url}#webpage`, url, name: title, description,
+  inLanguage: 'en', datePublished: published, dateModified: HUB_MODIFIED,
+  isPartOf: { '@id': SITE_ID }, publisher: { '@id': ORG_ID },
+  breadcrumb: { '@id': `${url}#breadcrumb` }, mainEntity: { '@id': `${url}#list` },
+});
+
+/* ---- /products -------------------------------------------------------------- */
+const P = HUB.products;
+const PRODUCTS_URL = abs('/products');
+const NA = '<span class="na" title="Not stated on the product page">&mdash;</span>';
+const cell = (v) => (!v || /^not stated$/i.test(v) ? NA : esc(v));
+const formatRows = FORMATS.map((f) => `<tr>
+          <th scope="row"><a href="/products/${esc(f.slug)}">${esc(f.name)}</a></th>
+          <td>${cell(f.delivery)}</td><td>${cell(f.interviewer)}</td><td>${cell(f.scoring)}</td><td>${cell(f.camera)}</td><td>${cell(f.best_for)}</td>
+        </tr>`).join('\n        ');
+const formatHrefs = new Set(FORMATS.map((f) => `/products/${f.slug}`));
+const restTiles = H.TILES.filter((t) => !formatHrefs.has(tileHref(t)));
+const restCards = restTiles.map((t, i) => {
+  const p = BY_SLUG.get(t.slug);
+  const href = tileHref(t);
+  return `<div class="cap${i === 0 ? ' wide' : ''}"><h3><a ${link(href)}>${esc(t.name)}</a></h3><p>${esc((p && p.description) || t.tagline)}</p><a class="more" ${link(href)}>See ${esc(t.name)} &rarr;</a></div>`;
+});
+
+/* Two FAQs are DERIVED from the table rather than written, so they cannot
+   disagree with it: the camera question and the install question. */
+const list = (arr) => arr.length <= 1 ? arr.join('') : `${arr.slice(0, -1).join(', ')} and ${arr[arr.length - 1]}`;
+const noCamera = FORMATS.filter((f) => /^not required$/i.test(f.camera));
+const needsCamera = FORMATS.filter((f) => /^required$/i.test(f.camera));
+const derivedFaq = [];
+if (noCamera.length) derivedFaq.push({
+  q: 'Which interview formats work without a camera?',
+  a: `${list(noCamera.map((f) => `<a href="/products/${esc(f.slug)}">${esc(f.name)}</a>`))} ${noCamera.length === 1 ? 'does' : 'do'} not need a camera${needsCamera.length ? `; ${list(needsCamera.map((f) => esc(f.name)))} ${needsCamera.length === 1 ? 'does' : 'do'}` : ''}. Each product page states what a candidate needs before the round.`,
+});
+const hubFaq = [...P.faq, ...derivedFaq];
+
+const productsHubBody = `
+<div class="hub">
+  <div class="wrap">
+    <p class="crumb"><a href="/">Home</a> &rsaquo; Products</p>
+    <h1 class="hand left">${keyed(P.h1)}</h1>
+    ${P.intro.map((t) => `<p class="intro">${t}</p>`).join('\n    ')}
+    <ul class="tldr">${P.tldr.map((t) => `<li>${t}</li>`).join('')}</ul>
+
+    <h2 class="hand left" id="formats">${keyed(P.tableHeading)}</h2>
+    <p class="intro">${P.tableIntro}</p>
+    <div class="tblwrap"><table class="cmp">
+      <caption class="skip">${esc(P.tableCaption)}</caption>
+      <thead><tr><th scope="col">Format</th><th scope="col">Live or asynchronous</th><th scope="col">Who asks the questions</th><th scope="col">How answers are scored</th><th scope="col">Camera</th><th scope="col">Best for</th></tr></thead>
+      <tbody>
+        ${formatRows}
+      </tbody>
+    </table></div>
+    <p class="tblnote">${P.tableNote}</p>
+
+    <h2 class="hand left" id="suite">${keyed(P.restHeading)}</h2>
+    <p class="intro">${P.restIntro}</p>
+    <div class="capgrid">
+      ${restCards.join('\n      ')}
+    </div>
+
+    <h2 class="hand left" id="faq">Frequently asked <span class="k-g">questions</span></h2>
+    ${faqAcc(hubFaq)}
+    ${stampLine(P.published, HUB_MODIFIED)}
+  </div>
+</div>`;
+
+const listedProducts = [
+  ...FORMATS.map((f) => ({ name: f.name, url: abs(`/products/${f.slug}`) })),
+  ...restTiles.map((t) => ({ name: t.name, url: abs(tileHref(t)) })),
+  ...(P.alsoList || []).map((slug) => ({ name: (PRODUCTS.find((p) => p.slug === slug) || {}).name || slug, url: abs(`/products/${slug}`) })),
+];
+const productsHubLd = [
+  pageLd(PRODUCTS_URL, P),
+  crumbsLd(PRODUCTS_URL, 'Products'),
+  {
+    '@type': 'ItemList', '@id': `${PRODUCTS_URL}#list`, name: P.tableCaption,
+    numberOfItems: listedProducts.length,
+    itemListElement: listedProducts.map((x, i) => ({ '@type': 'ListItem', position: i + 1, name: x.name, url: x.url })),
+  },
+  faqLd(PRODUCTS_URL, hubFaq),
+];
+if (P.title.length > 60) throw new Error(`/products title is ${P.title.length} chars (limit 60)`);
+if (P.description.length > 155) throw new Error(`/products description is ${P.description.length} chars (limit 155)`);
+fs.mkdirSync(path.join(__dirname, 'products'), { recursive: true });
+fs.writeFileSync(path.join(__dirname, 'products', 'index.html'), page({
+  path: '/products', title: P.title, desc: P.description, body: productsHubBody, extraLd: productsHubLd,
+}), 'utf8');
+
+/* ---- /solutions ----------------------------------------------------------- */
+const S = HUB.solutions;
+const SOLUTIONS_URL = abs('/solutions');
+const solutionCards = H.SOLUTIONS.map((s) => {
+  const href = s.local || s.url;
+  return href
+    ? `<div class="cap"><h3><a ${link(href)}>${esc(s.name)}</a></h3><p>${esc(s.summary)}</p><a class="more" ${link(href)}>See ${esc(s.name)} &rarr;</a></div>`
+    : `<div class="cap pending"><h3><span class="soon">${esc(s.name)}</span></h3><p>${esc(s.summary)}</p></div>`;
+});
+const solutionsHubBody = `
+<div class="hub">
+  <div class="wrap">
+    <p class="crumb"><a href="/">Home</a> &rsaquo; Solutions</p>
+    <h1 class="hand left">${keyed(S.h1)}</h1>
+    ${S.intro.map((t) => `<p class="intro">${t}</p>`).join('\n    ')}
+    <div class="capgrid">
+      ${solutionCards.join('\n      ')}
+    </div>
+
+    <h2 class="hand left" id="how">${keyed(S.howHeading)}</h2>
+    ${S.how.map((t) => `<p class="intro">${t}</p>`).join('\n    ')}
+    <div class="cta-pair" style="justify-content:flex-start">
+      <a class="btn btn-primary btn-lg" ${link(GO.talk)}>Talk to us</a>
+      <a class="btn btn-ghost btn-lg" ${link(GO.demo)}>${esc(H.COPY.hero.primary)}</a>
+    </div>
+
+    <h2 class="hand left" id="faq">Frequently asked <span class="k-g">questions</span></h2>
+    ${faqAcc(S.faq)}
+    ${stampLine(S.published, HUB_MODIFIED)}
+  </div>
+</div>`;
+const solutionsHubLd = [
+  pageLd(SOLUTIONS_URL, S),
+  crumbsLd(SOLUTIONS_URL, 'Solutions'),
+  {
+    '@type': 'ItemList', '@id': `${SOLUTIONS_URL}#list`, name: S.title,
+    numberOfItems: H.SOLUTIONS.filter((s) => s.local || s.url).length,
+    itemListElement: H.SOLUTIONS.filter((s) => s.local || s.url).map((s, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      item: { '@type': 'Service', name: s.name, description: s.summary, url: abs(s.local || s.url), provider: { '@id': ORG_ID }, areaServed: 'MY' },
+    })),
+  },
+  faqLd(SOLUTIONS_URL, S.faq),
+];
+if (S.title.length > 60) throw new Error(`/solutions title is ${S.title.length} chars (limit 60)`);
+if (S.description.length > 155) throw new Error(`/solutions description is ${S.description.length} chars (limit 155)`);
+fs.mkdirSync(path.join(__dirname, 'solutions'), { recursive: true });
+fs.writeFileSync(path.join(__dirname, 'solutions', 'index.html'), page({
+  path: '/solutions', title: S.title, desc: S.description, body: solutionsHubBody, extraLd: solutionsHubLd,
+}), 'utf8');
+console.log(`products/index.html — /products · ${FORMATS.length} formats in the table · ${restTiles.length} more products · ${hubFaq.length} FAQs`);
+console.log(`solutions/index.html — /solutions · ${H.SOLUTIONS.length} engagements · ${S.faq.length} FAQs`);
 
 const linked = H.TILES.filter((t) => tileHref(t)).length;
 const soon = [...H.SOLUTIONS, ...H.COMPANY_LINKS, ...H.RESOURCES].filter((x) => !x.url).length;

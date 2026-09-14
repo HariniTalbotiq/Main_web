@@ -45,8 +45,44 @@ const path = require('path');
 
 const { COMPANY } = require('../products.js');
 const { SOLUTIONS } = require('../home.js');
+/* The share card's URL comes from site.config.json, which build.js also reads,
+   so the generated pages and these hand-written ones cannot name two different
+   images. Renaming the card is then a one-line change in one file. */
+const SITE_CFG = JSON.parse(
+  require('fs').readFileSync(require('path').join(__dirname, '..', 'site.config.json'), 'utf8'));
+const OG_IMAGE = SITE_CFG.siteUrl.replace(/\/$/, '') + SITE_CFG.defaultOgImage;
+const OG_ALT = SITE_CFG.siteName + ' — Every workflow, running on intelligence.';
 
 const ROOT = path.join(__dirname, '..');
+/* VERCEL.JSON IS THE ROUTING RECORD, so this reads it rather than restating
+   it. Two things come out of it.
+
+   cleanUrls — the site is written as /contact, and there is no file at that
+   path. The resolver at the bottom of this script needs to know that before
+   it can tell a dead link from a live one.
+
+   redirects — every page rename the site has been through is recorded there,
+   because the old URL has to keep working. Following that chain is what stops
+   the slug tables below from rotting: products/ats.html became
+   products/recruitment-software.html and fourteen of the seventeen slugs here
+   were left pointing at files that no longer exist. Now a rename only has to
+   be written down once, in the place it was going to be written anyway. */
+const VERCEL = (() => {
+  try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')); }
+  catch (e) { return {}; }
+})();
+const CLEAN_URLS = VERCEL.cleanUrls === true;
+const REDIRECTS = new Map((VERCEL.redirects || [])
+  .filter((r) => r && r.source && r.destination && !r.source.includes(':'))
+  .map((r) => [r.source, r.destination]));
+/* Follow the chain — /products/task-management-system reaches /task-manager
+   in two hops — with a bound, so a cycle in vercel.json cannot hang the run. */
+const live = (url) => {
+  let u = url;
+  for (let i = 0; i < 8 && REDIRECTS.has(u); i++) u = REDIRECTS.get(u);
+  return u;
+};
+
 const DRY = process.argv.includes('--dry');
 const VERBOSE = process.argv.includes('--verbose');
 
@@ -102,12 +138,12 @@ for (const s of SOLUTIONS) SOLUTION_URL[s.name] = s.url;
 /* Solutions we now ship a page for. Local beats talbotiq.com, the same rule
    the product tiles follow. Add a line as each further service page arrives. */
 const SOLUTION_LOCAL = {
-  'AI Strategy & Consulting': 'solutions/ai-strategy-consulting.html',
-  'Embedded Edge AI': 'solutions/embedded-edge-ai.html',
+  'AI Strategy & Consulting': '/solutions/ai-strategy-consulting',
+  'Embedded Edge AI': '/solutions/embedded-edge-ai',
   /* home.js calls it "Dev", the mockups call it "Development" — the ALIASES
      table below copies this entry onto that spelling too. */
-  'Full Stack Dev & AI Integration': 'solutions/full-stack-ai-integration.html',
-  'AI Agent & Bot Development': 'solutions/ai-agent-bot-development.html',
+  'Full Stack Dev & AI Integration': '/solutions/full-stack-ai-integration',
+  'AI Agent & Bot Development': '/solutions/ai-agent-bot-development',
 };
 
 /* THE MOCKUPS DISAGREE WITH EACH OTHER ON TWO OF THESE NAMES. The service
@@ -132,6 +168,28 @@ const SOLUTION_NAMES = [...new Set([...Object.keys(SOLUTION_URL), ...Object.keys
    opens a panel there instead, which a standalone page cannot do. */
 const SERVICES_INDEX = COMPANY.site + '/services/';
 
+/* THE OFFICE NUMBER, PRINTED, IN THE CONTACT BLOCK. Requested: the WhatsApp
+   link beside the email is replaced by the number itself with a handset next
+   to it. This is a deliberate exception to the "no digits" rule enforced
+   further down — see the note on that rule, which now records why the contact
+   block is carved out of it.
+
+   currentColor on the icon means it inherits `.contact a`'s green, so it can
+   never drift from the email link directly above it. The href is the E.164
+   form with no spaces, which is what a dialler needs; the visible text keeps
+   the grouping the number is actually written in. aria-hidden on the svg
+   because the link text already says the number — a screen reader announcing
+   "image, phone" first would just be noise. */
+const PHONE_DISPLAY = '+603 20 111 320';
+const PHONE_TEL = '+60320111320';
+const PHONE_ROW = '<a class="tel" href="tel:' + PHONE_TEL + '">'
+  + '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+  + '<path fill="currentColor" d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24'
+  + 'l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3'
+  + '-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21'
+  + 'c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>'
+  + PHONE_DISPLAY + '</a>';
+
 const rx = (s, flags) => new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), flags || 'g');
 
 /* An <a> around `label` whose href is EITHER the untouched mockup's "#" or the
@@ -147,7 +205,13 @@ function rules(rel) {
   const self = path.basename(rel);
   const depth = dir === '.' ? 0 : 1;
   const up = depth === 0 ? '' : '../';
-  const HOME = up + 'index.html';
+  /* ROOT-ABSOLUTE AND EXTENSIONLESS, which is what the site is written in —
+     892 links of it and not one with a .html on the end. The old forms were
+     depth-relative (`index.html` here, `../index.html` there) because the
+     pages were opened off the filesystem before there was a host; under
+     cleanUrls they would each cost a redirect hop, and getting the depth
+     wrong was a silent 404. Only the font below still needs `up`. */
+  const HOME = '/';
   const PRODUCTS_GRID = HOME + '#products';
   const INSIGHTS = HOME + '#insights';
   /* THE LOCAL ANSWER TO "SHOW ME EVERY SOLUTION". There is still no solutions
@@ -156,10 +220,12 @@ function rules(rel) {
      that lists all five, and app.js opens that shelf when it arrives on this
      hash. Deliberately not an id of any section, so the browser has nothing to
      scroll to and the shelf is the whole answer. */
-  const SOLUTIONS_MENU = HOME + '#solutions';
-  const ABOUT = up + 'about.html';
+  /* /solutions is a generated hub page now (build.js); it used to be an anchor
+     the homepage never had. */
+  const SOLUTIONS_MENU = HOME + 'solutions';
+  const ABOUT = '/about';
   const LEADERSHIP = ABOUT + '#leadership';
-  const CONTACT = up + 'contact.html';
+  const CONTACT = '/contact';
   /* DEMO REQUESTS NOW STAY ON THIS SITE. These four buttons used to point at
      talbotiq.com/inquiry-now/, on the grounds that the old form actually
      submits and there was no local one. build.js now generates demo.html, which
@@ -167,11 +233,11 @@ function rules(rel) {
      whose own submit still falls through to the old form until an endpoint is
      configured. So the reason for the old routing survives, without fourteen
      pages handing the reader to the previous website. Local, so same tab. */
-  const DEMO = up + 'demo.html';
+  const DEMO = '/demo';
   /* The old destination, escaped for a regex. "Sign in" pointed at the tile
      grid while there was no login to point at; these pages were wired then, so
      the rules below re-point them and a re-run cannot put the grid back. */
-  const GRID_RE = PRODUCTS_GRID.replace(/\./g, '\\.');
+  const GRID_RE = '(?:(?:\\.\\./)?index\\.html|/)#products';
   /* Every href a Sign in link is found with: untouched mockup, already
      re-aimed at the page, or pointed at the tile grid. */
   const SIGNIN_HREF = '(?:#|[^"]*signin\\.html|' + GRID_RE + ')';
@@ -189,8 +255,7 @@ function rules(rel) {
      down, so a depth-only rule emitted a bare `mimic.html` there — a sibling
      of the solutions page, where no such file exists. Only a page already
      inside products/ can use the bare sibling name. */
-  const productPage = (slug) =>
-    (dir === 'products' ? '' : up + 'products/') + slug + '.html';
+  const productPage = (slug) => live('/products/' + slug);
 
   const r = [];
   const ext = (url) => `href="${url}" target="_blank" rel="noopener"`;
@@ -217,6 +282,145 @@ function rules(rel) {
      with it so no blank line is left in the header. */
   add('header Sign in -> removed',
     new RegExp('\\n[ \\t]*<a class="si" href="' + SIGNIN_HREF + '">Sign in</a>', 'g'), '');
+
+  /* ---- Home, first in the bar ----------------------------------------
+     THE GENERATED PAGES GET THIS FROM home.js, not from here. Their bar is
+     built from H.NAV, and assets/js/nav.js swaps that same markup into these
+     pages too on load — so on a standalone page Home arrives twice over. What
+     the script cannot do is be there before it runs, and these pages are
+     hand-written mockups whose header is what the reader sees on first paint
+     and all the reader sees with JavaScript off. So the static markup carries
+     it as well, and the two agree because both put Home immediately left of
+     Products.
+
+     ANCHORED ON THE PRODUCTS LINK, not on the <nav> alone, which is what keeps
+     it off the seventeen product pages: their bar is a different thing — the
+     product's own name and its section anchors — and it has no Products item
+     for the lookahead to find. The generated pages are skipped for the same
+     reason, from the other side: their Products item is a <button> that opens
+     a shelf, not an <a>.
+
+     Group 2 is the whitespace after the tag, replayed after the new link so
+     the indent matches whatever the page already uses. The lookahead is what
+     makes a second run a no-op: by then Home sits where Products was. */
+  const HOME_LINK = `<a href="${HOME}">Home</a>`;
+  add('nav Home -> the homepage, left of Products',
+    /(<nav class="mid"[^>]*>)(\s*)(?=<a href="[^"]*products"[^>]*>Products<\/a>)/g,
+    `$1$2${HOME_LINK}$2`);
+  add('drawer Home -> the homepage, first',
+    /(<div class="drawer" id="drawer">)(\s*)(?=<a href="[^"]*products"[^>]*>Products<\/a>)/g,
+    `$1$2${HOME_LINK}$2`);
+
+  /* ---- AND HOME ON THE PRODUCT DETAIL PAGES, which never had it ------
+     THIS IS THE WHOLE OF THE REPORTED BUG. The two rules above key on
+     `<a ...>Products</a>`, which only the site-level nav has. The 17 product
+     detail pages carry a DOCUMENT nav instead — `<a class="prod">Video
+     Interview</a>`, a divider, then Overview / Features / Trust — so that
+     lookahead never matched and Home was simply absent. Home did not
+     "disappear on navigation"; it was never emitted on those pages, which is
+     why it came back the moment you left one.
+
+     NO NEW CSS, AND THAT IS NOT LUCK — IT IS WHY `lnk` IS THE CLASS.
+     `nav.mid a.lnk` on these pages and `nav.mid a` on the site nav declare
+     the same four properties with the same values, and the same one-line
+     :hover to var(--green). So class="lnk" renders Home identically to the
+     Home it is being made consistent with — colour, size, weight, hover,
+     and the flex gap it inherits from nav.mid — without a byte added to
+     either stylesheet. The drawer link needs no class for the same reason:
+     `.drawer a` is declared identically on both page shapes.
+
+     FIRST IN THE ROW, where it sits on every other page, and nothing else in
+     the nav is touched. Deliberately NO `<span class="div">` between Home and
+     the product name: a separator would be new furniture in a nav the brief
+     says to leave alone.
+
+     MOBILE IS THE DRAWER, NOT THE ROW. Below 880px these pages set
+     `nav.mid{display:none}` and the burger takes over, so the second rule is
+     what makes Home reachable on a phone at all.
+
+     Both lookaheads are what make a re-run a no-op: after the insert, Home
+     sits between the container tag and the element the lookahead names. */
+  add('nav Home -> the homepage, first (product pages)',
+    /(<nav class="mid"[^>]*>)(\s*)(?=<a class="prod")/g,
+    `$1$2<a class="lnk" href="${HOME}">Home</a>$2`);
+  add('drawer Home -> the homepage, first (product pages)',
+    /(<div class="drawer" id="drawer">)(\s*)(?=<a href="#s\d">)/g,
+    `$1$2${HOME_LINK}$2`);
+
+  /* ---- §11 · A FINGER GETS THE MICRO-TRANSITIONS TOO -----------------
+     These 24 pages carry their own inline stylesheet, so the (hover: none)
+     block added to talbotiq.css for the homepage does not reach them. They
+     have between five and nine hover rules that move something and almost
+     no :active, so on a phone a press got no answer — the other half of
+     what was reported as "no micro transitions on mobile".
+
+     THE MIRROR IS THE SELECTOR, NOT THE DECLARATION. Rather than restate
+     each page's values — .sec lifts 4px here, .relchip 3px, .btn-primary 2px
+     with a shadow, and it differs per page — each rule just adds :active to
+     the selector list of the hover rule that already exists. The two states
+     then share one declaration block, so a tap cannot drift from a hover: it
+     is the same rule. It also costs nothing on desktop, where :active only
+     fires on mouse-down over an element that is already hovered.
+
+     Each rule is self-limiting: the pattern needs `:hover{` and leaves
+     `:hover,` behind, so a second run matches nothing. */
+  add('tap feedback: buttons answer a press',
+    /\.btn-primary:hover\{/g,
+    '@media (hover:none){a,button{-webkit-tap-highlight-color:transparent}}\n'
+    + '.btn-primary:hover,.btn-primary:active{');
+  add('tap feedback: secondary buttons',
+    /\.btn-secondary:hover\{/g, '.btn-secondary:hover,.btn-secondary:active{');
+  add('tap feedback: buttons on dark',
+    /\.btn-white:hover,\.btn-outline-white:hover\{/g,
+    '.btn-white:hover,.btn-outline-white:hover,.btn-white:active,.btn-outline-white:active{');
+  add('tap feedback: section cards',
+    /\.sec:hover\{/g, '.sec:hover,.sec:active{');
+  add('tap feedback: related chips',
+    /\.relchip:hover\{/g, '.relchip:hover,.relchip:active{');
+  add('tap feedback: panes',
+    /\.pane:hover\{/g, '.pane:hover,.pane:active{');
+  add('tap feedback: mode cards',
+    /\.modecard:hover\{/g, '.modecard:hover,.modecard:active{');
+  add('tap feedback: the mode card rule',
+    /\.modecard:hover \.rule\{/g, '.modecard:hover .rule,.modecard:active .rule{');
+  add('tap feedback: chips',
+    /\.chip:hover\{/g, '.chip:hover,.chip:active{');
+
+  /* ---- AND THE HEADER NEEDS 66px IT DID NOT HAVE ---------------------
+     MEASURED, NOT GUESSED, AND THIS RULE EXISTS ONLY BECAUSE OF THE TWO
+     ABOVE. `.hdr` is a three-track grid and the middle track is what the nav
+     gets. Home costs 42px of link plus one 24px flex gap, and sweeping the
+     viewport a pixel at a time says the widest product header needs 1095px
+     with Home against 1029px without it. The burger used to take over at
+     880px, so between 881 and 1095px the row was being asked to hold more
+     than fits: at 1024px — iPad landscape, not a corner case — "Business
+     Management System" broke onto two lines, "Build state" onto two, and
+     "Get in touch" onto three, overflowing a 70px header. Without Home the
+     same page at the same width is one clean line.
+
+     SO THE BURGER TAKES OVER AT 1100px INSTEAD, and it takes over for the
+     HEADER ONLY. The 880px block these four rules are lifted out of also
+     carries phone type sizes and one-column grids; moving the whole block
+     would put phone typography on a 1024px tablet, which is a far bigger
+     change than the nav. Splitting it means the header switches early while
+     the page keeps its desktop layout — and the mobile CTA bar comes with it,
+     so the "Get in touch" that the row stops showing is still on screen
+     rather than lost, with --tq-bottom-bar keeping the chat bubble clear of
+     it (§10).
+
+     Home stays visible at every width, which is the whole point: in the row
+     above 1100px, in the drawer below it.
+
+     THIS ALSO REPAIRS A PRE-EXISTING BUG. "Get in touch" was already wrapping
+     to three lines and overflowing the header anywhere below about 1029px,
+     with or without Home. That band is now behind the burger too.
+
+     The body line is matched loosely because §10 may or may not have added
+     --tq-bottom-bar to it by the time this runs, and a re-run is a no-op
+     because the 880px block no longer starts with these four rules. */
+  add('product header: burger takes over before the nav row runs out of width',
+    /@media \(max-width:880px\)\{(\s*nav\.mid,\.hdr-right a\.si,\.hdr-right \.btn\{display:none\}\s*\.burger\{display:block\}\.mobar\{display:flex\}\s*body\{padding-bottom:72px[^}]*\}\s*\.hdr\{grid-template-columns:1fr auto\})/g,
+    '@media (max-width:1100px){$1\n}\n@media (max-width:880px){');
 
   /* ---- header + drawer, about page ----------------------------------
      `class="on"` marks the item for the page you are already on. It becomes
@@ -392,7 +596,7 @@ function rules(rel) {
      in which case the href comes off rather than pointing at "#". */
   for (const name of SOLUTION_NAMES) {
     const printed = name.replace(/&/g, '&amp;');
-    const localPage = SOLUTION_LOCAL[name] ? up + SOLUTION_LOCAL[name] : null;
+    const localPage = SOLUTION_LOCAL[name] || null;
     const attrs = localPage ? `href="${localPage}"` : (SOLUTION_URL[name] ? ext(SOLUTION_URL[name]) : null);
 
     add(`footer ${name}`, rx(`<a href="#">${printed}</a>`),
@@ -536,114 +740,93 @@ function rules(rel) {
   /* ---- §4 · the display face ----------------------------------------
      The mockups ship with Caveat Brush, the brush script the homepage used
      before it was deliberately replaced. Left alone, the homepage and the page
-     one click from it read as two different brands.
-
-     THE FACE IS NOW BODONI MODA (Owen Earl, SIL OFL), weight 700, from Google
-     Fonts — the same request that already fetches Inter, so these pages make
-     one stylesheet round trip rather than two and self-host nothing.
-
-     EVERY RULE BELOW MATCHES TWO SOURCE STATES, and it has to: a freshly
-     dropped mockup still says "Caveat Brush", while the 24 pages in the repo
-     were already converted to "Meshed Display" by the previous version of this
-     section. Matching both means one pass converges from either, and a second
-     pass is a no-op — the same trick §1's Pricing rule uses. */
+     one click from it read as two different brands. MESHED Display is
+     self-hosted, so these pages load it from assets/fonts/ rather than Google
+     Fonts, and Caveat Brush comes out of that request — Inter stays. */
   add('drop Caveat Brush from the Google Fonts request', /family=Caveat\+Brush&/g, '');
-
-  /* MESHED WAS SELF-HOSTED; BODONI IS NOT. So the two rules that used to ADD a
-     preload and an @font-face now REMOVE them. That also retires the only
-     additive rules in the file, which is a small win: nothing here needs a
-     guard against appending a second copy any more, because nothing appends. */
-  add('drop the self-hosted display-face preload',
-    /[ \t]*<link rel="preload" href="[^"]*MeshedDisplay-Bold\.woff2"[^>]*>\n?/g, '');
-  add('drop the self-hosted @font-face',
-    /@font-face\{font-family:"Meshed Display";src:url\([^)]*\) format\("woff2"\);\s*font-weight:700;font-style:normal;font-display:swap\}\n?/g, '');
-
-  /* Ask Google for the display face alongside Inter. opsz is requested across
-     its full 6..96 range on purpose: Bodoni Moda is a Didone whose hairlines
-     thin out as the size grows, and font-optical-sizing (auto by default) is
-     what keeps a 46px heading crisp and a 19px SVG label from going muddy.
-     Only 700 is asked for, because only 700 is used. The lookahead makes a
-     second run a no-op. */
-  add('add Bodoni Moda to the Google Fonts request',
-    /(<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=)(?!Bodoni)/g,
-    '$1Bodoni+Moda:opsz,wght@6..96,700&family=');
-
-  /* line-height 1.08 is kept from the previous face. Bodoni Moda's DECLARED
-     font box is 1.525em (ascent 1.125, descent .400) which sounds far too tall
-     for it, but that box carries accent clearance the Latin text never uses —
-     the real ink is cap .75 and descender ~.21, so 1.08 sets two hero lines
-     tight without them touching. Checked on the rendered hero, not derived. */
-  add('.hand -> Bodoni Moda',
-    /\.hand\{font-family:(?:"Caveat Brush","Bradley Hand","Segoe Print","Comic Sans MS",cursive;\s*font-weight:400;line-height:1\.09|"Meshed Display","Playfair Display","Didot","Bodoni MT",Georgia,serif;font-weight:700;letter-spacing:0;line-height:1\.08);color:var\(--ink\)\}/g,
-    '.hand{font-family:"Bodoni Moda","Bodoni MT",Didot,"Playfair Display",Georgia,serif;'
+  /* GUARDED so it cannot fire twice. These two rules are the only ADDITIVE
+     ones in the file — everything else rewrites a broken state into a fixed
+     one and therefore stops matching once applied. These two insert new
+     markup, so without a negative lookahead a second run appends a second
+     copy, and the tool's promise of idempotency quietly becomes false. */
+  add('preload the self-hosted display face',
+    /(<link href="https:\/\/fonts\.googleapis\.com\/css2\?family=Inter[^>]*>)(?!\s*<link rel="preload"[^>]*MeshedDisplay)/g,
+    `$1\n<link rel="preload" href="${FONT}" as="font" type="font/woff2" crossorigin>`);
+  /* THE GUARD LOOKS AT THE WHOLE FILE, NOT AT WHAT COMES NEXT. It used to be
+     `(?!@font-face...)` — a check that the @font-face was the FIRST thing
+     after <style>. That is a positional guard on an additive rule, which
+     means any later rule that inserts anything else at the top of the same
+     <style> silently re-arms this one, and every run from then on appends
+     another copy of the @font-face. It happened: rule 13c above put the
+     typewriter's CSS there and three copies accumulated in twenty-three
+     pages before the second-run rewrite count gave it away.
+     `(?![\s\S]*...)` asks the question that was actually meant — is this
+     declaration already in this document, anywhere — so it cannot be
+     re-armed by position again. */
+  add('@font-face for MESHED Display', /(<style>\n)(?![\s\S]*@font-face\{font-family:"Meshed Display")/g,
+    `$1@font-face{font-family:"Meshed Display";src:url("${FONT}") format("woff2");`
+    + `font-weight:700;font-style:normal;font-display:swap}\n`);
+  /* weight 700 matches the one weight shipped, so nothing is synthesised.
+     line-height 1.09 -> 1.08 matches the homepage, which is what lets the
+     highlighter below reuse the homepage's numbers rather than need its own
+     derivation. */
+  add('.hand -> MESHED Display',
+    /\.hand\{font-family:"Caveat Brush","Bradley Hand","Segoe Print","Comic Sans MS",cursive;\s*font-weight:400;line-height:1\.09;color:var\(--ink\)\}/g,
+    '.hand{font-family:"Meshed Display","Playfair Display","Didot","Bodoni MT",Georgia,serif;'
     + 'font-weight:700;letter-spacing:0;line-height:1.08;color:var(--ink)}');
 
-  /* A CATCH-ALL for every other declaration of the display face in the CSS.
-     The mockups use at least three stacks for the same face — the full one in
-     `.hand`, `"Caveat Brush","Bradley Hand",cursive` on the about page's
-     `.portrait .tag` and `.pull`, and `"Caveat Brush",cursive` on the service
-     page's `.phase .no` — and a new page can invent a fourth. Matching the
-     family NAME instead of the exact stack means the next one needs no rule.
+  /* A CATCH-ALL for every other Caveat declaration in the CSS. The mockups use
+     at least three stacks for the same face — the full one in `.hand`,
+     `"Caveat Brush","Bradley Hand",cursive` on the about page's `.portrait
+     .tag` and `.pull`, and `"Caveat Brush",cursive` on the service page's
+     `.phase .no` — and a new page can invent a fourth. Matching the family
+     name instead of the exact stack means the next one needs no new rule.
 
      It runs AFTER the `.hand` rule above, which has already rewritten its own
      declaration, so this only sees the leftovers. Weight 700 is explicit
-     because that is the only weight requested, and asking for 400 invites some
+     because that is the only weight shipped, and asking for 400 invites some
      engines to synthesise a bold on top of an already-bold face. */
-  add('any remaining display-face declaration -> Bodoni Moda',
-    /font-family:"(?:Caveat Brush|Meshed Display)"[^;}]*/g,
-    'font-family:"Bodoni Moda","Bodoni MT",Didot,Georgia,serif;font-weight:700');
+  add('any remaining Caveat declaration -> MESHED Display',
+    /font-family:"Caveat Brush"[^;}]*/g,
+    'font-family:"Meshed Display","Playfair Display",Georgia,serif;font-weight:700');
 
-  /* And the labels inside the inline SVG diagrams, set with the presentation
-     attribute rather than CSS. A webfont applies to inline SVG through the
-     document's own stylesheet, so the Google Fonts request covers these too
-     with nothing extra. */
-  add('SVG diagram labels -> Bodoni Moda',
-    /font-family="(?:Caveat Brush,cursive|Meshed Display,serif)"(\s+font-weight="700")?/g,
-    'font-family="Bodoni Moda,serif" font-weight="700"');
+  /* And four labels inside an inline SVG diagram, set with the presentation
+     attribute rather than CSS. Inline SVG shares the document's @font-face,
+     so the self-hosted face works here without anything extra. */
+  add('SVG diagram labels -> MESHED Display',
+    /font-family="Caveat Brush,cursive"/g,
+    'font-family="Meshed Display,serif" font-weight="700"');
 
-  /* LEFT-ANCHORED SVG LABELS THAT NO LONGER FIT. SVG text has fixed
-     coordinates and no reflow, so a label that fitted in one face runs past
-     the edge of its own viewBox in a wider one and is clipped. Centre-anchored
-     labels stay centred and are fine; only `text-anchor="start"` ones grow
-     rightwards into trouble.
+  /* MESHED Display sets wider than Caveat Brush, and SVG text has fixed
+     coordinates with no reflow — so a label that fitted before can now run off
+     the edge of its own viewBox and be clipped. Measured with getBBox() after
+     the swap: three of the four labels are `text-anchor="middle"` and stay
+     centred, but this one is left-anchored at x=112 in a 340-wide box and
+     overran the right edge by 17 units. Dropping 23px to 21px scales it to
+     ~224 units, landing at 336 with a little air. */
+  /* LEFT-ANCHORED SVG LABELS THAT NO LONGER FIT. MESHED Display sets wider
+     than Caveat Brush, and SVG text has fixed coordinates and no reflow, so a
+     label that fitted before can now run past the edge of its own viewBox and
+     be clipped. Centre-anchored labels stay centred and are fine; only
+     `text-anchor="start"` ones grow rightwards into trouble.
 
-     Bodoni Moda sets wider than both earlier faces. Advance widths measured
-     off the fonts at 1000px, so the arithmetic below is per-px:
+     Each entry below was MEASURED with getBBox() in a browser after the swap,
+     not guessed — the overflow and the largest whole font-size that fits:
 
-                                  Caveat    Meshed    Bodoni
-       "anyone can buy the tool"   10112     10627     11413
-       "one roadmap"                5622      5963      6308
+       "anyone can buy the tool"  about.html    23px, ran 17 units over -> 21
+       "one roadmap"              ai-strategy   24px, ran 11 units over -> 21
 
-     "anyone can buy the tool" starts at x=112 in a 340-wide box, so it has 228
-     units: at 21px Bodoni wants 239.7 and overruns by 11.7, and 20px still
-     lands at 340.3 — hence 19px (216.8, ending at 328.8).
-     "one roadmap" starts at x=288 in a 420-wide box, so it has 132 units: 21px
-     wants 132.5 and overruns by half a unit, so 20px (126.2, ending at 414.2).
-
-     Each `from` size below covers a state this rule may meet: the mockup's own
-     size, and the size the previous version of this section left behind. If a
-     future page clips a label, measure it with getBBox() and add a line. */
-  for (const [label, froms, to] of [
-    ['anyone can buy the tool', [23, 21], 19],
-    ['one roadmap', [24, 21], 20],
+     If a future page clips a label, measure it the same way and add a line. */
+  for (const [label, from, to] of [
+    ['anyone can buy the tool', 23, 21],
+    ['one roadmap', 24, 21],
   ]) {
-    for (const from of froms) {
-      if (from === to) continue;
-      add(`keep "${label}" inside its viewBox`,
-        new RegExp(`font-size="${from}"([^>]*)>${label}<`, 'g'),
-        `font-size="${to}"$1>${label}<`);
-    }
+    add(`keep "${label}" inside its viewBox`,
+      new RegExp(`font-size="${from}"([^>]*)>${label}<`, 'g'),
+      `font-size="${to}"$1>${label}<`);
   }
+
   /* ---- §5 · re-aim the highlighter ----------------------------------
-     THESE TWO RULES CURRENTLY MATCH NOTHING. `.mark-hl` was removed from every
-     page, so both are dead — kept only because a re-dropped mockup could bring
-     the marker back, and Caveat-tuned percentages would be worse than these.
-
-     IF IT EVER RETURNS, RE-DERIVE THE NUMBERS: the em values below were
-     measured against MESHED Display Bold and the face is Bodoni Moda now,
-     whose metrics are nothing like it (ascent 1.125 vs .720, descent .400 vs
-     .202, x-height .460 vs .518). Do not trust them as they stand.
-
      `top:26%;height:74%` was tuned to Caveat Brush; against MESHED Display it
      paints below the baseline and reads as a thick underline.
 
@@ -1052,6 +1235,74 @@ function rules(rel) {
     /(?<!<script defer src="\/assets\/js\/nav\.js"><\/script>\n)(<script defer src="\/assets\/js\/chat\.js"><\/script>)/,
     '<script defer src="/assets/js/nav.js"></script>\n$1');
 
+  /* ---- 13c · the typewriter ----------------------------------------
+     Every .hand heading types itself in, requested for "every heading of this
+     meshed display" and explicitly "also for all product headings". These
+     pages carry thirteen of them each, which is where most of the site's
+     display headings actually live.
+
+     ANCHORED ABOVE THE NAV SHELVES for the same reason the shelves anchor
+     above the assistant: the assistant's rule stays idempotent only while
+     chat.js is the last line before </body>, and the shelves' rule only while
+     nav.js is immediately above chat.js. Each new include therefore goes on
+     top of the previous one and never between it and </body>. Same negative
+     lookbehind, so a re-run is a no-op.
+
+     assets/js/texttype.js needs nothing from these pages except the .hand
+     class they already have, and it only animates text that is already in
+     their markup — so a page that never gets the script, or gets it and
+     404s, is exactly as it is today. */
+  add('typewriter: drop a wrong include',
+    /[ \t]*<script[^>]*\bsrc="(?!\/assets\/js\/texttype\.js")[^"]*\btexttype\.js(?:\?[^"]*)?"[^>]*><\/script>\n?/g, '');
+  add('typewriter: one include, above the nav shelves',
+    /(?<!<script defer src="\/assets\/js\/texttype\.js"><\/script>\n)(<script defer src="\/assets\/js\/nav\.js"><\/script>)/,
+    '<script defer src="/assets/js/texttype.js"></script>\n$1');
+
+  /* Its four rules, inline, because these pages do not link talbotiq.css and
+     so cannot see section 31 of it. Trimmed to what applies here: the
+     homepage's copies also have to beat that file's .rv-head reveal, and
+     there is no reveal system on these pages to beat.
+
+     THE FONT STACK IS SPELLED OUT rather than `var(--f-text)`. These pages
+     define --teal but NOT --f-text — checked, not assumed — so the variable
+     would resolve to nothing and the caret would inherit the display face it
+     is deliberately not set in.
+
+     THE GUARD HAS TO LOOK IN THE DIRECTION THE BLOCK ACTUALLY IS, and getting
+     that wrong is the reason this rule took three goes. Both wrong versions
+     are worth recording, because the trap is easy to walk into twice:
+
+       1. `/(<style>\n)(?!@font-face...)/` was section 4's shape, copied.
+          That guard is POSITIONAL — it only asks whether the thing is the
+          FIRST item after <style> — so inserting anything else at the top of
+          the same <style> silently re-armed section 4's own additive rule.
+          Three copies of the @font-face accumulated in twenty-four pages.
+          Section 4's guard is fixed above and now asks the whole-document
+          question instead.
+
+       2. `/(?![\s\S]*\.hand\.tt...)([ \t]*<\/style>)/`, moving the block to
+          the end of the <style> to keep the two additive rules apart. This
+          re-inserted on every run, and the reason is obvious once seen: a
+          LOOKAHEAD at the </style> position can only see forward, and a
+          block inserted just before </style> is BEHIND that position. The
+          guard was asking whether the block existed in the closing tag.
+
+     So it anchors at <style> — where everything inside the element is ahead
+     of the match and a forward guard can therefore see it — and the guard is
+     whole-document rather than positional. Cascade order does not matter
+     either way here: these rules select .tt-c and .tt-at, which nothing else
+     on these pages mentions. */
+  add('typewriter: its stylesheet, inline',
+    /(<style>\n)(?![\s\S]*\.hand\.tt \.tt-c\{)/g,
+    '$1.hand.tt .tt-c{visibility:hidden;position:relative}\n'
+    + '.hand.tt .tt-c.on{visibility:visible}\n'
+    + '.hand.tt .tt-c.tt-at::after{content:"|";position:absolute;left:100%;top:0;'
+    + 'font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+    + 'font-weight:400;color:var(--teal);animation:tt-blink .53s steps(1,end) infinite alternate}\n'
+    + '@keyframes tt-blink{from{opacity:1}to{opacity:0}}\n'
+    + '@media (prefers-reduced-motion:reduce){.hand.tt .tt-c{visibility:visible}'
+    + '.hand.tt .tt-c.tt-at::after{content:none}}\n');
+
   /* ---- §9 · the mode card's rule grows on the compositor ------------
      The interviewer-family pages give each mode card a 2px teal rule that
      grows out from centre on hover, and they do it by transitioning `width`
@@ -1125,39 +1376,302 @@ function rules(rel) {
   add('footer: WhatsApp link shows the word, not the number',
     /(<div class="fcol"><h4>Get in touch<\/h4>\s*<a href="mailto:[^"]*">[^<]*<\/a>\s*<a href="https:\/\/wa\.me\/[^"]*"[^>]*>)\s*\+?\d[\d\s-]{6,}\s*(<\/a>)/g,
     '$1WhatsApp$2');
+  /* CARVED OUT BY REQUEST. This rule strips bare `tel:` links from a contact
+     block, on the reasoning that a link whose whole content is the number has
+     nothing to say. The block now deliberately shows the number, so the row
+     above must survive: it does because it is `<a class="tel" href="tel:...">`
+     carrying an svg, and this pattern matches only `<a href="tel:...">` whose
+     content has no tags. That is load-bearing, not luck — if you widen either
+     pattern, widen this comment too. */
   add('contact block: no phone links under the address',
     /(<div class="contact">\s*<a href="mailto:[^"]*">[^<]*<\/a>)(?:\s*<a href="tel:[^"]*">[^<]*<\/a>)+/g,
     '$1');
+  /* ---- the contact block's phone row -------------------------------
+     WHATSAPP OUT, THE OFFICE NUMBER IN. Asked for directly. The block is the
+     same component on all seven pages that carry it, so all seven change
+     together rather than one page disagreeing with its siblings.
+
+     Two shapes go in: the wa.me link on six pages, and about.html's
+     `<p class="co">`, which already printed the same number but as dead text
+     that could not be tapped. Both become the one dialling row. */
+  add('contact block: WhatsApp -> the office number, with its handset',
+    /(<div class="contact">\s*<a href="mailto:[^"]*">[^<]*<\/a>\s*)<a href="https:\/\/wa\.me\/[^"]*"[^>]*>[^<]*<\/a>/g,
+    `$1${PHONE_ROW}`);
+  add('contact block: the printed number becomes the same dialling row',
+    /(<div class="contact">\s*<a href="mailto:[^"]*">[^<]*<\/a>\s*)<p class="co">\s*\+?[\d\s]+<\/p>/g,
+    `$1${PHONE_ROW}`);
+  /* The icon needs one line of layout, and these pages each carry their own
+     copy of the stylesheet inline, so it goes in beside the rule it extends.
+     The lookahead is the idempotency guard. */
+  add('contact block: the phone row lays out its handset',
+    /(\.contact a\{color:var\(--green\);text-decoration:none;font-weight:600;display:block\})(?!\s*\.contact a\.tel)/g,
+    '$1\n.contact a.tel{display:flex;align-items:center;gap:9px}\n.contact a.tel svg{flex:none}');
+
+  /* ---- the share card, on every page, described completely -----------
+     EVERY ONE OF THESE IS GUARDED WHOLE-DOCUMENT, not positionally. Several of
+     them insert at the same anchor — the og:image line — and a `(?!next thing)`
+     guard would re-arm the moment a sibling rule inserted ahead of it, adding
+     the same tag again on every run. `(?![\s\S]*name)` asks the only question
+     that stays true: is this tag anywhere in the page yet.
+
+     WHY THE EXTRA TAGS AT ALL. A consumer that is not told the image's size
+     has to fetch it before it can lay anything out, and several guess a ratio
+     meanwhile and letterbox or crop to it — a correctly proportioned card then
+     still arrives squashed in one client and trimmed in another. secure_url is
+     what older Outlook and some mail gateways read instead of og:image. */
+  const OGI = '<meta property="og:image" content="([^"]*)">';
+
+  /* signin.html had no image and no twitter card at all — it shared as a bare
+     blue link. It goes first so the rules below have an og:image to hang on. */
+  add('social: signin gets a share card too',
+    /(^([ \t]*)<meta property="og:url" content="[^"]*">)(?![\s\S]*property="og:image")/m,
+    `$1\n$2<meta property="og:image" content="${OG_IMAGE}">`);
+  add('social: signin gets a twitter card too',
+    /(^([ \t]*)<meta property="og:image" content="[^"]*">)(?![\s\S]*name="twitter:card")/m,
+    '$1\n$2<meta name="twitter:card" content="summary_large_image">');
+
+  add('social: the card declares a secure url',
+    new RegExp('(^([ \\t]*)' + OGI + ')(?![\\s\\S]*og:image:secure_url)', 'm'),
+    '$1\n$2<meta property="og:image:secure_url" content="$3">');
+  add('social: the card declares its type',
+    new RegExp('(^([ \\t]*)' + OGI + ')(?![\\s\\S]*og:image:type)', 'm'),
+    '$1\n$2<meta property="og:image:type" content="image/png">');
+  add('social: the card declares its exact pixels',
+    new RegExp('(^([ \\t]*)' + OGI + ')(?![\\s\\S]*og:image:width)', 'm'),
+    '$1\n$2<meta property="og:image:width" content="1200">\n$2<meta property="og:image:height" content="630">');
+  add('social: the card has alt text',
+    new RegExp('(^([ \\t]*)' + OGI + ')(?![\\s\\S]*og:image:alt)', 'm'),
+    `$1\n$2<meta property="og:image:alt" content="${OG_ALT}">`);
+  add('social: twitter gets the image too',
+    new RegExp('(^([ \\t]*)' + OGI + ')(?![\\s\\S]*name="twitter:image")', 'm'),
+    '$1\n$2<meta name="twitter:image" content="$3">');
+  add('social: and its alt text',
+    /(^([ \t]*)<meta name="twitter:image" content="([^"]*)">)(?![\s\S]*twitter:image:alt)/m,
+    `$1\n$2<meta name="twitter:image:alt" content="${OG_ALT}">`);
+
+  /* ---- AND THE ONE RULE THAT WAS MISSING: THE URL ITSELF ------------------
+     EVERY RULE ABOVE IS INSERT-ONLY. Each is guarded by
+     `(?![\s\S]*the-tag-name)`, which asks "is this tag anywhere in the page
+     yet" — so once a card tag EXISTS, nothing above will ever look at its
+     value again. Changing defaultOgImage in site.config.json therefore reached
+     the five generated pages (build.js reads the config on every build) and
+     silently left the twenty-four hand-written ones pointing at the old file.
+
+     THAT IS NOT HYPOTHETICAL, IT IS THE BUG THIS RULE EXISTS FOR. The card was
+     regenerated under a content-hashed name, the previous file was deleted by
+     tools/build-og.mjs, and the retired URL then answered 404 while WhatsApp
+     went on showing the stretched wordmark it had already cached. The pages
+     were swept by hand that day, which is exactly the kind of step that is
+     remembered once and then not.
+
+     IDEMPOTENT BY CONSTRUCTION, and worth being explicit about because this
+     file's contract is that a second run reports zero rewrites. The lookahead
+     is `(?!<the configured url>")` — the rule matches a card URL only when it
+     is NOT already the configured one. After it runs, every one of these tags
+     holds exactly that URL, so the lookahead fails everywhere and the second
+     pass cannot match. It also self-heals in the other direction: point the
+     config at a new file and one run moves all three tags on all pages.
+
+     THE THREE TAGS THAT CARRY A URL, and only those. `og:image:type`,
+     `:width`, `:height`, `:alt` and `twitter:image:alt` all begin with the
+     same characters, so the property name is anchored with its own closing
+     quote — `og:image"` cannot match `og:image:type"`. */
+  const OG_URL_ESC = OG_IMAGE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  /* ---- Google Tag Manager, container GTM-T4ZK68F -------------------------
+     The same two halves build.js emits, pasted verbatim from what marketing
+     supplied. Google's snippet is not ours to reformat, so it goes in byte for
+     byte including its line breaks, and both files carry identical text.
+
+     TWO RULES WITH TWO DIFFERENT GUARDS, because both halves mention the
+     container id, so guarding either on "GTM-T4ZK68F" would make the second
+     rule think the first one's work was its own and skip a page that still
+     needs the noscript. They key on the one string unique to each instead:
+     gtm.js?id= for the loader, ns.html?id= for the noscript.
+
+     Guarded whole-document, not positionally -- the trap this file has been
+     bitten by repeatedly. Second run reports zero. */
+  const GTM_HEAD = "<!-- Google Tag Manager -->\n"
+    + "<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\n"
+    + "new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\n"
+    + "j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n"
+    + "'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n"
+    + "})(window,document,'script','dataLayer','GTM-T4ZK68F');</script>\n"
+    + "<!-- End Google Tag Manager -->";
+  const GTM_BODY = "<!-- Google Tag Manager (noscript) -->\n"
+    + '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T4ZK68F"\n'
+    + 'height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n'
+    + "<!-- End Google Tag Manager (noscript) -->";
+
+  add('gtm: loader, directly below the charset',
+    /(^[ \t]*<meta charset="utf-8">)(?![\s\S]*gtm\.js\?id=)/m,
+    '$1\n' + GTM_HEAD);
+  add('gtm: noscript, immediately after the opening body tag',
+    /(^[ \t]*<body>)(?![\s\S]*ns\.html\?id=)/m,
+    '$1\n' + GTM_BODY);
+
+  /* ---- the site icon, on the hand-written pages too ----------------------
+     Same four links as build.js emits, and the same reasoning: favicon.ico for
+     Windows and for anything that fetches it regardless of markup, a 32px PNG
+     for a crisp tab, apple-touch-icon for iOS, and the manifest to carry the
+     Android sizes.
+
+     TWO RULES, STRIP THEN INSERT, which is the pattern this file already uses
+     for the assistant include -- and it exists because the first version of
+     this rule was INSERT-ONLY. It was guarded by "is an apple-touch-icon
+     anywhere in the page", so once three links were in, changing the set could
+     never reach the twenty-four hand-written pages again. That is the same
+     trap the share-card URL fell into, one section down.
+
+     BOTH ARE IDEMPOTENT. The strip matches an icon-ish link ONLY when its href
+     is not one of the four canonical ones, so a correct page offers it nothing
+     to match; the insert is guarded on the manifest line, which the insert
+     itself adds. Second run reports zero. */
+  const ICON_LINKS =
+      '<link rel="icon" href="/favicon.ico" sizes="any">'
+    + '\n$2<link rel="icon" href="/assets/brand/favicon-32.png" type="image/png" sizes="32x32">'
+    + '\n$2<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">'
+    + '\n$2<link rel="manifest" href="/site.webmanifest">';
+  add('site icon: drop a non-canonical icon link',
+    /[ \t]*<link rel="(?:icon|apple-touch-icon|manifest|mask-icon)"(?![^>]*href="(?:\/favicon\.ico|\/assets\/brand\/favicon-32\.png|\/assets\/brand\/apple-touch-icon\.png|\/site\.webmanifest)")[^>]*>\n?/g,
+    '');
+  add('site icon: the canonical four, above the viewport meta',
+    /(^([ \t]*)<meta name="viewport" content="[^"]*">)(?![\s\S]*rel="manifest")/m,
+    '$1\n$2' + ICON_LINKS);
+
+  /* AND A THIRD RULE, BECAUSE href ALONE COULD NOT TELL THEM APART. The set
+     this replaces ended in the very same apple-touch-icon line, byte for byte,
+     so the strip above -- which decides by href -- had no way to remove the old
+     one without removing the new one. The insert anchors at the viewport meta,
+     so the canonical block lands ABOVE whatever was already there, and the
+     leftovers are simply the icon links that follow the manifest line.
+
+     Idempotent because the one-or-more group has to match at least one icon
+     link after the manifest: once they are gone the pattern cannot match at
+     all, and the second run reports zero. */
+  add('site icon: drop leftovers below the canonical block',
+    /(<link rel="manifest" href="\/site\.webmanifest">\n)(?:[ \t]*<link rel="(?:icon|apple-touch-icon|manifest|mask-icon)"[^>]*>\n?)+/g,
+    '$1');
+
+  add('social: every card tag names the configured image',
+    new RegExp('(<meta (?:property="og:image"|property="og:image:secure_url"'
+      + '|name="twitter:image") content=")(?!' + OG_URL_ESC + '")[^"]*(">)', 'g'),
+    '$1' + OG_IMAGE + '$2');
+
+  /* ---- the enquiry panel wears the brand's colours -------------------
+     contact.html carries its own copy of the demo form's stylesheet, so the
+     same four corrections that landed in assets/css/talbotiq.css have to land
+     here too or the two pages disagree. Each is keyed on the exact old
+     declaration, so a page already corrected matches nothing.
+
+     THE LINK ONE IS THE REAL BUG. `.dnote a` had no rule in either file, so
+     "call the office" rendered in the browser's default blue with a default
+     underline, on a dark teal panel. It was the only element on the page that
+     looked like an accident. */
+  add('enquiry panel: the gradient loses its slate-blue stop',
+    /background: linear-gradient\(rgb\(10 61 63 \/ \.92\) 0%, rgb\(52 78 96 \/ \.89\) 100%\);/g,
+    'background: linear-gradient(160deg, rgb(9 58 56 / .94) 0%, rgb(5 38 33 / .94) 100%);');
+  add('enquiry panel: the focus ring goes teal',
+    /border-color: #FFCD57;\s*\n\s*box-shadow: 0 0 0 3px rgb\(255 205 87 \/ \.45\);/g,
+    'border-color: var(--teal);\n  box-shadow: 0 0 0 3px rgb(2 168 133 / .38);');
+  add('enquiry panel: the submit button matches every other primary action',
+    /background: #FFCD57; color: #1E293B; border: 0; border-radius: 12px;/g,
+    'background: var(--teal); color: #fff; border: 0; border-radius: 12px;');
+  add('enquiry panel: and so do its hover and active states',
+    /\.dsubmit:hover\{ background: #FFD97C; color: #1E293B; \}\n\.dsubmit:active\{ background: #F3BE43; \}/g,
+    '.dsubmit:hover{ background: var(--green); color: #fff; }\n'
+    + '.dsubmit:active{ background: #016A50; }');
+  /* Whole-document guard, per the trap this file has been bitten by: a
+     positional lookahead here would re-arm the moment any other rule inserted
+     at the same anchor. */
+  add('enquiry panel: the note’s link stops being browser-blue',
+    /(\.dnote code\{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12\.5px; \})(?![\s\S]*\.dnote a\{)/g,
+    '$1\n.dnote a{ color: #3FD4B0; text-decoration: underline; text-underline-offset: 2px; }\n'
+    + '.dnote a:hover{ color: #fff; }');
+  /* The phone was a link and the email beside it was bare text, in the same
+     sentence. Both are ways to reach a person; only one was reachable. */
+  add('enquiry note: the email address becomes a link too',
+    /(<p class="dnote">Prefer to talk to a person\? )hello@talbotiq\.com/g,
+    '$1<a href="mailto:hello@talbotiq.com">hello@talbotiq.com</a>');
+
+  /* ---- the newsletter band ------------------------------------------
+     GONE, by request, the same as on the generated pages. It had no endpoint,
+     so it rendered a disabled field captioned "Not wired up yet" — a signup
+     that asks for an address it cannot accept.
+
+     Inherently idempotent: it is a deletion, so once the band is gone there is
+     nothing left to match. `\n<\/div>\n` with no indent in front of it closes
+     the OUTER div — every div nested inside this band is indented, so the
+     non-greedy run cannot stop early on one of them. */
+  add('newsletter band -> removed',
+    /\n<!-- ══ NEWSLETTER ══ -->\n<div class="news">[\s\S]*?\n<\/div>\n/g, '');
+
+  /* ---- WHATSAPP COMES OFF THE SITE ---------------------------------
+     Asked for: the channel goes, the office number stays in its place. These
+     pages offered it in four shapes, so all four are handled here rather than
+     by hand on nine files that get re-dropped.
+
+     The footer column takes the same dialling row the contact block above
+     uses, so the two agree. The chips are REMOVED rather than converted —
+     every chip row already carries a "Call the office" chip immediately after
+     the WhatsApp one, and converting would have printed the same destination
+     twice in a row. The phone button in the mobile bar is repointed rather
+     than deleted, because deleting it would leave that bar with one lone
+     button where the layout expects two. */
+  add('footer: WhatsApp -> the office number, with its handset',
+    /(<div class="fcol"><h4>Get in touch<\/h4>\s*<a href="mailto:[^"]*">[^<]*<\/a>\s*)<a href="https:\/\/wa\.me\/[^"]*"[^>]*>[^<]*<\/a>/g,
+    `$1${PHONE_ROW}`);
+  add('footer: the phone row lays out its handset',
+    /(\.fcol a\{display:block;color:#C4C7CA;text-decoration:none;padding:4px 0\})(?!\s*\.fcol a\.tel)/g,
+    '$1\n.fcol a.tel{display:flex;align-items:center;gap:8px}\n.fcol a.tel svg{flex:none}');
+  /* Both chip rows on the contact page: the icon chip near the top and the
+     flat one in the closing band. Non-greedy to the first </a>, which is the
+     chip's own — the svg inside it closes no anchor. */
+  add('chip row: the WhatsApp chip goes',
+    /\n[ \t]*<a class="chip" href="https:\/\/wa\.me\/[^"]*"[^>]*>[\s\S]*?<\/a>/g, '');
+  add('mobile bar: WhatsApp -> call the office',
+    /<a class="btn btn-secondary" href="https:\/\/wa\.me\/[^"]*">WhatsApp<\/a>/g,
+    `<a class="btn btn-secondary" href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a>`);
+
   add('contact block: WhatsApp link shows the word, not the number',
     /(<div class="contact">\s*<a href="mailto:[^"]*">[^<]*<\/a>\s*<a href="https:\/\/wa\.me\/[^"]*"[^>]*>)\s*\+?\d[\d\s-]{6,}\s*(<\/a>)/g,
     '$1WhatsApp$2');
-  /* the closing band's chip row: its twin at the top of contact.html already
-     says "Call the office" rather than reading the number out */
-  add('closing chip: Call the office, not the number',
-    /(<a class="chip" href="tel:[^"]*"[^>]*>)\s*\+?\d[\d\s-]{6,}\s*(<\/a>)/g,
-    '$1Call the office$2');
+  /* ---- THE NUMBER IS PRINTED, NOT HIDDEN BEHIND A VERB ---------------
+     REVERSED BY REQUEST, and the four rules this replaces did the opposite:
+     they hunted down every printed number on the site and swapped it for the
+     words "Call the office". The reasoning then was that a page should not ask
+     a desktop reader to copy fourteen digits by hand. The reasoning now is the
+     one that wins: a company that will not show its phone number reads as a
+     company you cannot reach, and a reader dialling from a desk phone, saving
+     the contact, or just checking somebody real is on the other end had
+     nothing to work with.
 
-  /* THE CONTACT PAGE'S OWN DETAIL COLUMN, which is the last place on the site
-     that printed the digits. Two rows of numbers become ONE row that dials the
-     office without reading it out — the same trade the chip row above this
-     already made, and the same markup build.js now emits for the demo page.
-     The number stays reachable; it is simply not printed. */
-  add('detail list: one Phone row that dials, not two that print',
-    /<li><span>Phone<\/span><a href="tel:([^"]*)">\s*\+?\d[\d\s-]{6,}<\/a><\/li>\s*(?:<li><span>Phone<\/span><a href="tel:[^"]*">\s*\+?\d[\d\s-]{6,}<\/a><\/li>)+/g,
-    '<li><span>Phone</span><a href="tel:$1">Call the office</a></li>');
-  /* "Call the office" HAS TO DIAL THE OFFICE. The collapse above keeps the
-     first row's href, and on the contact page that row was the mobile. The
-     lookahead is what makes this a no-op once the number is right. */
-  add('detail list: Call the office dials the landline',
-    /(<li><span>Phone<\/span><a href="tel:)(?!\+60320111320")[^"]*(">Call the office<\/a><\/li>)/g,
-    '$1+60320111320$2');
-  /* a single row left over from a page that only ever had one */
-  add('detail list: the last Phone row dials too',
-    /(<li><span>Phone<\/span><a href="tel:[^"]*">)\s*\+?\d[\d\s-]{6,}(<\/a><\/li>)/g,
-    '$1Call the office$2');
-  add('form note: call the office, not the number',
-    /(<p class="dnote">[^<]*?)\bor\s+\+?\d[\d\s-]{6,}\.(<\/p>)/g,
-    '$1or <a href="tel:+60320111320">call the office<\/a>.$2');
+     ONE RULE FOR EVERY PLACE, because the label had spread to four different
+     shapes — a chip, a button in the mobile bar, a row in the detail list and
+     a link in the note under the form. Matching the tel: anchor rather than
+     any one of those containers catches all four and anything added later. It
+     is still a tel: link, so a phone still taps it; the digits are additional,
+     not a replacement. */
+  add('phone links print the number instead of naming the action',
+    /* The chips carry an inline svg between the anchor and its label, so the
+       match has to skip whatever sits in front of the words — bounded by a
+       (?!<\/a>) so it can never run past the end of one link into the next. */
+    /(<a[^>]*href="tel:\+?\d+"[^>]*>(?:(?!<\/a>)[\s\S])*?)\s*[Cc]all the office\s*(<\/a>)/g,
+    `$1${PHONE_DISPLAY}$2`);
+
+  /* The collapse still has to happen — contact.html shipped two Phone rows,
+     a mobile and a landline — but what survives now prints the office number
+     rather than naming the act of ringing it. */
+  add('detail list: one Phone row, not two',
+    /<li><span>Phone<\/span><a href="tel:[^"]*">\s*\+?\d[\d\s-]{6,}<\/a><\/li>\s*(?:<li><span>Phone<\/span><a href="tel:[^"]*">\s*\+?\d[\d\s-]{6,}<\/a><\/li>)+/g,
+    `<li><span>Phone</span><a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a></li>`);
+  /* Whatever a row prints, it dials the landline. */
+  add('detail list: the Phone row dials the landline',
+    new RegExp('(<li><span>Phone</span><a href="tel:)(?!' + PHONE_TEL.replace('+', '\\+') + '")[^"]*(">)', 'g'),
+    '$1' + PHONE_TEL + '$2');
+  /* The note under the form printed bare digits with no link on some pages. */
+  add('form note: the number is a link, not loose text',
+    /(<p class="dnote">[^<]*?)\bor\s+(\+?\d[\d\s-]{6,})\.(<\/p>)/g,
+    `$1or <a href="tel:${PHONE_TEL}">${PHONE_DISPLAY}</a>.$3`);
 
   /* ---- §10 · the chat bubble sat on the mobile CTA bar ---------------
      24 of the 26 pages pin `.mobar` to the bottom edge below 880px and
@@ -1180,6 +1694,68 @@ function rules(rel) {
   add('mobile CTA bar: tell the chat bubble how tall it is',
     /body\{padding-bottom:72px(?!;--tq-bottom-bar)\}/g,
     'body{padding-bottom:72px;--tq-bottom-bar:72px}');
+
+  /* ---- ONE BOOK A DEMO, AND IT IS THE REAL ONE ----------------------
+     Asked for: the product pages use the homepage's demo flow, exactly.
+
+     THE BLOCK BEING DELETED WAS NEVER A FORM. `.formsec#form` is a mockup
+     carried over from the template: no <form> element, no action, not one
+     `name` attribute on any of its inputs, and a "Request demo" submit that is
+     an <a href="/demo">. Anyone who filled it in and pressed the button had
+     every answer discarded and landed on /demo with an empty form — which is
+     how an enquiry that looked sent was lost. The real one lives on /demo:
+     <form action="/api/demo" method="post">, which posts with JavaScript off.
+
+     So the CTAs stop scrolling to a decoration and go where the homepage's
+     Book a demo goes. This REVERSES the reasoning in the header-CTA note
+     above, which left the hero and closing buttons on #form because that is
+     "what they are for" — true while the local block looked like a form, wrong
+     now that it is established it never was one.
+
+     PRODUCT PAGES ONLY, which is the scope of the request. The four solutions
+     pages carry the identical dead block and are knowingly left alone.
+
+     BOTH ARE IDEMPOTENT BY CONSTRUCTION. The first is a deletion, so a second
+     run finds no block; the second removes the only `#form` on the page, so a
+     second run has nothing to match. And `\n</div>\n` with no indent in front
+     of it closes the OUTER div — every div inside the block is indented, so
+     the non-greedy run cannot stop early. Same argument as the newsletter band
+     above, and checked against a depth counter on all seventeen pages. */
+  if (dir === 'products') {
+    add('product page: the mockup demo form -> removed',
+      /\n<div class="formsec" id="form">[\s\S]*?\n<\/div>\n/g, '');
+    add('product page: Book a demo -> the real form on /demo',
+      /href="#form"/g, `href="${DEMO}"`);
+  }
+
+  /* ---- LAST RULE IN THE FILE: STRIP HTML COMMENTS ------------------------
+     Requested for production. These pages are served exactly as they sit in
+     the repo -- there is no dist step -- so "strip in production" and "strip
+     in the file" are the same operation here, and the designers' section
+     markers go with it. git has them if anyone wants them back.
+
+     IT MUST BE LAST, AND THAT IS LOAD-BEARING. The newsletter rule matches on
+     a comment (the NEWSLETTER marker followed by its div) to find the block it
+     deletes. Strip the comments first and that rule can never fire again, so a
+     freshly re-dropped mockup would keep its newsletter block for ever. Run
+     last and every comment-anchored rule has already had its turn.
+
+     THE GTM MARKERS SURVIVE, deliberately. They came from marketing as part of
+     a snippet to paste verbatim, they are the conventional way to confirm a
+     container is installed by viewing source, and they are about 120 bytes a
+     page. Everything else goes.
+
+     SAFE BECAUSE IT WAS CHECKED, not because it looks safe: no page has a
+     conditional comment, and no script or style body anywhere in the tree
+     contains an HTML comment delimiter, so there is nothing a plain sweep can
+     corrupt. build.js asserts the same thing at build time for the pages it
+     generates.
+
+     Idempotent: after one pass only the GTM markers remain, and they are the
+     one thing the lookahead refuses to match. */
+  add('strip HTML comments (GTM markers kept)',
+    /[ \t]*<!--(?!\s*(?:End\s+)?Google Tag Manager)[\s\S]*?-->[ \t]*\n?/g,
+    '');
 
   return r;
 }
@@ -1205,6 +1781,13 @@ if (!targets.length) {
 
 let totalBefore = 0;
 let totalAfter = 0;
+/* WHAT THE RULES WOULD WRITE, checked alongside what the pages already say.
+   The resolver at the end of this file only ever read the pages, so a rule
+   whose destination had gone stale stayed silent for as long as no page
+   happened to be in the broken state it matches — which is exactly how
+   fourteen of the seventeen product slugs came to point at files that had
+   been renamed out from under them, with the run still reporting all clear. */
+const emitted = new Map();
 
 for (const { rel, depth } of targets) {
   const p = path.join(ROOT, rel);
@@ -1213,6 +1796,13 @@ for (const { rel, depth } of targets) {
   let hits = 0;
 
   for (const [name, find, replace] of rules(rel)) {
+    /* Skip `$1`-style replacements: those carry a captured href through
+       unchanged, so the destination is the page's, not this script's. */
+    if (typeof replace === 'string' && !replace.includes('$')) {
+      for (const h of replace.matchAll(/href="([^"]+)"/g)) {
+        if (!emitted.has(h[1])) emitted.set(h[1], `${rel} · ${name}`);
+      }
+    }
     /* COUNT FIRST, THEN REPLACE WITH THE STRING. Do not pass a function here
        to do the counting: `s.replace(find, () => replace)` returns `replace`
        verbatim, so `$1` and friends land as literal text instead of the
@@ -1252,7 +1842,34 @@ if (totalAfter === 0) console.log('no placeholder links left, or the href was re
 
    href, src and poster, because all three are depth-sensitive. Fragments,
    query strings and the non-filesystem schemes are dropped first. */
+/* CLEAN URLS. vercel.json sets "cleanUrls": true, so /contact is served by
+   contact.html and there is no file at that path — the site is written that
+   way throughout, 800-odd links of it. Checking existsSync alone therefore
+   reported every internal link on every page as BROKEN, which is the exact
+   failure the note above warns about: a checker that always cries wolf stops
+   being read. So a reference resolves if the file is there, or if the file is
+   there once .html is added, or if it names a directory with an index.html.
+   Assets keep their extensions and take the first branch unchanged. */
+const resolves = (abs) => fs.existsSync(abs)
+  || (CLEAN_URLS && !path.extname(abs)
+      && (fs.existsSync(abs + '.html') || fs.existsSync(path.join(abs, 'index.html'))));
+
 const KNOWN_GAPS = /-demo(-poster)?\.(jpg|mp4|webm)$/;   /* the marked video placeholders */
+const deadRule = [];
+for (const [url, where] of emitted) {
+  if (/^(?:https?:|mailto:|tel:|data:|#|\/\/)/.test(url)) continue;
+  const file = url.split('#')[0].split('?')[0];
+  if (!file || !file.startsWith('/')) continue;   /* the font is depth-relative */
+  if (!resolves(path.join(ROOT, file.slice(1)))) deadRule.push([where, url]);
+}
+if (deadRule.length) {
+  console.log(`rule destinations: ${deadRule.length} point at nothing`);
+  for (const [where, url] of deadRule) console.log(`  STALE RULE  ${where}  ->  ${url}`);
+  process.exitCode = 1;
+} else {
+  console.log(`rule destinations: all ${emitted.size} resolve`);
+}
+
 const missing = [];
 for (const { rel } of targets) {
   const dir = path.dirname(path.join(ROOT, rel));
@@ -1270,7 +1887,7 @@ for (const { rel } of targets) {
     const abs_ = file.charAt(0) === '/'
       ? path.join(ROOT, file.slice(1))
       : path.join(dir, file);
-    if (!fs.existsSync(abs_)) missing.push([rel, raw]);
+    if (!resolves(abs_)) missing.push([rel, raw]);
   }
 }
 const real = missing.filter(([, u]) => !KNOWN_GAPS.test(u));

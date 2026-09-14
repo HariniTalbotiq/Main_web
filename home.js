@@ -191,12 +191,29 @@ const MODES = {
   ],
 };
 
+/* nameBreak — WORDS ON THE FIRST LINE OF THE PHONE TITLE.
+   Below 460px the product grid is two columns and a name gets under 200px, so
+   the names wrap to one, two or three lines depending on their own length. The
+   grey caption underneath therefore started on a different baseline in each
+   column, which is the misalignment this fixes.
+
+   IT IS DATA, NOT A RULE, because no rule produces these splits: three-word
+   names mostly break after the first word ("Business / Management System",
+   "Intelligent / Recruitment Software") but "Intelligent Document /
+   Management" breaks after the second, and "Sales / CRM" is broken even though
+   it would fit on one line. Every title becomes exactly two lines, so every
+   caption starts at the same height with no reserved blank line.
+
+   The number is a word index into `name`, so it cannot drift from the name it
+   splits — build.js joins the halves back together and the desktop layout gets
+   the two words with a single space between them, exactly as before. */
 const TILES = [
   {
     slug: 'mimic',
     group: 'hiring',
     local: '/products/video-interview',
     name: 'Video Interview',
+    nameBreak: 1,
     tagline: 'Multi-way, one-way and AI avatar interview',
     modes: MODES.video,
     vb: 58,
@@ -212,6 +229,7 @@ const TILES = [
     group: 'hiring',
     local: '/products/voice-interview',
     name: 'Voice Interview',
+    nameBreak: 1,
     tagline: 'A spoken round, transcribed live',
     kin: 'Live',
     vb: 58,
@@ -227,6 +245,7 @@ const TILES = [
     group: 'hiring',
     local: '/products/chat-interview',
     name: 'Chat Interview',
+    nameBreak: 1,
     tagline: 'Blind text assessment, AI answers flagged',
     modes: MODES.chat,
     vb: 58,
@@ -241,6 +260,7 @@ const TILES = [
     group: 'hiring',
     local: '/products/recruitment-software',
     name: 'Intelligent Recruitment Software',
+    nameBreak: 1,
     was: 'ATS',
     tagline: 'End-to-end recruitment system for your hiring needs',
     kin: '2 modes',
@@ -254,6 +274,7 @@ const TILES = [
     group: 'business',
     local: '/products/business-management-system',
     name: 'Business Management System',
+    nameBreak: 1,
     was: 'ERP',
     /* NOT SETTLED. The meeting named the modules — purchase, procurement,
        invoicing, vendor management, cash flow — but stopped short of the final
@@ -273,6 +294,7 @@ const TILES = [
     group: 'business',
     local: '/products/sales-crm',
     name: 'Sales CRM',
+    nameBreak: 1,
     was: 'NousCRM',
     tagline: 'Intelligent platform for leads and sales',
     page: 'https://talbotiq.com/products/sales-crm/',
@@ -288,6 +310,7 @@ const TILES = [
     group: 'business',
     local: '/products/task-manager',
     name: 'Task & Productivity Manager',
+    nameBreak: 3,
     was: 'tasca',
     tagline: 'Smart management for tasks and productivity',
     page: 'https://talbotiq.com/products/task-management-system/',
@@ -307,6 +330,7 @@ const TILES = [
        parses, so calling it a parser understates it — "Intelligent Document
        Management" was the name settled on. */
     name: 'Intelligent Document Management',
+    nameBreak: 2,
     was: 'Lexer',
     tagline: 'Scan and parse all types of documents',
     vb: 58,
@@ -321,6 +345,7 @@ const TILES = [
     group: 'business',
     local: '/products/note-taker',
     name: 'Intelligent Note Taker',
+    nameBreak: 1,
     was: 'Recapr',
     tagline: 'The intelligent note taker for all your meetings',
     vb: 58,
@@ -362,6 +387,16 @@ const COUNT = NUMWORD[TILES.length] || String(TILES.length);
    place.
    ---------------------------------------------------------------------- */
 const COPY = {
+  /* THE HOMEPAGE'S <title> AND META DESCRIPTION, as copy rather than as a
+     join. The title used to be the hero headline and the description was the
+     hero lede plus every tile name comma-separated — 285 characters, which
+     Google truncates at about 155, and a list is not a sentence anyone clicks.
+     build.js refuses to build if either exceeds its limit (60 / 155). */
+  meta: {
+    title: 'TalbotIQ | AI Interview & Business Software for SMEs',
+    description: 'AI interview software, recruitment software (ATS), a sales CRM, an ERP for SMEs, document and meeting-notes tools, all running on one private AI engine.',
+  },
+
   /* THE DEMO PAGE'S OWN WORDS. The heading is the company's own line, taken
      from the live inquiry page because it is a good one; the rest is written
      for a form that now sits on this site rather than on the old one. */
@@ -411,24 +446,53 @@ const COPY = {
        words that carry it are simply named. */
     heading: {
       text: 'Every workflow, running on intelligence.',
-      keys: [['workflow', 'y'], ['intelligence', 'g']],
+      /* BOTH KEYWORDS TAKE A BRUSH, one green and one yellow, as asked, in
+         the manner of the reference. Neither word keeps a colour of its own:
+         both go ink, because that is what a highlighter does to the word
+         underneath it, and because it is the only way the two marks read as
+         the same device in two colours rather than as two unrelated ideas.
+
+         THE YELLOW ONE IS THE BRAND'S ACTUAL YELLOW, #F3E202, and this is the
+         one place on the site it can be used. The note beside --key-y in the
+         stylesheet explains that it cannot be type: 1.34:1 on white, which is
+         invisible, which is why every gold word on this site uses a darkened
+         substitute instead. As a GROUND it is the opposite — ink on it is
+         11.6:1, better than the ink-on-teal 5.13:1 of the green brush beside
+         it. A colour that fails completely as a foreground turning out to be
+         the best highlighter on the page is worth knowing. */
+      keys: [['workflow', 'brush'], ['intelligence', 'brush-y']],
     },
-    lede: { strong: 'All products', rest: 'Powered by or Connected to an AI Engine.' },
+    lede: { strong: 'End to End Suite,', rest: 'Powered by AI' },
     primary: 'Book a demo',
     secondary: 'Explore the products',
-    /* REMOVED, both on request:
-         subnote  "Live in under two weeks. See how"
-         aside    "8 products. 1 login." — the pencilled note, with its arrow
+    /* REMOVED, on request: the subnote "Live in under two weeks. See how".
 
-       Worth recording why the aside is no loss: it was the one claim on the
-       page the products could not support. There are eight applications on six
-       different hosts and no single sign-on, so "1 login" was not true. Its
-       going resolves that; `GO.signin` in build.js still explains why Sign in
-       points at the tile grid rather than a login. */
+       THE ASIDE IS BACK, ON AN EXPLICIT AND REPEATED REQUEST, AND IT CARRIES
+       A CLAIM THIS REPO OTHERWISE REFUSES TO MAKE. Read this before editing
+       it, because the history matters more than the words do.
+
+       It used to read "8 products. 1 login." and was removed as untrue: there
+       are eight applications on six different hosts and no single sign-on.
+       `research/RESEARCH.md:168` states that SSO is explicitly NOT claimed,
+       and `GO.signin` in build.js still explains why "Sign in" points at the
+       tile grid rather than at a login screen — because there is no one login
+       to point it at.
+
+       It was then asked for again, twice, in the wording below, after that
+       objection had been put in writing and answered. So it ships: the count
+       is gone (that part was simply wrong and is not worth being wrong about
+       twice), and the phrasing is the requester's own.
+
+       WHAT TO DO ABOUT IT. Either SSO ships and this becomes true, or this
+       line goes. It should not sit here indefinitely as the one sentence on
+       the homepage that the product cannot back. If you are reading this
+       because you are auditing claims: this is the one, it is known, and
+       docs/seo/05-claims-to-verify.md records it. */
+    aside: ['All products', 'one login'],
   },
 
   ecosystem: {
-    eyebrow: 'The TALBOTIQ ecosystem advantage',
+    eyebrow: 'Edge with TALBOTIQ ecosystem',
     body:
       'Our AI-first proprietary software suite is engineered as a high-performance, '
       + 'interconnected ecosystem. By eliminating the friction of fragmented '
@@ -440,6 +504,9 @@ const COPY = {
        here — they are the AI Engine's own `story.arc` from products.js, so the
        diagram cannot drift from the product it describes. */
     coreEyebrow: 'AI-first proprietary core',
+
+    /* The line that closes the chapter, centred under the diagram. */
+    tagline: 'One core. Infinite possibilities.',
 
     /* ONE PLAIN SENTENCE PER STAGE, keyed by the stage's own word. "Redact" is
        precise and it is what the engine does, but a reader who has not met the
@@ -536,6 +603,12 @@ const COPY = {
   },
 
   allProducts: 'View all products',
+  /* the line under the tile grid — the hub compares every interview format in
+     one table, which the grid cannot */
+  /* Rephrased by request: it used to read "Compare all interview formats",
+     which named one narrow job — comparing interview types — while the link
+     goes to the whole portfolio, ten products of which six are not interview
+     tools at all. The label now describes the destination. */
 };
 
 /* SIX CARDS, so nothing spans. `wide: true` used to sit on "Innovation at
@@ -745,6 +818,12 @@ const BROADCAST = {
    is a different thing from this nav item, so it was left alone.
    ---------------------------------------------------------------------- */
 const NAV = [
+  /* HOME IS A PLAIN LINK, not a shelf, and it is first because that is where
+     a reader reaches for it. The three that follow open panels; this one and
+     Contact are the two that just go somewhere, so they render as bare <a>
+     and pick up `nav.mid > a` — the same type, spacing and hover the Contact
+     link has always had. Nothing new in the stylesheet. */
+  { label: 'Home', href: '/' },
   { label: 'Products', panel: 'products' },
   { label: 'Solutions', panel: 'solutions' },
   { label: 'Company', panel: 'company' },
@@ -824,23 +903,14 @@ const RESOURCES = [
    numbers" got `phones[-1]` — undefined — and a TypeError instead of a page.
    A named field cannot be half-emptied.
 
-   THE MOBILE IS STILL ON THE SITE, as the wa.me number behind the WhatsApp
-   links in the standalone pages. Those are hand-written in each page, not
-   generated from here — `products.js` records it as COMPANY.whatsapp — so it is
-   not this file's business. */
+   THE MOBILE IS NO LONGER ON THE SITE. It used to be reachable as the wa.me
+   number behind the WhatsApp links in the standalone pages; WhatsApp was
+   removed by request, and with it the last place that number appeared. The
+   office line below is now the only number the site publishes, and
+   tools/fix-pages.js keeps it that way on every run. */
 const CONTACTS = {
   email: 'hello@talbotiq.com',
   office: '+603 20 111 320',
-};
-
-/* No form endpoint exists yet. Until `action` is set, the field renders
-   DISABLED with a one-line reason — a subscribe box that silently swallows an
-   address is worse than one that admits it is not wired up. */
-const NEWSLETTER = {
-  title: 'Join our newsletter',
-  body: 'Get news about our products and services. Join our waiting list for upcoming products.',
-  action: null,
-  cta: 'Subscribe',
 };
 
 /* PRIVACY POLICY · TERMS · SECURITY ARE NO LONGER IN THE FOOTER, by request.
@@ -857,5 +927,5 @@ const NEWSLETTER = {
 module.exports = {
   PALETTE, TILES, GROUPS, COPY, CAPABILITIES,
   WHY, BLOG, FEATURE, BROADCAST,
-  NAV, SOLUTIONS, COMPANY_LINKS, RESOURCES, CONTACTS, NEWSLETTER,
+  NAV, SOLUTIONS, COMPANY_LINKS, RESOURCES, CONTACTS,
 };

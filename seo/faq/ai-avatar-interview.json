@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Does the candidate need to install anything to take the interview?",
+    "answer": "No. The interview runs in the browser, so there is nothing for the candidate to install.",
+    "evidence": "Runs in the browser. Nothing for the candidate to install."
+  },
+  {
+    "question": "Are candidates told they are being interviewed by an AI avatar, and what happens before the round starts?",
+    "answer": "Yes, candidates are told before the round begins that the interviewer is an avatar. Before that, they run a short check on camera, microphone and connection, and identity and document collection is handled in chat first.",
+    "evidence": "The candidate runs a short check on camera, microphone and connection, and identity and document collection is handled in chat first. They are also told, before the round begins, that the interviewer is an avatar."
+  },
+  {
+    "question": "How are answers scored, and can I see why a candidate got a particular score?",
+    "answer": "Every answer is scored against your rubric by a model tier reserved for scoring, and the output is validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt and the moment of video it came from, so you can trace a rating to what the candidate actually said.",
+    "evidence": "Every answer is scored against your rubric by a model tier reserved for scoring, validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt and the moment of video it came from"
+  },
+  {
+    "question": "Can the avatar ask follow-up questions, or does it only read a fixed list?",
+    "answer": "It probes thin answers with follow-ups, but each probe is selected from your own question set rather than invented in the moment, so the round stays adaptive without reintroducing interviewer variance. You can see exactly which follow-ups are available for each question before any candidate takes it.",
+    "evidence": "the probe is selected from your own question set rather than invented in the moment. That keeps the round adaptive without reintroducing the variance the avatar exists to remove. You can see exactly which follow-ups are available for each question before a single candidate takes it."
+  },
+  {
+    "question": "Can I compare avatar interview scores with scores from a recorded video interview or a live two-way interview?",
+    "answer": "Yes. All three rounds use the same rubric, so an avatar score, a recorded score and a live score are directly comparable, and choosing the format becomes a logistics decision rather than a scoring one.",
+    "evidence": "The same rubric as the other two rounds. An avatar score, a recorded score and a live score are directly comparable, so the modality is a logistics choice rather than a scoring one."
+  },
+  {
+    "question": "Can an avatar interview replace meeting candidates in person?",
+    "answer": "No. The avatar round is a screening instrument, not a substitute for meeting somebody before you hire them, and TalbotIQ publishes no accuracy figure for the scoring.",
+    "evidence": "We publish no accuracy figure for the scoring. And an avatar round is a screening instrument — it is not a substitute for meeting somebody before you hire them."
+  }
+]

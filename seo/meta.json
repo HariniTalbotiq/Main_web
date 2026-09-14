@@ -1,0 +1,105 @@
+{
+  "_readme": [
+    "Titles and meta descriptions for the hand-written pages, applied by tools/seo-pass.js.",
+    "Rules (the pass refuses to run if they are broken): title <= 60 characters with the",
+    "primary term first and the brand last; description <= 155 characters, written as a",
+    "sentence a buyer would click, containing only claims the page itself makes.",
+    "A page not listed here keeps whatever it already has. Only <title> and the meta",
+    "description are changed: og:title / og:description are the social-share copy and are",
+    "left as written."
+  ],
+  "pages": {
+    "about": {
+      "title": "About TalbotIQ | AI Software Company in Kuala Lumpur",
+      "description": "Talbotiq Technologies builds AI software from Kuala Lumpur: interview and recruitment tools, CRM, ERP, document and meeting tools, plus custom development."
+    },
+    "contact": {
+      "title": "Contact TalbotIQ | Book a Demo or Talk to the Team",
+      "description": "Tell us about your goals and bottlenecks and our engineers come back with a roadmap, not a brochure. Kuala Lumpur based, reply within one business day."
+    },
+    "products/ai-avatar-interview": {
+      "title": "Conversational AI Avatar Interview Software | TalbotIQ",
+      "description": "An AI avatar conducts the interview and asks the fortieth candidate what it asked the first: no fatigue, no rapport bias, one rubric for every answer."
+    },
+    "products/business-management-system": {
+      "title": "Business Management System (ERP) for SMEs | TalbotIQ",
+      "description": "An ERP built around how an SME runs: quotation to order, delivery and invoice on one chain of records, with the money questions read off that same chain."
+    },
+    "products/chat-interview": {
+      "title": "Chat Interview Software: Blind Text Assessments | TalbotIQ",
+      "description": "Behavioural questions answered in text and assessed with no name, face or accent attached, with AI-generated answers detected as they arrive."
+    },
+    "products/conversational-chat-interview": {
+      "title": "Conversational Chatbot Interview Software | TalbotIQ",
+      "description": "An open-ended written interview with no clock and no answer key: a thin answer draws a follow-up, and how a candidate writes under a prompt is assessed."
+    },
+    "products/document-management": {
+      "title": "Intelligent Document Management & Parsing | TalbotIQ",
+      "description": "AI extraction reads business cards and receipts in any language, pulls every field, converts currencies and flags tampering, with a person confirming each."
+    },
+    "products/mcq-rounds": {
+      "title": "MCQ Interview Software for Screening Rounds | TalbotIQ",
+      "description": "Multiple-choice interview rounds with a declared answer set, so scoring is arithmetic rather than judgement, drawn from your own question banks."
+    },
+    "products/mimic": {
+      "title": "Mimic: AI Interview Software for Every Candidate | TalbotIQ",
+      "description": "Mimic interviews every applicant the day they apply, across chat, voice, AI video and a live round, and scores each answer on one rubric with evidence."
+    },
+    "products/note-taker": {
+      "title": "AI Meeting Notes & Minute Taker Software | TalbotIQ",
+      "description": "Live transcript with real names, a recap the moment you stop, and every open promise carried into the next meeting. Nothing joins your call."
+    },
+    "products/recorded-video-interview": {
+      "title": "Recorded Video Interview Software (Asynchronous) | TalbotIQ",
+      "description": "Set the questions once and every applicant answers the same ones, in their own time. No calendars, no time zones, no forty-slot scheduling exercise."
+    },
+    "products/recruitment-software": {
+      "title": "Recruitment Software (ATS) for Teams & Agencies | TalbotIQ",
+      "description": "Recruitment software: seven modules on one licence and one database. Hire Mode for internal talent teams, Agency Mode for staffing firms billing clients."
+    },
+    "products/sales-crm": {
+      "title": "Sales CRM: Pipeline, Invoices & Approvals | TalbotIQ",
+      "description": "A sales CRM for the desk and the road: cards, receipts and meetings captured as photos and audio, a configurable pipeline, quote-to-cash and receivables."
+    },
+    "products/task-manager": {
+      "title": "Task & Productivity Manager with AI Triage | TalbotIQ",
+      "description": "Paste the meeting notes and the task manager finds every commitment, creates the task, assigns the owner and sets the date, then reports whether it landed."
+    },
+    "products/timed-qa": {
+      "title": "Timed Q&A Interview Software | TalbotIQ",
+      "description": "Timed Q&A interview rounds with a visible per-question limit, so you measure what a candidate knows and how they structure it under pressure."
+    },
+    "products/two-way-interview": {
+      "title": "Two-Way Live Interview Software | TalbotIQ",
+      "description": "Your interviewer, the candidate, and the rubric on screen. Recorded, transcribed and scored against the same criteria as the async rounds."
+    },
+    "products/vawlt": {
+      "title": "Vawlt: Private AI Engine with PII Scrubbing | TalbotIQ",
+      "description": "The private AI engine behind TalbotIQ products: 27 of 33 AI tasks run on purpose-trained models on our own hardware, each declaring its data handling."
+    },
+    "products/video-interview": {
+      "title": "Video Interview Software for Hiring Teams | TalbotIQ",
+      "description": "Video interview software: a recorded round every applicant can take the day they apply, scored on one rubric, each score linked to the moment it came from."
+    },
+    "products/voice-interview": {
+      "title": "Voice Interview Software, No Camera Needed | TalbotIQ",
+      "description": "Voice interviews any candidate can take on the phone they already have: no camera, no download, transcribed live and scored on one rubric like every round."
+    },
+    "solutions/ai-agent-bot-development": {
+      "title": "AI Agent & Bot Development Services | TalbotIQ",
+      "description": "AI agent and bot development: agents that decompose a request, plan the steps, call the tools and hand back the decisions a person should make."
+    },
+    "solutions/ai-strategy-consulting": {
+      "title": "AI Strategy & Consulting Services | TalbotIQ",
+      "description": "Bridging the gap between speculative AI trends and measurable ROI by replacing manual workflows with autonomous, high-impact agentic systems."
+    },
+    "solutions/embedded-edge-ai": {
+      "title": "Embedded Edge AI Development | TalbotIQ",
+      "description": "Embedded edge AI: vision and sensor fusion deployed on existing hardware for real-time operational intelligence, including agricultural use."
+    },
+    "solutions/full-stack-ai-integration": {
+      "title": "Full Stack Development & AI Integration | TalbotIQ",
+      "description": "Full stack development and AI integration: scalable systems that connect modern applications with existing infrastructure, built for speed and reliability."
+    }
+  }
+}

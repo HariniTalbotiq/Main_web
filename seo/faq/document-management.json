@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Can this document scanning tool also read invoices, purchase orders or contracts?",
+    "answer": "No. It handles business cards and receipts only, and nothing else — not invoices, purchase orders, contracts or identity documents. If your paperwork is mainly those other types, this is the wrong tool.",
+    "evidence": "Business cards and receipts. Nothing else — not invoices, purchase orders, contracts or identity documents."
+  },
+  {
+    "question": "Does the extracted data get saved automatically, or does someone have to approve each record?",
+    "answer": "Someone has to approve it. Nothing is written to your library until you confirm the capture. The page describes five stages, only one of which needs a person, and the record does not exist until the fourth stage.",
+    "evidence": "Five stages, and only one of them needs you. The record does not exist until the fourth."
+  },
+  {
+    "question": "Will it read receipts printed in Malay, Mandarin or Tamil, and what about foreign currencies?",
+    "answer": "Yes. It reads the document in whatever language it was printed in and translates as it extracts, so a Malay, Mandarin or Tamil receipt comes back as the same structured fields as an English one. Amounts are converted and the base currency is recorded alongside the original figure.",
+    "evidence": "It reads the document in whatever language it was printed in and translates as it extracts, so a receipt in Malay, Mandarin or Tamil comes back as the same structured fields as an English one. Amounts are converted and the base currency is recorded alongside the original"
+  },
+  {
+    "question": "How do I get contacts and receipts out of it — does it need an integration with my accounting or contacts software?",
+    "answer": "No integration is needed; the export is the integration. Business cards export to CSV, Excel, JSON and vCard so your phone can import them as contacts directly, and receipts export to CSV, Excel, JSON and PDF.",
+    "evidence": "Cards export to CSV, Excel, JSON and vCard, so a stack of business cards becomes contacts your phone can import directly. Receipts export to CSV, Excel, JSON and PDF. There is no lock-in step and nothing needs an integration to be useful — the export is the integration."
+  },
+  {
+    "question": "Can I give my accountant or bookkeeper access to the same receipt library?",
+    "answer": "No. It is one account, one library — there are no teams, sharing or delegation anywhere in the product, so you cannot give your accountant access and a bookkeeper cannot hold a client's library on their behalf.",
+    "evidence": "One account, one library. There are no teams, no sharing and no delegation anywhere in the product — you cannot give your accountant access, and a bookkeeper cannot hold a client's library on their behalf."
+  },
+  {
+    "question": "How accurate is the receipt and business card OCR?",
+    "answer": "TalbotIQ publishes no accuracy figure, because nothing in the product measures accuracy against a ground truth. What it shows instead is how often a human corrected a field in your own library, which is a real number from your data rather than a claim about the product.",
+    "evidence": "we publish no accuracy figure, because nothing in the product measures accuracy against a ground truth — what we can show you instead is how often a human corrected a field, which is a real number from your own library rather than a claim about ours."
+  }
+]

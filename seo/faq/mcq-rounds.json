@@ -1,0 +1,32 @@
+[
+  {
+    "question": "How is the multiple-choice round scored, and does an AI mark it?",
+    "answer": "No AI marks it. You record the correct options before any candidate sits the round, the candidate picks answers, and the score is arithmetic. TalbotIQ describes this as the one part of its pipeline where no model forms a judgement.",
+    "evidence": "An MCQ round is the one part of the pipeline where no model forms a judgement — the answer set is declared before anybody takes it, and the score is arithmetic."
+  },
+  {
+    "question": "How much work is a multiple-choice knowledge test to set up and run?",
+    "answer": "Setup is five stages, and after the first one nobody touches it. Invitations send themselves and results appear when candidates submit.",
+    "evidence": "Five stages, and after the first one nobody touches it. Invitations send themselves and results appear on submit."
+  },
+  {
+    "question": "Can I set a separate pass mark for each section of the test?",
+    "answer": "Yes. You can set a floor per section rather than only an overall pass mark, so someone strong overall but below the line on the regulated section is treated as a different decision from someone uniformly average. Scoring happens on submit with no review queue.",
+    "evidence": "Scored on submit, with no review queue. You can set a floor per section rather than only an overall pass mark, which is usually what you actually want: somebody strong overall but below the line on the regulated section is a different decision from somebody uniformly average."
+  },
+  {
+    "question": "Is the test proctored, or can candidates look up answers at home?",
+    "answer": "There is no proctoring. A candidate at home can look things up, and for most questions a model will answer correctly in seconds, so TalbotIQ tells you to treat the result as a knowledge floor (evidence someone could find and apply the right answer) rather than proof they knew it unaided.",
+    "evidence": "There is no proctoring. A candidate sitting an MCQ round at home can look things up, and for most questions a model will answer them correctly in seconds. So treat this as a knowledge floor — evidence somebody could find and apply the right answer — rather than proof they knew it unaided."
+  },
+  {
+    "question": "When is a multiple-choice test the wrong way to assess job candidates?",
+    "answer": "When you need to rank them. The gap between 13 and 15 out of 15 tells you very little about who will do the job better, so use MCQs to filter for a knowledge threshold and then use a written or spoken round to choose between the people who pass.",
+    "evidence": "They are a poor instrument for a ranking, because the gap between 13 and 15 out of 15 tells you very little about who will do the job better. Use it to filter, then use a written or spoken round to choose."
+  },
+  {
+    "question": "Can multiple-choice questions be combined with a chat or timed interview instead of running as a separate test?",
+    "answer": "Yes. Multiple-choice items can sit inside a conversational or timed round, so a few factual checks run alongside the behavioural questions in one sitting without asking the candidate to complete two separate things.",
+    "evidence": "Multiple-choice items can sit inside a conversational or timed round rather than running separately, which is often the better shape — a few factual checks in among the behavioural questions, in one sitting, without asking a candidate to complete two separate things."
+  }
+]

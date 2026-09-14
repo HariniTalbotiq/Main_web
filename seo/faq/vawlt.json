@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Does our data leave TalbotIQ's servers when Vawlt runs an AI task?",
+    "answer": "For 27 of the 33 tasks, no: they are answered by models that never leave TalbotIQ's own servers, each one trained separately for its single job. Six tasks go to outside models because they were measured as beyond what the in-house models do faithfully, and the catalogue states exactly which ones.",
+    "evidence": "27 of 33 AI tasks are answered by models that never leave our own servers — each one separately trained for its single job. The six that go outside were measured as beyond what our own models do faithfully, and the catalogue says exactly which."
+  },
+  {
+    "question": "How does Vawlt handle names, salaries and other personal data in the text we send?",
+    "answer": "Each task declares one of two policies. Under 'redacted', names, emails, phones, salaries and similar are replaced with typed placeholders before the model is called; under 'as sent', the input reaches the model unchanged, because for that task the entity data is the input. Every response reports which policy applied on that call.",
+    "evidence": "Each task declares one of two policies. Redacted — names, emails, phones, salaries and similar are replaced with typed placeholders before the model is called. As sent — the input reaches the model unchanged, because the entity data is the input"
+  },
+  {
+    "question": "Can we use Vawlt as a chatbot or general-purpose AI assistant?",
+    "answer": "No. Vawlt is single-turn only, with no conversation history, no system prompt from the caller and no streaming. It runs a fixed catalogue of tasks, and an unknown task name is a hard error.",
+    "evidence": "Not a chatbot — single-turn only, no conversation history, no system prompt from the caller, no streaming. Not general-purpose — a fixed catalogue, where an unknown task name is a hard error."
+  },
+  {
+    "question": "Does Vawlt check the AI's output before it reaches our system?",
+    "answer": "For the ten tasks that declare a closed set of legal answers, such as a six-label classifier and a fourteen-action planner, the engine checks the model's answer and returns an error rather than passing an illegal value to your code. Nine of the ten are currently callable.",
+    "evidence": "Ten tasks declare a closed set of legal answers — a six-label classifier, a fourteen-action planner. After the model answers, the engine checks it and returns an error rather than passing an illegal value to your code. Nine of the ten are currently callable."
+  },
+  {
+    "question": "Does Vawlt learn from or train on the data we send it?",
+    "answer": "Not today. Corrections are captured and scrubbed as future training data, but the retraining step is deliberately switched off, so nothing improves on its own.",
+    "evidence": "It does not learn from use: corrections are captured and scrubbed as future training data, but the retraining step is deliberately switched off, so nothing improves on its own today."
+  },
+  {
+    "question": "How do we get access to Vawlt - is there self-service sign-up or an API key portal?",
+    "answer": "There is no self-service: an administrator mints a key per calling application. The raw key is returned exactly once and cannot be recovered because only its hash is stored, and keys can be listed as non-reversible fingerprints and deactivated.",
+    "evidence": "An administrator mints a key per calling application. The raw key is returned exactly once and cannot be recovered, because only its hash is stored; keys can be listed as non-reversible fingerprints and deactivated."
+  }
+]

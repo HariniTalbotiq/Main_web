@@ -1,0 +1,32 @@
+[
+  {
+    "question": "Do candidates need to download an app or create an account to take the interview?",
+    "answer": "No. The candidate interview runs in the browser, with no onboarding and no app to install.",
+    "evidence": "Candidate interview in the browser. No onboarding, no app to install."
+  },
+  {
+    "question": "What happens if a candidate's camera or microphone is not working?",
+    "answer": "Before a round starts, the candidate runs a short check of their camera, microphone and connection, and identity and document collection is handled in chat first. Interviewers only reach people who are validated and ready, so nobody loses a round to a broken headset.",
+    "evidence": "Before a round starts, the candidate runs a short check on camera, microphone and connection, with identity and document collection handled in chat first. Interviewers only reach people who are validated and ready, and nobody loses a round to a broken headset."
+  },
+  {
+    "question": "How does the AI score interview answers, and can I see why a candidate got a particular score?",
+    "answer": "Every answer is scored against the rubric you define by a model tier reserved for scoring, and the output is validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt it came from, so you can see what the candidate actually said to earn a given rating.",
+    "evidence": "Every answer is scored against your rubric by a model tier reserved for scoring, validated against a fixed schema rather than accepted as free text. Each score links back to the transcript excerpt it came from, so a rating can always be traced to something the candidate actually said."
+  },
+  {
+    "question": "Does the AI decide who gets rejected, or does a person?",
+    "answer": "A person does. Mimic interviews and scores candidates against your rubric with the evidence attached, but the decision is made by humans: the product is described as screening intelligence decided by humans, and the final stage of its five-stage process is labelled \"You decide\".",
+    "evidence": "Screening intelligence, decided by humans"
+  },
+  {
+    "question": "Can I use a chat interview for one stage and a live video interview for another, and still compare candidates fairly?",
+    "answer": "Yes. You pick the mode that fits the role and the stage, and scoring is identical across modes, so a chat score and a live-round score sit on the same axis and can be compared directly.",
+    "evidence": "Pick the mode that fits the role and the stage — the scoring is identical, so a chat score and a live-round score sit on the same axis."
+  },
+  {
+    "question": "How are interview recordings stored, and are they kept forever?",
+    "answer": "Recordings sit in private storage that is reached only through short-lived signed URLs. Lifecycle rules expire media on a schedule rather than keeping it indefinitely.",
+    "evidence": "Recordings sit in private storage reached only through short-lived signed URLs, with lifecycle rules that expire media on a schedule rather than keeping it forever."
+  }
+]

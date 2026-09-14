@@ -33,6 +33,9 @@
 const COMPANY = {
   name: 'TalbotIQ',
   legal: 'Talbotiq Technologies Sdn Bhd [1313215-V]',
+  // about-us page and research/RESEARCH.md: Group CEO and Founder. Named in the
+  // Organization schema so search engines attach the company to a real person.
+  founder: { name: 'Akhil Gupta', jobTitle: 'Group CEO and Founder' },
   tagline: 'Intelligent AI Automation',              // from the official logo lockup
   positioning: 'Architecting the Intelligence Layer of Modern Businesses',
   // about-us, verbatim. Used as the closing statement — the company's own words,
@@ -75,8 +78,6 @@ const COMPANY = {
     state: 'Wilayah Persekutuan',
     country: 'Malaysia',
   },
-  // WhatsApp, already live on the contact page mockup
-  whatsapp: 'https://wa.me/60128177741',
   // Every product's app mark carries one shape in this green — the shared
   // engine, drawn into the icon set itself. Sampled from the official logo.
   markGreen: '#1F9A69',

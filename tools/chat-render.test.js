@@ -60,7 +60,11 @@ test('a bolded word at the end of a line does not weld the next sentence on', ()
 });
 
 test('a line ending in a link keeps its newline too', () => {
-  const out = rich('Start at /index.html\nThen read /about.html');
+  /* both paths must be in the renderer's closed list and must be paths the
+     site still serves: /index.html was neither after the SEO pass, so the
+     first line stopped ending in a link and this test's own subject
+     disappeared while it kept asserting. */
+  const out = rich('Start at /demo\nThen read /about');
   assert.strictEqual((out.match(/\n/g) || []).length, 1, out);
   assert.ok(/<\/a>\nThen read/.test(out), out);
 });

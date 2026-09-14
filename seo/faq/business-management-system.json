@@ -1,0 +1,32 @@
+[
+  {
+    "question": "How does the inventory module handle stock across more than one store or warehouse?",
+    "answer": "Stock on hand is calculated per store from movements and is never typed in. A trading firm might run one or two stores and a factory three (raw, production, finished), each with its own count and its own adjustments. The whole inventory lane is money-blind: no ringgit figure reaches it, and the warehouse works in quantities only.",
+    "evidence": "A trading firm has one store or two. A factory has three — raw, production, finished — each a store in its own right with its own count and its own adjustments. Stock on hand is calculated per store from movements. It is never typed."
+  },
+  {
+    "question": "Is a supplier bill checked against the purchase order and the goods received note before it can be paid?",
+    "answer": "Yes. A bill cannot be paid until it agrees with the purchase order and the GRN; the three documents are checked against each other. Upstream, a purchase request carries no prices, and a count difference on the GRN needs a reason.",
+    "evidence": "A bill cannot be paid until it agrees with the order and the goods. The three documents are checked against each other, which is the whole point of running procurement in one place."
+  },
+  {
+    "question": "Is approving a purchase order the same as sending it to the supplier?",
+    "answer": "No. Preview, approve (if you are authorised) and send or download are three separate acts, because signing off and issuing are treated as different decisions. Approval goes nowhere until someone with the right puts their name to it.",
+    "evidence": "Approving a purchase order is not sending it. Preview, then approve if you are authorised, then send or download — three separate acts, because signing off and issuing are different decisions."
+  },
+  {
+    "question": "Can I stop sales or warehouse staff from seeing cost and margin?",
+    "answer": "Yes. Cost and margin are withheld by the server rather than hidden by the interface, so a money-blind role cannot retrieve them whatever the interface asks for. A seller sees only their own customers and the owner sees everyone; department personnel see their own vendors. Scope is a property of the record, not a filter someone chooses.",
+    "evidence": "Cost and margin are withheld by the server, not hidden by the interface — a money-blind role cannot see them even if it asks. A seller sees their own customers; the owner sees everyone."
+  },
+  {
+    "question": "Which steps are designed but not built yet?",
+    "answer": "Of the 47 named steps, 15 are live, 25 are partly built, and 7 are designed with no screen yet: the cash flow statement, the income and expense statement, both budgets, bank statement import, bank reconciliation, and production value-add for factories. The SST statement is deliberately held back until the tax treatment is verified with RMCD.",
+    "evidence": "The seven not yet built: the cash flow statement, the income and expense statement, both budgets, bank statement import, bank reconciliation, and production value-add for factories. The SST statement is deliberately held until the treatment is verified with RMCD"
+  },
+  {
+    "question": "Can it submit e-Invoices to MyInvois, take part payments, or move stock between stores yet?",
+    "answer": "Not yet. Still to come across the partly-built steps are e-Invoice submission with a register of what is pending, part payments and multi-invoice settlement, store-to-store transfers, and document uploads on the six steps that want one. There is also no customer portal: a quotation is sent as a PDF, and a customer login waits until one asks for it.",
+    "evidence": "Also still to come across the partly-built steps: document uploads on the six steps that want one, part payments and multi-invoice settlement, store-to-store transfers, and e-Invoice submission with a register of what is pending. There is no customer portal — a quotation is sent as a PDF"
+  }
+]
