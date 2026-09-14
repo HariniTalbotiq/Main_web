@@ -36,7 +36,16 @@
   'use strict';
 
   var reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  var narrow = matchMedia('(max-width: 820px)');
+  /* THE PHONE USED TO BE EXCLUDED HERE, and that was the whole bug. A
+     `matchMedia('(max-width: 820px)')` sat beside this one and every gate
+     below tested both, so a phone got the finished page with no motion at
+     all: the hero's entrance never ran and all 31 reveals resolved
+     instantly. Every other page on the site reveals on scroll on a phone —
+     they gate `.rv` on reduced-motion alone — so the homepage was the one
+     page that arrived dead, which is exactly what was reported.
+
+     Reduced motion is the only gate now. That is the one the reader actually
+     asked for; screen width is not a motion preference. */
 
   /* THE KIT. Four treatments, assigned by what the content IS rather than by
      where it sits. §25 of the stylesheet holds the actual motion; this only
@@ -63,6 +72,45 @@
     { c: 'rv-text', s: '.cta .cta-pair, .cta .fine' },
     { c: 'rv-text', s: '.allp' },
 
+    /* THE PRODUCT TILES HINGE, and they are the one entry here that reverses
+       an earlier decision rather than continuing it. This band was made
+       deliberately static — the note in build.js still says "it is complete
+       the moment it is on screen, it costs no extra scroll, and it renders
+       identically with or without JavaScript", and that was right about what
+       was removed: a pinned section scrubbing a construction grid, ticking in
+       registration marks and drawing wires against scroll position.
+
+       This is not that. It is one transition per tile, fired once on entry,
+       with no scroll listener and no rAF loop anywhere in the path. The band
+       still does not pin, still costs no extra scroll, and a tile that never
+       enters view is never touched. Requested: the tiles lie flat and hinge
+       up like a laptop lid, and their captions pop in behind them. §32 of the
+       stylesheet holds the motion.
+
+       `.cell` rather than `.tile` because `.tile` already animates its own
+       transform on hover and on tap. Ten cells in one group, so --i staggers
+       them 0..9 across both visual rows.
+
+       `now` IS WHY THIS ENTRY LOOKS DIFFERENT FROM THE OTHERS, and it exists
+       because the guard below did exactly its job and produced a bad result.
+       The tiles straddle the fold: at 1440x900 the top row of five is already
+       on screen, so `onScreen` skipped all five and only the bottom row
+       hinged. Five tiles standing up beside five that never moved is worse
+       than no animation at all, and it is the specific complaint this work
+       came from.
+
+       The fix is NOT to hide things that are already on screen — that rule is
+       right, and §26 of the stylesheet records the day it was learned. It is
+       to give the on-screen ones the first-screen treatment instead: a CSS
+       animation that rests in the visible state, so it is never hidden and
+       never owed a reveal. Same gesture, same curve, same stagger; the only
+       difference is that one is a transition waiting on an observer and the
+       other is an animation that has already happened by the time anything
+       could go wrong with it.
+
+       So every tile hinges, and no tile is ever hidden with a debt. */
+    { c: 'rv-wake', s: '.band .pgrid .cell', now: 'rv-wake-now' },
+
     /* objects — rise with a little scale, and the badge lands after the card */
     { c: 'rv-card', s: '.cap' },
     { c: 'rv-card', s: '.whyitem' },
@@ -82,7 +130,13 @@
      of the window a broken promise costs an entrance. Inside the window it
      costs the content itself, and the reader has no way to know anything is
      missing. So the first screen is left alone on every page, not just on the
-     one where it was caught: this is the guard, §26 is the entrance. */
+     one where it was caught: this is the guard, §26 is the entrance.
+
+     A GROUP MAY OPT IN TO ANIMATING ON SCREEN ANYWAY, via `now` in the KIT —
+     but only by naming a class whose motion RESTS IN THE VISIBLE STATE, the
+     way §26 and §32 do. That is not a hole in this rule, it is the rule
+     restated: what is forbidden is hiding something and owing it a reveal,
+     not motion as such. Nothing marked that way is observed or hidden. */
   function onScreen(el) {
     var r = el.getBoundingClientRect();
     return r.bottom > 0 && r.top < (innerHeight || 0);
@@ -93,7 +147,18 @@
       var els = document.querySelectorAll(g.s);
       for (var i = 0; i < els.length; i++) {
         if (els[i].hasAttribute('data-reveal')) continue;   /* first rule wins */
-        if (onScreen(els[i])) continue;
+        if (els[i].classList.contains('rv-now')) continue;
+        if (onScreen(els[i])) {
+          /* ON SCREEN: animate only if the group has a no-debt variant, and
+             never mark it for the observer. `--i` is still set, so a group
+             that straddles the fold cascades as ONE gesture across both
+             halves instead of restarting its count at the boundary. */
+          if (g.now) {
+            els[i].style.setProperty('--i', i);
+            els[i].classList.add(g.now, 'rv-now');
+          }
+          continue;
+        }
         els[i].setAttribute('data-reveal', '');
         els[i].classList.add(g.c);
         els[i].style.setProperty('--i', i);
@@ -127,8 +192,9 @@
   function start() {
     if (started) return;
     started = true;
-    /* Already set by the inline gate in <head> for the common case; this covers
-       a window dragged wider than 820 after load. Idempotent either way. */
+    /* Already set by the inline gate in <head> for the common case; this
+       covers reduced motion being switched off mid-session. Idempotent
+       either way. */
     document.documentElement.classList.add('fx');
     /* Tell the dead-man's switch in <head> that this file is alive, before it
        times out and strips .fx to rescue the page. */
@@ -138,20 +204,20 @@
   }
 
   function stopVisuals() {
-    /* Reduced motion turned on mid-session, or the window narrowed to a phone.
-       Resolve every reveal to its finished state rather than freezing it part
-       way. */
+    /* Reduced motion turned on mid-session. Resolve every reveal to its
+       finished state rather than freezing it part way. */
     if (!started) return;
     document.documentElement.classList.remove('fx');
     var all = document.querySelectorAll('[data-reveal]');
     for (var i = 0; i < all.length; i++) all[i].classList.add('in');
   }
 
-  /* THE PHONE AND THE READER WHO ASKED FOR LESS MOTION GET THE SAME THING: the
-     finished page, immediately. `fx` is never added, so nothing is ever hidden
-     waiting to be revealed. */
+  /* THE READER WHO ASKED FOR LESS MOTION GETS THE FINISHED PAGE, IMMEDIATELY.
+     `fx` is never added, so nothing is ever hidden waiting to be revealed.
+     That reader, and a browser with no script, are now the only two states
+     that skip the motion — a narrow window is not one of them. */
   function evaluate() {
-    if (reduce.matches || narrow.matches) {
+    if (reduce.matches) {
       if (started) stopVisuals();
       else document.documentElement.classList.remove('fx');
       return;
@@ -164,7 +230,6 @@
      IntersectionObserver entries, which the browser re-evaluates itself after a
      reflow, so there is nothing left here to keep in sync. */
   reduce.addEventListener('change', evaluate);
-  narrow.addEventListener('change', evaluate);
 
   evaluate();
 })();

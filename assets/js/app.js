@@ -7,6 +7,7 @@
      2. the three nav panels open and close
      3. the drawer, for viewports with no room for a nav
      4. the thought-leadership grid collapses to three and opens to eight
+     5. the "3 modes" pill opens the panel of sub-modes under its tile
 
    The mockup drew a caret on Products, Solutions and Company but had nowhere
    for them to go. This is where they go.
@@ -235,10 +236,35 @@
     }, { once: true });
   }
 
+  /* ---- 5 · the "3 modes" pill ------------------------------------------
+     Below 1080px there is nothing to hover with, so the pill is the control
+     that opens the panel of sub-modes beneath its tile. Above 1080px the panel
+     still opens on hover and focus-within; a click here pins it, which is what
+     keeps the same button from being a control that does nothing on a desktop.
+
+     Delegated, because the tiles are built by build.js and there is no reason
+     for this file to know how many there are. The collapsed state itself lives
+     in CSS behind html.js — if this file never loads, the panels stay open
+     rather than becoming unreachable. */
+  addEventListener('click', function (e) {
+    var pill = e.target.closest && e.target.closest('.modes');
+    if (!pill) return;
+    var cell = pill.closest('.cell');
+    if (!cell) return;
+    pill.setAttribute('aria-expanded', cell.classList.toggle('is-open') ? 'true' : 'false');
+  });
+
   /* ---- Escape closes whichever is open --------------------------------- */
   addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (drawer && drawer.dataset.open === 'true') { setDrawer(false); burger.focus(); return; }
-    if (open) { var b = open; hide(); b.focus(); }
+    if (open) { var b = open; hide(); b.focus(); return; }
+    /* an open mode panel is the last thing Escape should reach */
+    var cell = document.querySelector('.cell.is-open');
+    if (cell) {
+      cell.classList.remove('is-open');
+      var pill = cell.querySelector('.modes');
+      if (pill) { pill.setAttribute('aria-expanded', 'false'); pill.focus(); }
+    }
   });
 }());

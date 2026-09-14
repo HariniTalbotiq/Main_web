@@ -39,6 +39,15 @@ file change. Edit the `family=Bodoni+Moda:opsz,wght@6..96,700` fragment in the
 `assets/css/talbotiq.css` to match, and re-run both scripts. Ask for only the
 weights actually used; a range ships bytes nothing references.
 
-## Inter
+## Inter — self-hosted, in `inter/`
 
-Loaded from Google Fonts, as the mockup does. Body text only.
+`Inter-latin.woff2` (48 kB) is the file Google Fonts itself serves for the latin subset of
+Inter's variable font — one file for weights 400–700 — fetched from `fonts.gstatic.com` on
+9 September 2026 and copied verbatim. It replaced the Google Fonts `<link>` on every page
+because that stylesheet was a render-blocking request to a third origin in front of every
+first paint (1.3–2.0 s of mobile LCP in Lighthouse). Declared in §30 of
+`assets/css/talbotiq.css` for the generated pages and written into each hand-written page's
+`<style>` by `tools/seo-pass.js`. Inter is SIL Open Font License; self-hosting is permitted.
+
+Only the latin subset is shipped. If a page ever needs Cyrillic, Greek or Vietnamese glyphs,
+Google's CSS lists one more file per script; add it beside this one with its `unicode-range`.
