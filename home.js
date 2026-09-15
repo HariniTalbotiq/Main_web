@@ -405,7 +405,7 @@ const COPY = {
       text: 'Ready to accelerate your business with AI?',
       keys: [['accelerate', 'g'], ['AI', 'y']],
     },
-    lede: 'Tell us which product you want to see and we will come back to you within one business day.',
+    lede: 'Tell us which product you’re interested in, and we’ll be in touch soon.',
     notesPlaceholder: 'What you would like the demo to cover, and roughly how many people would use it.',
     cta: 'Request a demo',
   },

@@ -185,7 +185,16 @@ function faqBlock(faqs, band, stamp) {
 </section>
 <!-- /seo-pass:faq -->`;
 }
-const FAQ_RE = /\n?<!-- seo-pass:faq[\s\S]*?<!-- \/seo-pass:faq -->/;
+/* FINDS ITS OWN BLOCK WITH OR WITHOUT THE COMMENT MARKERS. It used to key on
+   the markers alone, which held until the pages stopped shipping comments: with
+   the markers stripped this could no longer see the block it had written, so
+   every run appended another. Six runs, six copies of the FAQ, six elements
+   sharing id="faq". The <section> survives whatever happens to the comments, so
+   that is what it keys on now.
+
+   GLOBAL, and the caller strips before it inserts rather than replacing in
+   place: one copy or six, the page ends with exactly one either way. */
+const FAQ_RE = /\n*(?:<!-- seo-pass:faq[\s\S]*?<!-- \/seo-pass:faq -->|<section id="faq"[\s\S]*?<\/section>)/g;
 
 function faq(s, rel, slug, d) {
   const file = path.join(FAQ_DIR, `${slug}.json`);
@@ -198,8 +207,8 @@ function faq(s, rel, slug, d) {
   const band = !(lastSection && /var\(--band\)/.test(lastSection[0]));
   const stamp = `Published ${human(d.published)} &middot; Updated ${human(d.modified)} &middot; Written by the TalbotIQ team`;
   const block = faqBlock(faqs, band, stamp);
-  let out = FAQ_RE.test(s) ? s.replace(FAQ_RE, `\n${block}`) : s.replace(/\n<\/main>/, `\n\n${block}\n</main>`);
-  if (!out.includes('seo-pass:faq')) throw new Error(`${rel}: no </main> to put the FAQ before`);
+  let out = body.replace(/\n+<\/main>/, `\n\n${block}\n</main>`);
+  if (out === body) throw new Error(`${rel}: no </main> to put the FAQ before`);
   if (!out.includes(STAMP_CSS)) out = out.replace('</style>', `${STAMP_CSS}\n</style>`);
   return { s: out, faqs };
 }
